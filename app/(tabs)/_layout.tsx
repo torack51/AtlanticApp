@@ -25,19 +25,34 @@ export default function TabLayout() {
           },
           default: {},
         }),
-      }}>
+      }}> 
       <Tabs.Screen
-        name="index"
+        name="calendar"
         options={{
-          title: 'Home',
+          title: 'Calendar',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="competition"
+        options={{ 
+          title: 'Compétition',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="map"
         options={{
-          title: 'Explore',
+          title: 'Carte',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="other"
+        options={{
+          title: 'Autre',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="ellipsis" color={color} />,
         }}
       />
     </Tabs>
