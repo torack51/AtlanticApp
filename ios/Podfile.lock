@@ -1559,6 +1559,15 @@ PODS:
     - hermes-engine/Pre-built (= 0.76.5)
   - hermes-engine/Pre-built (0.76.5)
   - leveldb-library (1.22.6)
+  - MapboxCommon (23.11.2)
+  - MapboxCoreMaps (10.19.2):
+    - MapboxCommon (~> 23.11)
+  - MapboxMaps (10.19.1):
+    - MapboxCommon (= 23.11.2)
+    - MapboxCoreMaps (= 10.19.2)
+    - MapboxMobileEvents (= 2.0.0)
+    - Turf (= 2.8.0)
+  - MapboxMobileEvents (2.0.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -3223,6 +3232,31 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - rnmapbox-maps (10.1.33):
+    - MapboxMaps (~> 10.19.0)
+    - React
+    - React-Core
+    - rnmapbox-maps/DynamicLibrary (= 10.1.33)
+    - Turf
+  - rnmapbox-maps/DynamicLibrary (10.1.33):
+    - DoubleConversion
+    - hermes-engine
+    - MapboxMaps (~> 10.19.0)
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - React-Core
+    - React-featureflags
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Turf
+    - Yoga
   - RNReanimated (3.16.6):
     - DoubleConversion
     - glog
@@ -3356,6 +3390,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
+  - Turf (2.8.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -3453,6 +3488,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - "rnmapbox-maps (from `../node_modules/@rnmapbox/maps`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -3473,8 +3509,13 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - leveldb-library
+    - MapboxCommon
+    - MapboxCoreMaps
+    - MapboxMaps
+    - MapboxMobileEvents
     - nanopb
     - SocketRocket
+    - Turf
 
 EXTERNAL SOURCES:
   boost:
@@ -3662,6 +3703,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  rnmapbox-maps:
+    :path: "../node_modules/@rnmapbox/maps"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -3713,6 +3756,10 @@ SPEC CHECKSUMS:
   gRPC-Core: a27c294d6149e1c39a7d173527119cfbc3375ce4
   hermes-engine: 06a9c6900587420b90accc394199527c64259db4
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
+  MapboxCommon: 873b75dd0e8c5d7029e0c849437eba365f4887e5
+  MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
+  MapboxMaps: 05822ab0ee74f7d626e6471572439afe35c1c116
+  MapboxMobileEvents: d044b9edbe0ec7df60f6c2c9634fe9a7f449266b
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   RCT-Folly: 84578c8756030547307e4572ab1947de1685c599
   RCTDeprecation: fb7d408617e25d7f537940000d766d60149c5fea
@@ -3777,9 +3824,11 @@ SPEC CHECKSUMS:
   RNFBApp: 33938c8ee95629bda8a14eda579e555a101212dd
   RNFBFirestore: 54ebde6e7eed7dc3ce58940ba620ab040c059e25
   RNGestureHandler: 1e33ee267aaf61bbab6089d32df3b38c3024e3dd
+  rnmapbox-maps: d6e6d15c7d7418f3fa6d73e74f6f0e5fdd9bd9b5
   RNReanimated: fb3896d9010787799eb5748e50fd59746a503001
   RNScreens: f5762e2dd74e365dcee2007dc96942a528ac25d4
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
   Yoga: 7548e4449365bf0ef60db4aefe58abff37fcabec
 
 PODFILE CHECKSUM: 7cf6de20cb4b34efd6428c387189866bc3c8c5cb
