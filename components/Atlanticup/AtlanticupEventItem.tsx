@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing } from 'react-native';
 import { atlanticupGetSportFromId } from '../../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
+import { Link } from 'expo-router';
 
 const width = Dimensions.get('window').width;
 
@@ -89,7 +90,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                         ]}
                     />
                 )}
-                <TouchableOpacity style={styles.touchable_container} onPress={this.props.onPress}>
+                <TouchableOpacity style={styles.touchable_container}>
                     <LinearGradient colors={[team1.delegation.color, team2.delegation.color]} style={styles.touchable_container} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
                         <View style={{ position: 'absolute', top: 0 }}>
                             <Image source={{ uri: this.state.image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }} />
@@ -125,7 +126,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
         return (
             <View style={[styles.main_container, { borderRadius: 5 }]}>
                 <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
-                    <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]} onPress={this.props.onPress}>
+                    <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
                         <View style={{ flex: 1, alignItems: 'center' }}>
                             <Text style={styles.text}>{event.title}</Text>
                         </View>
@@ -168,9 +169,14 @@ class AtlanticupEventItem extends React.Component<Props, State> {
         });
 
         return (
-            event.kind === "match" ?
+            <Link href={{
+                pathname: '/atlanticupEventDetail',
+                params: { event_id : event.id },
+            }}>
+            {event.kind === "match" ?
                 this.renderMatch(event, scaleInterpolation1, opacityInterpolation1, borderWidthInterpolation1) :
-                this.renderEvent(event, scaleInterpolation1, opacityInterpolation1, borderWidthInterpolation1)
+                this.renderEvent(event, scaleInterpolation1, opacityInterpolation1, borderWidthInterpolation1)}
+            </Link>
         );
     }
 }
