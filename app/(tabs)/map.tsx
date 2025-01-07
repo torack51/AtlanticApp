@@ -16,6 +16,10 @@ interface SportItemProps {
     navigation: any;
 }
 
+interface User {
+    id: string;
+}
+
 const SportItem: React.FC<SportItemProps> = ({ item, navigation }) => {
     return (
         <TouchableOpacity onPress={() => navigation.navigate('SportDetailScreen', { sport: item })}>
@@ -87,11 +91,12 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     };
 
     componentDidUpdate(prevProps: any) {
-        const { route } = this.props;
+        //console.log('props : ', this.props);
+        /*const { route } = this.props;
         if (route.params && (!prevProps.route.params || route.params.redirect_to_place_id !== prevProps.route.params.redirect_to_place_id)) {
             const { redirect_to_place_id } = route.params;
             this.handleNewPlaceId(redirect_to_place_id);
-        }
+        }*/
     }
 
     handleSheetChange = (index: number) => {
@@ -113,12 +118,13 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
         const { features } = event;
         if (features.length > 0) {
             const feature = features[0];
+            console.log('pressed, feature : ', feature);
             this.moveCameraToCoordinate(feature.properties.centerCoordinates[0], feature.properties.centerCoordinates[1], feature.properties.defaultZoom);
             this.setState({ selectedFeature: feature, loading: true });
             if (this.bottomSheetRef.current) {
-                this.bottomSheetRef.current.snapToIndex(Math.max(1, this.state.currentIndex));
+                //this.bottomSheetRef.current.snapToIndex(Math.max(1, this.state.currentIndex));
+                //problème avec cette fonction
             }
-
             const placeDetails = await atlanticupGetPlaceFromId(feature.properties.id);
             this.setState({ placeDetails, loading: false });
 
@@ -133,7 +139,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
             return [];
         }
 
-        this.setState({ sportsList: null, loadingSports: true });
+        this.setState({ sportsList: [], loadingSports: true });
         let sports: any[] = [];
         for (let i = 0; i < id_list.length; i++) {
             const data = await atlanticupGetSportFromId(id_list[i]);
@@ -146,7 +152,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     fetchInitialEvents = async () => {
         this.setState({ loading: true });
         try {
-            const { items, lastVisible } = await atlanticupGetEventsFromPlaceId(ITEMS_PER_PAGE, this.state.placeDetails.id);
+            const { items, lastVisible } = await atlanticupGetEventsFromPlaceId(ITEMS_PER_PAGE, this.state.placeDetails.id, null);
             if (items.length > 0) {
                 this.setState({
                     events: items,
@@ -195,7 +201,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
 
     loadEvents = async () => {
         if (this.state.placeDetails) {
-            const data = await atlanticupGetEventsFromPlaceId(this.state.placeDetails.id);
+            const data:any = await atlanticupGetEventsFromPlaceId(ITEMS_PER_PAGE, this.state.placeDetails.id, null);
             const events = [];
             for (let i = 0; i < data.length; i++) {
                 if (data[i].start_time >= new Date().toISOString() && (data[i].end_time == null || data[i].end_time >= new Date().toISOString())) {
@@ -226,9 +232,9 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
 
     renderItem = ({ item }: { item: any }) => {
         if (item.kind === "match") {
-            return <AtlanticupEventItem event={item} onPress={() => this.props.navigation.navigate("MatchDetailScreen", { match: item })} />;
+            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={() => this.props.navigation.navigate("MatchDetailScreen", { match: item })} />;
         } else {
-            return <AtlanticupEventItem event={item} onPress={() => this.props.navigation.navigate("AtlanticupEventDetail", { event: item })} />;
+            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={() => this.props.navigation.navigate("AtlanticupEventDetail", { event: item })} />;
         }
     };
 
@@ -257,14 +263,24 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     renderPlaceStatus() {
         if (this.state.events.find((event) => event.status === "playing")) {
             return (
-                <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => (this.setState({ currentIndex: 2 }), this.bottomSheetRef.current.snapToIndex(3))}>
+                <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => {
+                    this.setState({ currentIndex: 2 });
+                    if (this.bottomSheetRef.current) {
+                        this.bottomSheetRef.current.snapToIndex(3);
+                    }
+                }}>
                     <Text style={{ fontWeight: '900', fontSize: 18, color: 'red', textAlign: 'center' }}>MATCH EN COURS</Text>
                     <Text style={{ fontWeight: '900', fontSize: 15, color: 'blue', textAlign: 'center' }}>voir détails</Text>
                 </TouchableOpacity>
             );
         }
         return (
-            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => (this.setState({ currentIndex: 2 }), this.bottomSheetRef.current.snapToIndex(2))}>
+            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => {
+                this.setState({ currentIndex: 2 });
+                if (this.bottomSheetRef.current) {
+                    this.bottomSheetRef.current.snapToIndex(2);
+                }
+            }}>
                 <Text style={{ fontWeight: '900', fontSize: 18, color: 'black', textAlign: 'center' }}>Rien en cours</Text>
                 <Text style={{ fontWeight: '900', fontSize: 15, color: 'blue', textAlign: 'center' }}>voir détails</Text>
             </TouchableOpacity>
@@ -329,15 +345,17 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
                     <MapboxGL.MapView style={styles.map} styleURL="mapbox://styles/mapbox/streets-v10" ref={this.mapRef}>
                         <MapboxGL.Camera ref={this.cameraRef} maxBounds={bounds} zoomLevel={15} centerCoordinate={[-4.571357, 45.358577]} pitch={45} />
                         {features.map((item, index) => (
-                            <MapboxGL.ShapeSource key={index} id={`polygonSource-${index}`} shape={item} onPress={this.handlePress}>
+                            <MapboxGL.ShapeSource key={index.toString()} id={`polygonSource-${index}`} shape={item} onPress={this.handlePress}>
                                 <MapboxGL.FillExtrusionLayer
-                                    id={`extrusionLayer-${index}`}
+                                    id={`extrusionLayer-${index}`}d
                                     style={{
                                         fillExtrusionColor: ['get', 'color'],
                                         fillExtrusionHeight: ['get', 'height'],
                                         fillExtrusionBase: 0,
                                         fillExtrusionOpacity: 0.7,
                                     }}
+                                    minZoomLevel={0}
+                                    maxZoomLevel={22}
                                 />
                             </MapboxGL.ShapeSource>
                         ))}

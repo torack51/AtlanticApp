@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, RefreshControl, Alert} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
 import AtlanticupEventItem from '../../components/Atlanticup/AtlanticupEventItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 
 interface User {
     id: string;
@@ -53,10 +54,21 @@ class CalendarTab extends Component<{}, State> {
         this.seeSchoolOnlyPressed = this.seeSchoolOnlyPressed.bind(this);
     }
 
-    seeSchoolOnlyPressed = () => {
-        this.setState(prevState => ({
-            seeSchoolOnly: !prevState.seeSchoolOnly
-        }));
+    seeSchoolOnlyPressed = async () => {
+        await this.getTeamFromStorage();
+        if (!this.state.selectedTeam){
+            if (!this.state.seeSchoolOnly){
+                Alert.alert("Vous devez d'abord sélectionner une équipe dans la section 'Mon Profil' pour activer cette fonctionnalité",
+                "",
+                [
+                    { text: "Annuler", onPress: () => {} },
+                    { text: "M'y emmener", onPress: () => {} }
+                ]
+                );
+                return;
+            }
+        }
+        this.setState({seeSchoolOnly : !this.state.seeSchoolOnly});
     };
 
     getTeamFromStorage = async () => {
@@ -114,10 +126,10 @@ class CalendarTab extends Component<{}, State> {
     renderItem = ({ item }: { item: Event }) => {
         // Implémentez la logique pour rendre un élément de la liste
         if (item.kind=="match"){
-            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={() => {}}/>
+            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={()=>router.push("/atlanticupMatchDetail")}/>
         }
         else{
-            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={() => {}}/>
+            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} onPress={()=>router.push("/atlanticupEventDetail")}/>
         }
     };
 

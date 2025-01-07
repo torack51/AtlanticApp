@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
-//import { atlanticupGetAllSports } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetAllSports } from '../../backend/atlanticupBackendFunctions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const width = Dimensions.get('window').width;
 
-interface Sport {
+type Sport = {
     id: string;
     title: string;
     image: string;
-}
+};
 
-interface Props {
-    navigation: any;
-}
+type Props = {
+    navigation: {
+        navigate: (screen: string, params?: object) => void;
+    };
+};
 
-interface State {
+type State = {
     sports: Sport[];
     refreshing: boolean;
-}
+};
 
-// Fonction pour interpoler les couleurs
+// Function to interpolate colors
 const interpolateColor = (color1: number[], color2: number[], factor: number): number[] => {
     const result = color1.slice();
     for (let i = 0; i < 3; i++) {
@@ -29,24 +31,22 @@ const interpolateColor = (color1: number[], color2: number[], factor: number): n
     return result;
 };
 
-// Convertir la couleur RGB en format hexadécimal
+// Convert RGB color to hexadecimal format
 const rgbToHex = (rgb: number[]): string => {
     return `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`;
 };
 
-// Les deux couleurs en format [R, G, B]
-const endColor = [29, 73, 102]; // Bleu clair
-const startColor = [255, 219, 35]; // Rouge tomate
+// Colors in [R, G, B] format
+const endColor = [29, 73, 102]; // Light blue
+const startColor = [255, 219, 35]; // Tomato red
 
-// Composant SportItem avec un dégradé de couleur basé sur l'index
-const SportItem: React.FC<{ item: Sport, index: number, totalItems: number, props: Props }> = ({ item, index, totalItems, props }) => {
-    const factor = index / (totalItems - 1); // Facteur d'interpolation basé sur l'index
-    const color = rgbToHex(interpolateColor(startColor, endColor, factor)); // Couleur interpolée
+// SportItem component with color gradient based on index
+const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props }> = ({ item, index, totalItems, props }) => {
+    const factor = index / (totalItems - 1); // Interpolation factor based on index
+    const color = rgbToHex(interpolateColor(startColor, endColor, factor)); // Interpolated color
 
     return (
-        <TouchableOpacity
-            onPress={() => props.navigation.navigate('SportDetailScreen', { sport: item })}
-        >
+        <TouchableOpacity onPress={() => props.navigation.navigate('SportDetailScreen', { sport: item })}>
             <View style={[styles.sportItemContainer]}>
                 <Image source={{ uri: item.image }} style={[styles.image, { tintColor: color }]} />
                 <Text style={[styles.text, { color }]}>{item.title}</Text>
@@ -60,7 +60,7 @@ class CompetitionScreen extends Component<Props, State> {
         super(props);
         this.state = {
             sports: [],
-            refreshing: false
+            refreshing: false,
         };
     }
 
@@ -70,10 +70,9 @@ class CompetitionScreen extends Component<Props, State> {
 
     fetchSports = async () => {
         this.setState({ refreshing: true });
-        //const sports = await atlanticupGetAllSports();
-        const sports = [{}] as Sport[];
+        const sports = await atlanticupGetAllSports();
         this.setState({ sports, refreshing: false });
-    }
+    };
 
     render() {
         return (
@@ -81,37 +80,31 @@ class CompetitionScreen extends Component<Props, State> {
                 <View style={styles.topBar}>
                     <Text style={styles.topText}>Choisissez un sport</Text>
                 </View>
-                {this.state.refreshing ? <ActivityIndicator size="large" color="#0000ff" /> :
+                {this.state.refreshing ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
                     <View style={styles.listContainer}>
                         <FlatList
                             data={this.state.sports}
                             numColumns={2}
                             renderItem={({ item, index }) => (
-                                <SportItem
-                                    item={item}
-                                    index={index}
-                                    totalItems={this.state.sports.length}
-                                    props={this.props}
-                                />
+                                <SportItem item={item} index={index} totalItems={this.state.sports.length} props={this.props} />
                             )}
                             keyExtractor={item => item.id}
                             refreshing={this.state.refreshing}
                             onRefresh={this.fetchSports}
                             showsVerticalScrollIndicator={false}
                             ListFooterComponent={
-                                <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('GeneralRanking')}
-                                >
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('GeneralRanking')}>
                                     <View style={styles.last_container}>
-                                        {/*
-                                        <Image source={require('../../images/logo_ac.png')} style={styles.last_image} />
-                                        */}
+                                        <Image source={require('../../assets/images/icons/logo_ac.png')} style={styles.last_image} />
                                         <Text style={styles.last_text}>Classement des écoles</Text>
                                     </View>
                                 </TouchableOpacity>
                             }
                         />
-                    </View>}
+                    </View>
+                )}
             </SafeAreaView>
         );
     }
@@ -171,7 +164,7 @@ const styles = StyleSheet.create({
         height: width / 2 - 20,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
 });
 
 export default CompetitionScreen;

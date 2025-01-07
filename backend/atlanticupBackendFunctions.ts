@@ -619,7 +619,7 @@ const atlanticupUpdateType1MatchScore = async (match_id: string, score1: number,
     }
 }
 
-const atlanticupUpdateType2MatchScore = async (match_id: string, score1: number, score2: number): Promise<void> => {
+const atlanticupUpdateType2MatchScore = async (match_id: string, score1: number[], score2: number[]): Promise<void> => {
     try {
         await firestore()
             .collection('atlanticup_matches')
