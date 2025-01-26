@@ -91,7 +91,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     };
 
     componentDidUpdate(prevProps: any) {
-        //console.log('props : ', this.props);
+        //console.log('state : ',this.state);
         /*const { route } = this.props;
         if (route.params && (!prevProps.route.params || route.params.redirect_to_place_id !== prevProps.route.params.redirect_to_place_id)) {
             const { redirect_to_place_id } = route.params;
@@ -118,7 +118,6 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
         const { features } = event;
         if (features.length > 0) {
             const feature = features[0];
-            console.log('pressed, feature : ', feature);
             this.moveCameraToCoordinate(feature.properties.centerCoordinates[0], feature.properties.centerCoordinates[1], feature.properties.defaultZoom);
             this.setState({ selectedFeature: feature, loading: true });
             if (this.bottomSheetRef.current) {
@@ -126,9 +125,9 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
                 //problème avec cette fonction
             }
             const placeDetails = await atlanticupGetPlaceFromId(feature.properties.id);
-            this.setState({ placeDetails, loading: false });
-
-            await this.loadSportsList(this.state.placeDetails.sports_id_list);
+            this.setState({ placeDetails : placeDetails, loading: false });
+                
+            await this.loadSportsList(placeDetails.sports_id_list);
             await this.fetchInitialEvents();
         }
     };
@@ -150,6 +149,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     };
 
     fetchInitialEvents = async () => {
+        console.log('fetching');
         this.setState({ loading: true });
         try {
             const { items, lastVisible } = await atlanticupGetEventsFromPlaceId(ITEMS_PER_PAGE, this.state.placeDetails.id, null);
@@ -261,6 +261,7 @@ class AtlanticupMapScreen extends React.Component<any, AtlanticupMapScreenState>
     }
 
     renderPlaceStatus() {
+        console.log('events : ', this.state.events);
         if (this.state.events.find((event) => event.status === "playing")) {
             return (
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => {

@@ -172,26 +172,27 @@ async function atlanticupGetMatchesFromSportId(sport_id: string): Promise<any[]>
 
 const atlanticupGetPlaceFromId = async (id: string): Promise<any> => {
     try {
-        await firestore()
+        const doc = await firestore()
             .collection('atlanticup_places')
             .doc(id)
-            .get()
-            .then((doc) => {
-                if (doc.exists) {
-                    return {
-                        id: doc.id,
-                        ...doc.data()
-                    };
-                } else {
-                    console.log("Aucun document trouvé avec cet ID.");
-                    return null;
-                }
-            });
-    }
-    catch (error) {
+            .get();
+
+        if (doc.exists) {
+            const data = {
+                id: doc.id,
+                ...doc.data()
+            };
+            return data;
+        } else {
+            console.log("Aucun document trouvé avec cet ID.");
+            return null;
+        }
+    } catch (error) {
         console.error("Erreur lors de la récupération du document:", error);
+        return null;
     }
-}
+};
+
 
 const atlanticupGetAllGroups = async (): Promise<any[]> => {
     try {
