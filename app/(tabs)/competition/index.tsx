@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
-import { atlanticupGetAllSports } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetAllSports } from '../../../backend/atlanticupBackendFunctions';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 const width = Dimensions.get('window').width;
 
@@ -46,7 +47,7 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
     const color = rgbToHex(interpolateColor(startColor, endColor, factor)); // Interpolated color
 
     return (
-        <TouchableOpacity onPress={() => props.navigation.navigate('SportDetailScreen', { sport: item })}>
+        <TouchableOpacity onPress={() => router.navigate(`/sportDetail/${item.id}?name=${item.title}`)}>
             <View style={[styles.sportItemContainer]}>
                 <Image source={{ uri: item.image }} style={[styles.image, { tintColor: color }]} />
                 <Text style={[styles.text, { color }]}>{item.title}</Text>
@@ -97,7 +98,7 @@ class CompetitionScreen extends Component<Props, State> {
                             ListFooterComponent={
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('GeneralRanking')}>
                                     <View style={styles.last_container}>
-                                        <Image source={require('../../assets/images/icons/logo_ac.png')} style={styles.last_image} />
+                                        <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image} />
                                         <Text style={styles.last_text}>Classement des écoles</Text>
                                     </View>
                                 </TouchableOpacity>

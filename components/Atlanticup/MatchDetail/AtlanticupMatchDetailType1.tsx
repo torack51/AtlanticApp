@@ -4,6 +4,7 @@ import { Menu, Button, Provider } from 'react-native-paper';
 import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../../backend/atlanticupBackendFunctions';
 import UpdateScoreType1 from '../UpdateScore/AtlanticupUpdateScoreType1';
 import auth from '@react-native-firebase/auth';
+import ScreenLoader from '@/components/ScreenLoader';
 import { Link } from 'expo-router';
 
 const width = Dimensions.get('window').width;
@@ -142,6 +143,7 @@ const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     };
 
     const redirectToMap = () => {
+        console.log('pressed');
         //this.props.navigation.navigate('Carte', { redirect_to_place_id: state.match.place_id });
     };
 
@@ -199,7 +201,7 @@ const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     if (team1 == null || team2 == null || delegation1 == null || delegation2 == null) {
         return (
             <SafeAreaView style={styles.container}>
-                <Text>Chargement...</Text>
+                <ScreenLoader/>
             </SafeAreaView>
         );
     }

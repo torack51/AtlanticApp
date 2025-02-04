@@ -41,24 +41,26 @@ const CalendarTab: React.FC = () => {
     const getTeamFromStorage = async () => {
         const team = await AsyncStorage.getItem("atlanticup_team");
         setSelectedTeam(team);
+        return team;
     };
 
     const seeSchoolOnlyPressed = async () => {
-        await getTeamFromStorage();
-        if (!selectedTeam) {
-            if (!seeSchoolOnly) {
-                Alert.alert(
-                    "Vous devez d'abord sélectionner une équipe dans la section 'Mon Profil' pour activer cette fonctionnalité",
-                    "",
-                    [
-                        { text: "Annuler", onPress: () => {} },
-                        { text: "M'y emmener", onPress: () => {} }
-                    ]
-                );
-                return;
+        await getTeamFromStorage().then((team) => {
+            if (!team) {
+                if (!seeSchoolOnly) {
+                    Alert.alert(
+                        "Vous devez d'abord sélectionner une équipe dans la section 'Mon Profil' pour activer cette fonctionnalité",
+                        "",
+                        [
+                            { text: "Annuler", onPress: () => {} },
+                            { text: "M'y emmener", onPress: () => {router.navigate('/other')} }
+                        ]
+                    );
+                    return;
+                }
             }
-        }
-        setSeeSchoolOnly(!seeSchoolOnly);
+            setSeeSchoolOnly(!seeSchoolOnly);
+        });
     };
 
     const fetchInitialEvents = async () => {
