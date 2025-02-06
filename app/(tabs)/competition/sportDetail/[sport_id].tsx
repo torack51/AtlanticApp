@@ -5,6 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 import ResultsTab from './ResultsTab';
 import SportMatchesTab from './SportMatchesTab';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -15,7 +16,6 @@ const SportDetailScreen: React.FC = () => {
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
     const handleIndexChange = (index: number) => {
-        console.log('index', index);
         setIndex(index);
     }
     const [routes] = useState<{ key: string; title: string }[]>([

@@ -181,6 +181,16 @@ const AtlanticupMatchDetail: React.FC<Props> = () => {
         //this.props.navigation.navigate('Carte', { redirect_to_place_id: state.match.place_id });
     };
 
+    const redirectToSport = () => {
+        if (state.sport){
+            router.navigate(`/competition/sportDetail/${state.sport.id}?name=${state.sport.title}`);
+        }
+        else{
+            console.warn('Sport introuvable');
+        }
+        //this.props.navigation.navigate('Sport', { sport_id: state.match.sport_id });
+    }
+
     const renderScore = (score: number | null) => {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'black', paddingHorizontal: 8, paddingVertical: 5, borderRadius: 5 }}>
@@ -313,11 +323,9 @@ const AtlanticupMatchDetail: React.FC<Props> = () => {
                 </View>
                 <View style={styles.lower_container}>
                     {state.sport &&
-                        
-                            <View style={{ padding: 10, margin: 10, borderRadius: 15, backgroundColor: '#76b9f5' }}>
-                                <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {state.sport.title}</Text>
-                            </View>
-                        
+                        <TouchableOpacity style={{ padding: 10, margin: 10, borderRadius: 15, backgroundColor: '#76b9f5' }} onPress={redirectToSport}>
+                            <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {state.sport.title}</Text>
+                        </TouchableOpacity>
                     }
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={redirectToMap}>
                         <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 18 }}>{state.location == null ? "Voir sur la carte" : state.location.title} </Text>

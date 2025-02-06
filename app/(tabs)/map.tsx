@@ -343,7 +343,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={{ flex: 1 }}>
                 <MapboxGL.MapView style={{ flex: 1 }} styleURL="mapbox://styles/mapbox/streets-v10" ref={mapRef}>
                 <MapboxGL.Camera ref={cameraRef} maxBounds={bounds} zoomLevel={15} centerCoordinate={[-4.571357, 45.358577]} />
                 {features.map((item, index) => (
@@ -366,7 +365,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['4%', '25%', '50%', '75%']} onChange={handleSheetChange}>
                 {renderPlaceDetails()}
                 </BottomSheet>
-            </SafeAreaView>
         </GestureHandlerRootView>
     );
 };

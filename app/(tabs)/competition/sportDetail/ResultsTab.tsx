@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions, RefreshControl, Image, ScrollView } from 'react-native';
-import { atlanticupGetGroupsFromSportId, atlanticupGetDelegationFromId, atlanticupGetMatchesFromSportId, atlanticupGetTeamFromId, atlanticupGetSportFromId } from '../../../backend/atlanticupBackendFunctions';
-import { giveResults, sortTeams } from '../../../backend/pointsPerMatchBySports';
-import AtlanticupRankingType1 from '../../../components/Atlanticup/Ranking/AtlanticupRankingType1';
-import AtlanticupRankingType2 from '../../../components/Atlanticup/Ranking/AtlanticupRankingType2';
-import AtlanticupRankingType3 from '../../../components/Atlanticup/Ranking/AtlanticupRankingType3';
+import { atlanticupGetGroupsFromSportId, atlanticupGetDelegationFromId, atlanticupGetMatchesFromSportId, atlanticupGetTeamFromId, atlanticupGetSportFromId } from '../../../../backend/atlanticupBackendFunctions';
+import { giveResults, sortTeams } from '../../../../backend/pointsPerMatchBySports';
+import AtlanticupRankingType1 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType1';
+import AtlanticupRankingType2 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType2';
+import AtlanticupRankingType3 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType3';
 
 const width = Dimensions.get('window').width;
 
@@ -141,10 +141,6 @@ const ResultsTab: React.FC<ResultsTabProps> = ({sport_id}) => {
             console.error('Error fetching data:', error);
         }
     }, [sport_id, computeScores]);
-
-    useEffect(() => {
-        fetchAll();
-    }, [fetchAll]);
 
     const renderType1Ranking = (groups: any[]) => {
         return (

@@ -7,6 +7,7 @@ import AtlanticupEventItem from '../../components/Atlanticup/AtlanticupEventItem
 import AtlanticupMatchItem from '@/components/Atlanticup/AtlanticupMatchItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface User {
     id: string;
@@ -37,6 +38,8 @@ const CalendarTab: React.FC = () => {
     const [seeSchoolOnly, setSeeSchoolOnly] = useState(false);
     const [lastVisibleItem, setLastVisibleItem] = useState(0);
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+
+    const insets = useSafeAreaInsets();
 
     const getTeamFromStorage = async () => {
         const team = await AsyncStorage.getItem("atlanticup_team");
@@ -100,9 +103,13 @@ const CalendarTab: React.FC = () => {
 
     const renderItem = ({ item }: { item: Event }) => {
         if (item.kind === "match") {
-            return <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }}/>;
+            return <View style={{margin:5}}>
+                        <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }}/>
+                    </View>;
         } else {
-            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }}/>;
+            return <View style={{margin:5}}>
+                        <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }}/>
+                    </View>;
         }
     };
 
@@ -119,7 +126,7 @@ const CalendarTab: React.FC = () => {
     }, []);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
             <View style={styles.topBar}>
                 <Text style={styles.topText}>Evénements futurs</Text>
             </View>
