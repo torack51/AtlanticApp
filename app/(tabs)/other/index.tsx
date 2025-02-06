@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, Tou
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 import { getAuth } from 'firebase/auth';
-import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const width = Dimensions.get('window').width;
 
@@ -29,6 +30,8 @@ const ProfileScreen: React.FC = () => {
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
     const navigation = useNavigation();
+
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         fetchAnnouncements();
@@ -93,9 +96,9 @@ const ProfileScreen: React.FC = () => {
     
     return (
         <ScrollView>
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
                 <View style={styles.logo_container}> 
-                    <Image source={require('../../assets/images/logo_avec_titre.png')} style={{ width: width * 0.8, height: width * 0.4 }} />
+                    <Image source={require('../../../assets/images/logo_avec_titre.png')} style={{ width: width * 0.8, height: width * 0.4 }} />
                 </View>
                 <View style={styles.description_container}>
                     <Text>
@@ -105,7 +108,7 @@ const ProfileScreen: React.FC = () => {
 
                 <View style={styles.annoucements_container}>
                     <TouchableOpacity onPress={fetchAnnouncements} style={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}>
-                        <Image source={require('../../assets/images/icons/refresh-outline.png')} style={{ width: 25, height: 25 }} />
+                        <Image source={require('../../../assets/images/icons/refresh-outline.png')} style={{ width: 25, height: 25 }} />
                     </TouchableOpacity>
 
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>
@@ -115,7 +118,7 @@ const ProfileScreen: React.FC = () => {
                     <ScrollView style={{ flex: 1, margin: 10 }}>
                         {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
                     </ScrollView>
-                    <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/calendar")}>
+                    <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
                         <Text style={{ color: 'blue', fontWeight: 'bold' }}>Tout voir</Text>
                     </TouchableOpacity>
                 </View>
@@ -145,6 +148,12 @@ const ProfileScreen: React.FC = () => {
                         <Text style={{ textAlign: 'center', fontSize: 12, color: 'grey', fontWeight: 'bold' }}>
                             {"Réinitialiser mon équipe"}
                         </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.legal_notices_container}>
+                    <TouchableOpacity onPress={() => router.navigate("/other/legalNotices")}>
+                        <Text style={{ color: 'blue' }}>Mentions légales</Text>
                     </TouchableOpacity>
                 </View>
 

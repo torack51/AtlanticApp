@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { atlanticupGetAllSports } from '../../../backend/atlanticupBackendFunctions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const width = Dimensions.get('window').width;
 
@@ -42,74 +44,84 @@ const endColor = [29, 73, 102]; // Light blue
 const startColor = [255, 219, 35]; // Tomato red
 
 // SportItem component with color gradient based on index
-const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props }> = ({ item, index, totalItems, props }) => {
+const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props; onImageLoaded : any}> = ({ item, index, totalItems, props, onImageLoaded}) => {
     const factor = index / (totalItems - 1); // Interpolation factor based on index
     const color = rgbToHex(interpolateColor(startColor, endColor, factor)); // Interpolated color
 
+    const handleImageLoad = () => {
+        onImageLoaded();
+    }
+
     return (
-        <TouchableOpacity onPress={() => router.navigate(`/sportDetail/${item.id}?name=${item.title}`)}>
+        <TouchableOpacity onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
             <View style={[styles.sportItemContainer]}>
-                <Image source={{ uri: item.image }} style={[styles.image, { tintColor: color }]} />
+                <Image source={{ uri: item.image }} style={[styles.image, { tintColor: color }]} onLoadEnd={handleImageLoad}/>
                 <Text style={[styles.text, { color }]}>{item.title}</Text>
             </View>
         </TouchableOpacity>
     );
 };
 
-class CompetitionScreen extends Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            sports: [],
-            refreshing: false,
-        };
-    }
+const CompetitionScreen: React.FC<Props> = (props) => {
+    const [sports, setSports] = useState<Sport[]>([]);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [imagesLoaded, setImagesLoaded] = useState(0);
+    const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-    componentDidMount() {
-        this.fetchSports();
-    }
+    const insets = useSafeAreaInsets();
 
-    fetchSports = async () => {
-        this.setState({ refreshing: true });
+    useEffect(() => {
+        fetchSports();
+    }, []);
+
+    useEffect(() => {
+        if (imagesLoaded === sports.length && sports.length > 0) {
+            console.log('all images loaded now');
+            setAllImagesLoaded(true);
+        }
+    }, [imagesLoaded]);
+
+    const fetchSports = async () => {
+        setRefreshing(true);
         const sports = await atlanticupGetAllSports();
-        this.setState({ sports, refreshing: false });
+        setSports(sports);
+        setRefreshing(false);
     };
 
-    render() {
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.topBar}>
-                    <Text style={styles.topText}>Choisissez un sport</Text>
-                </View>
-                {this.state.refreshing ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    <View style={styles.listContainer}>
-                        <FlatList
-                            data={this.state.sports}
-                            numColumns={2}
-                            renderItem={({ item, index }) => (
-                                <SportItem item={item} index={index} totalItems={this.state.sports.length} props={this.props} />
-                            )}
-                            keyExtractor={item => item.id}
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.fetchSports}
-                            showsVerticalScrollIndicator={false}
-                            ListFooterComponent={
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('GeneralRanking')}>
-                                    <View style={styles.last_container}>
-                                        <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image} />
-                                        <Text style={styles.last_text}>Classement des écoles</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
-                        />
-                    </View>
-                )}
-            </SafeAreaView>
-        );
+    const handleImageLoad = () => {
+        setImagesLoaded(prev => prev + 1);
     }
-}
+
+    return (
+        <SafeAreaView style={[styles.container, {paddingBottom: insets.bottom}]}>
+            {refreshing ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={sports}
+                        numColumns={2}
+                        renderItem={({ item, index }) => (
+                            <SportItem item={item} index={index} totalItems={sports.length} props={props} onImageLoaded={handleImageLoad}/>
+                        )}
+                        keyExtractor={item => item.id}
+                        refreshing={refreshing}
+                        onRefresh={fetchSports}
+                        showsVerticalScrollIndicator={false}
+                        ListHeaderComponent={
+                            <TouchableOpacity onPress={() => router.navigate('/competition/generalRanking')}>
+                                <View style={styles.last_container}>
+                                    <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image}/>
+                                    <Text style={styles.last_text}>Classement général</Text>
+                                </View>
+                            </TouchableOpacity>
+                        }
+                    />
+                </View>
+            )}
+        </SafeAreaView>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {

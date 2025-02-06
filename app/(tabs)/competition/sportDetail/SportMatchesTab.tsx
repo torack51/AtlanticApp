@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
-import { atlanticupGetMatchesFromSportId } from '../../../backend/atlanticupBackendFunctions';
-import AtlanticupEventItem from '../../../components/Atlanticup/AtlanticupMatchItem';
-import AtlanticupMatchItem from '../../../components/Atlanticup/AtlanticupMatchItem';
+import { atlanticupGetMatchesFromSportId } from '../../../../backend/atlanticupBackendFunctions';
+import { User } from '../../../../types';
+import AtlanticupEventItem from '../../../../components/Atlanticup/AtlanticupEventItem';
+import AtlanticupMatchItem from '../../../../components/Atlanticup/AtlanticupMatchItem';
 
 interface SportMatchesTabProps {
-    sport_id: string;
+    sport_id: any;
 }
 
 const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
@@ -14,7 +15,7 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
 
     useEffect(() => {
         fetchMatches(sport_id);
-    }, [sport_id]);
+    }, []);
 
     const fetchMatches = async (sport_id: string) => {
         setRefreshing(true);
@@ -52,14 +53,15 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
     return (
         <View style={styles.container}>
             <SectionList
-                onRefresh={() => fetchMatches(sport.id)}
+                onRefresh={() => fetchMatches(sport_id)}
                 refreshing={refreshing}
                 style={{ width: '100%' }}
                 contentContainerStyle={{ alignItems: 'center', width: '100%' }}
                 sections={sectionListData}
-                keyExtractor={(item, index) => item + index}
                 renderItem={({ item }) => (
-                    <AtlanticupEventItem event={item} onPress={() => navigation.navigate("MatchDetailScreen", { match: item })} />
+                    item.kind === "match" ? 
+                        <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }} /> :
+                        <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} />
                 )}
                 renderSectionHeader={({ section: { title } }) => (
                     <View style={{ margin: 10 }}>
