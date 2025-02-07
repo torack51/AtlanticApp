@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import { getAuth } from 'firebase/auth';
 import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -78,9 +78,10 @@ const ProfileScreen: React.FC = () => {
     };
 
     const renderAnnouncements = () => {
-        const sortedAnnouncements = announcements.sort((a, b) => {
+        var sortedAnnouncements = announcements.sort((a, b) => {
             return new Date(b.time_sent).getTime() - new Date(a.time_sent).getTime();
         });
+        sortedAnnouncements = sortedAnnouncements.slice(0, 3);
         return sortedAnnouncements.map((announcement, key) => (
             <View key={key} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 20, height: 60, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
@@ -107,10 +108,6 @@ const ProfileScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.annoucements_container}>
-                    <TouchableOpacity onPress={fetchAnnouncements} style={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}>
-                        <Image source={require('../../../assets/images/icons/refresh-outline.png')} style={{ width: 25, height: 25 }} />
-                    </TouchableOpacity>
-
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>
                         {"Liste des annonces :"}
                     </Text>
@@ -211,7 +208,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     annoucements_container: {
-        height: 250,
         borderRadius: 20,
         backgroundColor: 'rgba(0,0,0,0.1)',
         marginBottom: 20,

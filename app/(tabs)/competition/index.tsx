@@ -83,12 +83,15 @@ const CompetitionScreen: React.FC<Props> = (props) => {
 
     const fetchSports = async () => {
         setRefreshing(true);
+        setImagesLoaded(0);
+        setAllImagesLoaded(false);
         const sports = await atlanticupGetAllSports();
         setSports(sports);
         setRefreshing(false);
     };
 
     const handleImageLoad = () => {
+        console.log('new image loaded');
         setImagesLoaded(prev => prev + 1);
     }
 
@@ -111,7 +114,7 @@ const CompetitionScreen: React.FC<Props> = (props) => {
                         ListHeaderComponent={
                             <TouchableOpacity onPress={() => router.navigate('/competition/generalRanking')}>
                                 <View style={styles.last_container}>
-                                    <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image}/>
+                                    <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image} defaultSource={require('../../../assets/images/ripple-loading.svg')}/>
                                     <Text style={styles.last_text}>Classement général</Text>
                                 </View>
                             </TouchableOpacity>

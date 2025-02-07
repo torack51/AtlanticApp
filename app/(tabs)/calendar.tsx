@@ -125,6 +125,8 @@ const CalendarTab: React.FC = () => {
         fetchInitialEvents();
     }, []);
 
+    const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
+
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
             <View style={styles.topBar}>
@@ -152,7 +154,7 @@ const CalendarTab: React.FC = () => {
                     <ActivityIndicator size="large" />
                 ) : (
                     <FlatList
-                        data={events}
+                        data={displayEvents}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
                         refreshControl={
