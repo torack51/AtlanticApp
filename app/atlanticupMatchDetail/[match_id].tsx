@@ -252,9 +252,11 @@ const AtlanticupMatchDetail: React.FC<Props> = () => {
 
     if (team1 == null || team2 == null || delegation1 == null || delegation2 == null) {
         return (
-            <SafeAreaView style={styles.container}>
-                <ScreenLoader/>
-            </SafeAreaView>
+            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                <View style={styles.screen_loader_container}>
+                    <ScreenLoader/>
+                </View>
+            </View>
         );
     }
 
@@ -395,7 +397,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
-    }
+    },
+    screen_loader_container: {
+        height:250,
+        width:250,
+    },
 });
 
 export default AtlanticupMatchDetail;

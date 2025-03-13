@@ -83,10 +83,17 @@ const ProfileScreen: React.FC = () => {
         });
         sortedAnnouncements = sortedAnnouncements.slice(0, 3);
         return sortedAnnouncements.map((announcement, key) => (
-            <View key={key} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 20, height: 60, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                    {announcement.title}
-                </Text>
+            <View key={key} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 20, height: 200, width: 200, justifyContent: 'center', alignItems: 'center' }}>
+                <View>
+                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                        {announcement.title}
+                    </Text>
+                </View>
+                <View style={{flex:1, justifyContent:'center'}}>
+                    <Text>
+                        {announcement.id}
+                    </Text>
+                </View>
             </View>
         ));
     };
@@ -112,7 +119,7 @@ const ProfileScreen: React.FC = () => {
                         {"Liste des annonces :"}
                     </Text>
 
-                    <ScrollView style={{ flex: 1, margin: 10 }}>
+                    <ScrollView style={{ flex: 1, margin: 10 }} horizontal={true}>
                         {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
                     </ScrollView>
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
