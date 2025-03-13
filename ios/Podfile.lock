@@ -1586,15 +1586,15 @@ PODS:
     - hermes-engine/Pre-built (= 0.76.5)
   - hermes-engine/Pre-built (0.76.5)
   - leveldb-library (1.22.6)
-  - MapboxCommon (23.11.2)
-  - MapboxCoreMaps (10.19.2):
-    - MapboxCommon (~> 23.11)
-  - MapboxMaps (10.19.1):
-    - MapboxCommon (= 23.11.2)
-    - MapboxCoreMaps (= 10.19.2)
-    - MapboxMobileEvents (= 2.0.0)
+  - MapboxCommon (23.10.1)
+  - MapboxCoreMaps (10.18.0):
+    - MapboxCommon (~> 23.10)
+  - MapboxMaps (10.18.2):
+    - MapboxCommon (= 23.10.1)
+    - MapboxCoreMaps (= 10.18.0)
+    - MapboxMobileEvents (= 1.0.10)
     - Turf (= 2.8.0)
-  - MapboxMobileEvents (2.0.0)
+  - MapboxMobileEvents (1.0.10)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -2856,6 +2856,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-maps (1.18.0):
+    - React-Core
   - react-native-pager-view (6.7.0):
     - DoubleConversion
     - glog
@@ -3285,16 +3287,16 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - rnmapbox-maps (10.1.33):
-    - MapboxMaps (~> 10.19.0)
+  - rnmapbox-maps (10.1.30):
+    - MapboxMaps (~> 10.18.2)
     - React
     - React-Core
-    - rnmapbox-maps/DynamicLibrary (= 10.1.33)
+    - rnmapbox-maps/DynamicLibrary (= 10.1.30)
     - Turf
-  - rnmapbox-maps/DynamicLibrary (10.1.33):
+  - rnmapbox-maps/DynamicLibrary (10.1.30):
     - DoubleConversion
     - hermes-engine
-    - MapboxMaps (~> 10.19.0)
+    - MapboxMaps (~> 10.18.2)
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -3508,6 +3510,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-compressor (from `../node_modules/react-native-compressor`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -3696,6 +3699,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-compressor:
     :path: "../node_modules/react-native-compressor"
+  react-native-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-pager-view:
     :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
@@ -3822,10 +3827,10 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 923b710231ad3d6f3f0495ac1ced35421e07d9a6
   hermes-engine: 06a9c6900587420b90accc394199527c64259db4
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
-  MapboxCommon: 873b75dd0e8c5d7029e0c849437eba365f4887e5
-  MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
-  MapboxMaps: 05822ab0ee74f7d626e6471572439afe35c1c116
-  MapboxMobileEvents: d044b9edbe0ec7df60f6c2c9634fe9a7f449266b
+  MapboxCommon: 0ff437e44988da6856e280d00ffb266564ed0487
+  MapboxCoreMaps: f1bd9405f5b9d3e343f2fe4138775299699a22fb
+  MapboxMaps: e76b14f52c54c40b76ddecd04f40448e6f35a864
+  MapboxMobileEvents: de50b3a4de180dd129c326e09cd12c8adaaa46d6
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   RCT-Folly: 84578c8756030547307e4572ab1947de1685c599
   RCTDeprecation: fb7d408617e25d7f537940000d766d60149c5fea
@@ -3857,6 +3862,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: f0c766c9dfb313c91b07457beb4e4ec9b2e02435
   React-microtasksnativemodule: 23565fc14a9588c3116cdf279c8124d7285856cc
   react-native-compressor: bcfddf34b82b060c2b0ea5e9f359740812a82207
+  react-native-maps: 3b0c8378ff774053bdd8954c820e987fdd7b4d72
   react-native-pager-view: 5f438cbc18659b10e02da4151321b8ad01b6c65a
   react-native-safe-area-context: db6ad47f9354809886d34e349a0809b0580712ea
   react-native-webview: 7ca4d79f6a79f011a85417ee0957bf5bbbe0889b
@@ -3893,7 +3899,7 @@ SPEC CHECKSUMS:
   RNFBAuth: f144747dac003dd7e77b0d52371ef8ab9966927c
   RNFBFirestore: 54ebde6e7eed7dc3ce58940ba620ab040c059e25
   RNGestureHandler: 1e33ee267aaf61bbab6089d32df3b38c3024e3dd
-  rnmapbox-maps: d6e6d15c7d7418f3fa6d73e74f6f0e5fdd9bd9b5
+  rnmapbox-maps: d64cb7a43beb745a5a20477b05cc1287e25db65f
   RNReanimated: fb3896d9010787799eb5748e50fd59746a503001
   RNScreens: f5762e2dd74e365dcee2007dc96942a528ac25d4
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

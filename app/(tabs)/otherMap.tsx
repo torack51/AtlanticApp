@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Dimensions, Image, RefreshControl, ActivityIndicator } from 'react-native';
-import MapView from 'react-native-maps';
+import Mapbox from '@rnmapbox/maps';
 import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import features from '../../constants/AtlanticupBuildungFeatures';
@@ -33,9 +33,9 @@ const SportItem: React.FC<SportItemProps> = ({ item }) => {
 };
 
 const AtlanticupMapScreen: React.FC<any> = () => {
-    //const mapRef = useRef<MapboxGL.MapView>(null);
-    //const bottomSheetRef = useRef<BottomSheet>(null);
-    //const cameraRef = useRef<MapboxGL.Camera>(null);
+    const mapRef = useRef<MapboxGL.MapView>(null);
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const cameraRef = useRef<MapboxGL.Camera>(null);
 
     const [loading, setLoading] = useState(false);
     const [selectedFeature, setSelectedFeature] = useState<any>(null);
@@ -47,6 +47,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [allLoaded, setAllLoaded] = useState(false);
     const [lastVisible, setLastVisible] = useState<any>(null);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [mapIsReady, setMapIsReady] = useState(false);
 
     const redirection = useLocalSearchParams().location;
 
@@ -75,11 +76,12 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             await moveCameraToCoordinate(feature.properties.centerCoordinates[0], feature.properties.centerCoordinates[1], feature.properties.defaultZoom);
             setSelectedFeature(feature);
             setLoading(true);
-            /*if (bottomSheetRef.current) {
+            if (bottomSheetRef.current) {
                 console.log('balise1');
                 //bottomSheetRef.current.snapToIndex(1);
                 console.log('balise2');
-            }*/
+            }
+            console.log('balise3');
 
             const placeDetails = await atlanticupGetPlaceFromId(feature.properties.id);
             setPlaceDetails(placeDetails);
@@ -96,8 +98,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     const moveCameraToCoordinate = async (longitude: number, latitude: number, zoom: number) => {
         console.log('moving to coordinates : ', longitude, latitude, zoom);
-        //console.log('yo : ', cameraRef);
-        /*if (cameraRef.current) {
+        console.log('yo : ', cameraRef);
+        if (cameraRef.current) {
             console.log('hey');
             while (!mapIsReady) {
                 console.log('map not ready yet');
@@ -110,7 +112,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 animationMode : 'none',
             });
         }
-        console.log('moved');*/
+        console.log('moved');
     };
 
     const handlePress = async (event: any) => {
@@ -125,10 +127,10 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             await moveCameraToCoordinate(feature.properties.centerCoordinates[0], feature.properties.centerCoordinates[1], feature.properties.defaultZoom);
             setSelectedFeature(feature);
             setLoading(true);
-            /*if (bottomSheetRef.current) {
+            if (bottomSheetRef.current) {
                 bottomSheetRef.current.snapToIndex(Math.max(1, currentIndex));
                 // problème avec cette fonction
-            }*/
+            }
             const placeDetails = await atlanticupGetPlaceFromId(feature.properties.id);
             setPlaceDetails(placeDetails);
             setLoading(false);
@@ -273,9 +275,9 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             return (
                 <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => {
                     setCurrentIndex(2);
-                    /*if (bottomSheetRef.current) {
+                    if (bottomSheetRef.current) {
                         bottomSheetRef.current.snapToIndex(3);
-                    }*/
+                    }
                 }}>
                     <Text style={{ fontWeight: '900', fontSize: 18, color: 'red', textAlign: 'center' }}>MATCH EN COURS</Text>
                     <Text style={{ fontWeight: '900', fontSize: 15, color: 'blue', textAlign: 'center' }}>voir détails</Text>
@@ -285,9 +287,9 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         return (
             <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }} onPress={() => {
                 setCurrentIndex(2);
-                /*if (bottomSheetRef.current) {
+                if (bottomSheetRef.current) {
                     bottomSheetRef.current.snapToIndex(2);
-                }*/
+                }
             }}>
                 <Text style={{ fontWeight: '900', fontSize: 18, color: 'black', textAlign: 'center' }}>Rien en cours</Text>
                 <Text style={{ fontWeight: '900', fontSize: 15, color: 'blue', textAlign: 'center' }}>voir détails</Text>
@@ -342,44 +344,20 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     };
 
     const bounds = {
-        ne: { latitude: 48.363577, longitude: -4.578357 },
-        sw: { latitude: 48.353577, longitude: -4.564357 },
+        ne: [-4.578357, 48.363577],
+        sw: [-4.564357, 48.353577],
     };
 
-    const [mapIsReady, setMapIsReady] = useState(false);
-    const mapRef = useRef<MapView>(null);
-    const bottomSheetRef = useRef(null);
 
-    useEffect(() => {
-      if (mapRef.current) {
-        // Set the map boundaries after the map has loaded
-        mapRef.current.setMapBoundaries(
-          bounds.ne,
-          bounds.sw
-        );
-      }
-    }, []);
-
-
-    return(
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <MapView
-          ref={mapRef}
-          style={{flex:1}}
-          onMapReady={() => setMapIsReady(true)}
-        >
-          {/* Affichage des polygones */}
-        </MapView>
-
-        {/* BottomSheet pour afficher les détails des lieux */}
-        <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['4%', '25%', '50%', '75%']}>
-          <View style={styles.sheetContent}>
-            {/* Fonction qui affiche les détails du lieu */}
-            {mapIsReady ? null : null}
-          </View>
-        </BottomSheet>
-      </GestureHandlerRootView>
-    )
+    return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={styles.page}>
+                <View style={styles.container}>
+                    <Mapbox.MapView style={styles.map} />
+                </View>
+            </View>
+        </GestureHandlerRootView>
+    );
     
     
     return (
