@@ -19,7 +19,7 @@
           "backgroundColor": "#ffffff"
         },
         "package": "com.evimt.evimt",
-        "googleServicesFile": "./google-services.json"
+          "googleServicesFile":"./google-services.json"
       },
       "web": {
         "bundler": "metro",

@@ -15,6 +15,7 @@ interface Announcement {
     id: string;
     title: string;
     time_sent: string;
+    description: string;
 }
 
 interface Team {
@@ -82,6 +83,7 @@ const ProfileScreen: React.FC = () => {
             return new Date(b.time_sent).getTime() - new Date(a.time_sent).getTime();
         });
         sortedAnnouncements = sortedAnnouncements.slice(0, 3);
+        console.log('sorted announcements : ',sortedAnnouncements)
         return sortedAnnouncements.map((announcement, key) => (
             <View key={key} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 20, height: 200, width: 200, justifyContent: 'center', alignItems: 'center' }}>
                 <View>
@@ -90,8 +92,8 @@ const ProfileScreen: React.FC = () => {
                     </Text>
                 </View>
                 <View style={{flex:1, justifyContent:'center'}}>
-                    <Text>
-                        {announcement.id}
+                    <Text numberOfLines={6} ellipsizeMode='tail'>
+                        {announcement.description.replace(/\\n/g, "\n")}
                     </Text>
                 </View>
             </View>
