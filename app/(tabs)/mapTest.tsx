@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Dimensions, PanResponder} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -55,9 +55,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         });
     });
 
-    const expansion = useDerivedValue(() => {
-        return (height.value - MIN_HEIGHT)/(MAX_HEIGHT - MIN_HEIGHT)
-    })
+    
 
     const onSnapToItem = (index: number) => {
         const location = locations[index];
@@ -81,10 +79,26 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         }
     };
 
+    const expansion = useDerivedValue(() => {
+        return (height.value - MIN_HEIGHT)/(MAX_HEIGHT - MIN_HEIGHT)
+    })
+
     const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
     }));
 
+
+    const animatedCardHeaderTopBarHeight = useAnimatedStyle(() => ({
+        height:75 + 25*expansion.value,
+    }))
+
+    const animatedOpacity = useAnimatedStyle(() => ({
+        opacity: expansion.value,
+    }))
+
+    const animatedReverseOpacity = useAnimatedStyle(() => ({
+        opacity: 1-expansion.value,
+    }))
 
 
 
@@ -92,7 +106,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     }, []);
 
     const locations = [
-        { id: 1, title: "Terrain de foot", latitude: 48.359396, longitude: -4.573559 },
+        { id: 1, title: "Terrain de fooooooooooooooooooooooot", latitude: 48.359396, longitude: -4.573559 },
         { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
         { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
       ];
@@ -108,12 +122,23 @@ const AtlanticupMapScreen: React.FC<any> = () => {
       const renderCarouselItem = ({item, index}) => {
         return (
             <View style={styles.card}>
-                <View style={styles.left_compressed_container}>
-                    <Text style={styles.title}>{ item.title }</Text>
+                <View style={styles.card_header}>
+                    <Animated.View style={[styles.card_header_top_bar, animatedCardHeaderTopBarHeight]}>
+                        <View style={styles.title_container}>
+                            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Text>
+                        </View>
+                        <View style={styles.sports_container}>
+                            <Text style={styles.title}>Liste des sports</Text>
+                        </View>
+                    </Animated.View>
+                    <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
+                        <Text>Current activity container</Text>
+                    </Animated.View>
                 </View>
-                <View style={styles.right_compressed_container}>
-                    <Text style={styles.title}>Coucou</Text>
-                </View>
+
+                <Animated.View style={[styles.card_body, animatedOpacity]}>
+                    <Text>Body</Text>
+                </Animated.View>
             </View>
         );
     }
@@ -177,25 +202,41 @@ const styles = StyleSheet.create({
     card: {
       backgroundColor: "rgba(250,250,250,0.9)",
       borderRadius: 10,
-      padding: 20,
       height:'100%',
       alignItems: "center",
-      justifyContent:"center",
-      flexDirection:'row',
     },
-    left_compressed_container:{
-        backgroundColor:'green',
-        alignSelf:'flex-start',
+    card_header:{
+        height:100,
+        padding:5,
+        width:'100%',
+        alignItems:'center',
+    },
+    card_header_top_bar:{
+    },
+    current_activity_container:{
+        position:'absolute',
+        justifyContent:'center',
+        bottom:0,
+        height:25,
+    },
+    card_body:{
         flex:1,
+        height:'100%',
+        backgroundColor:'blue',
     },
-    right_compressed_container:{
-        backgroundColor:'red',
-        alignSelf:'flex-start',
+    title_container:{
+        alignItems:'center',
+        justifyContent:'center',
+        height:30,
+    },
+    sports_container:{
+        alignItems:'center',
+        justifyContent:'center',
         flex:1,
     },
     title: { 
-        fontSize: 16, 
-        fontWeight: "bold" 
+        fontSize:22, 
+        fontWeight: "bold",
     },
   });
 
