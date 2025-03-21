@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Dimensions, Image, RefreshControl, ActivityIndicator } from 'react-native';
-import MapView from 'react-native-maps';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, Image, RefreshControl, ActivityIndicator, Animated, TouchableWithoutFeedback, ViewStyle} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import features from '../../constants/AtlanticupBuildungFeatures';
@@ -9,6 +9,7 @@ import ScreenLoader from '../../components/ScreenLoader';
 import AtlanticupEventItem from '../../components/Atlanticup/AtlanticupEventItem';
 import { useLocalSearchParams } from 'expo-router';
 import { router } from 'expo-router';
+import Carousel from "react-native-snap-carousel";
 
 const { width, height } = Dimensions.get('window');
 const ITEMS_PER_PAGE = 10;
@@ -20,6 +21,7 @@ interface SportItemProps {
 interface User {
     id: string;
 }
+
 
 const SportItem: React.FC<SportItemProps> = ({ item }) => {
     return (
@@ -50,17 +52,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     const redirection = useLocalSearchParams().location;
 
-    /*useEffect(() => {
-        MapboxGL.setTelemetryEnabled(false);
-        if (cameraRef.current){
-            cameraRef.current.setCamera({
-                centerCoordinate: [-4.571357, 45.358577],
-                zoomLevel: 15,
-                animationDuration: 0,
-                animationMode : 'none', 
-            });
-        }
-    }, []);*/
 
     useEffect(() => {
         if (redirection && typeof redirection === 'string') {
@@ -346,137 +337,116 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         sw: { latitude: 48.353577, longitude: -4.564357 },
     };
 
-    const [mapIsReady, setMapIsReady] = useState(false);
     const mapRef = useRef<MapView>(null);
     const bottomSheetRef = useRef(null);
 
-    useEffect(() => {
-      if (mapRef.current) {
-        // Set the map boundaries after the map has loaded
-        mapRef.current.setMapBoundaries(
-          bounds.ne,
-          bounds.sw
+    const onSnapToItem = (index: number) => {
+        const location = locations[index];
+        mapRef.current?.animateToRegion(
+          {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          1000
         );
-      }
+      };
+
+
+    useEffect(() => {
     }, []);
+
+    const locations = [
+        { id: 1, title: "Terrain de foot", latitude: 48.359396, longitude: -4.573559 },
+        { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
+        { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
+      ];
+
+
+      const initialRegion = {
+        latitude : 48.358616,
+        longitude : -4.571361,
+        latitudeDelta : 0.006,
+        longitudeDelta : 0.006,
+      }
 
 
     return(
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <MapView
-          ref={mapRef}
-          style={{flex:1}}
-          onMapReady={() => setMapIsReady(true)}
-        >
-          {/* Affichage des polygones */}
-        </MapView>
+        <View style={styles.container}>
+            <MapView
+                ref={mapRef}
+                style={styles.map}
+                initialRegion={initialRegion}
+                customMapStyle={[  //cache les Point Of Interest pour Android
+                    {
+                      featureType: "poi",
+                      elementType: "labels",
+                      stylers: [{ visibility: "off" }],
+                    },
+                  ]}
+                  showsPointsOfInterest={false}  //cache les Point Of Interest pour iOS
+            >
+                {locations.map((loc) => (
+                    <Marker key={loc.id} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }} title={loc.title} />
+                ))}
+            </MapView>
 
-        {/* BottomSheet pour afficher les détails des lieux */}
-        <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['4%', '25%', '50%', '75%']}>
-          <View style={styles.sheetContent}>
-            {/* Fonction qui affiche les détails du lieu */}
-            {mapIsReady ? null : null}
-          </View>
-        </BottomSheet>
+            {/* Zone du carousel */}
+
+        </View>
+
+        <View style={styles.carouselContainer}>
+          <View style={styles.dragHandle} />
+          <Carousel
+            data={[
+              { id: 1, title: "Terrain de foot", latitude: 48.359396, longitude: -4.573559 },
+              { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987 },
+              { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
+            ]}
+            renderItem={({ item }: { item: { id: number; title: string; latitude: number; longitude: number } }) => (
+              <View style={styles.card}>
+                <Text style={styles.title}>{item.title}</Text>
+              </View>
+            )}
+            sliderWidth={width}
+            itemWidth={width * 0.8}
+            onSnapToItem={onSnapToItem}
+          />
+        </View>
       </GestureHandlerRootView>
     )
-    
-    
-    return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-                <MapboxGL.MapView style={{ flex: 1 }} styleURL="mapbox://styles/mapbox/streets-v10" ref={mapRef} onDidFinishLoadingMap={() => {setMapIsReady(true);}}>
-                <MapboxGL.Camera ref={cameraRef} maxBounds={bounds} zoomLevel={15} centerCoordinate={[-4.571357, 45.358577]} />
-                {features.map((item, index) => (
-                    <MapboxGL.ShapeSource key={index.toString()} id={`polygonSource-${index}`} shape={item} onPress={handlePress}>
-                    <MapboxGL.FillExtrusionLayer
-                        id={`extrusionLayer-${index}`}
-                        style={{
-                        fillExtrusionColor: ['get', 'color'],
-                        fillExtrusionHeight: ['get', 'height'],
-                        fillExtrusionBase: 0,
-                        fillExtrusionOpacity: 0.7,
-                        }}
-                        minZoomLevel={0}
-                        maxZoomLevel={22}
-                    />
-                    </MapboxGL.ShapeSource>
-                ))}
-                </MapboxGL.MapView>
-
-                <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['4%', '25%', '50%', '75%']} onChange={handleSheetChange}>
-                {renderPlaceDetails()}
-                </BottomSheet>
-        </GestureHandlerRootView>
-    );
 };
 
 const styles = StyleSheet.create({
-    bottomSheetContent: {
-        alignItems: 'center',
-        flex: 1,
-        backgroundColor: 'grey',
+    container: { flex: 1 },
+    map: { flex: 1 },
+    carouselContainer: {
+      position: "absolute",
+      width: "100%",
+      backgroundColor: "white",
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      elevation: 5,
+      alignItems: "center",
     },
-    bottomSheetTitleContainer: {
-        height: height * 0.045,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
+    dragHandle: {
+      width: 40,
+      height: 5,
+      backgroundColor: "#ccc",
+      borderRadius: 5,
+      marginVertical: 10,
     },
-    bottomSheetAvailibilityContainer: {
-        flex: 1,
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 10,
-        paddingBottom: 20,
+    card: {
+      backgroundColor: "white",
+      borderRadius: 10,
+      padding: 20,
+      alignItems: "center",
+      elevation: 5,
     },
-    bottomSheetActivitiesContainer: {
-        flex: 2,
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-    },
-    bottomSheetBotttomContainer: {
-        flex: 1,
-        width: '100%',
-        flexDirection: 'column',
-    },
-    firstRowContainer: {
-        height: height * 0.16,
-        flexDirection: 'row',
-    },
-    secondRowContainer: {
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'column',
-    },
-    sportItemContainer: {
-        margin: 5,
-        padding: 10,
-        borderRadius: 10,
-        width: 80,
-        height: 80,
-        backgroundColor: 'lightgrey',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    image: {
-        width: 50,
-        height: 50,
-        tintColor: 'black',
-    },
-    text: {
-        fontSize: 11,
-        fontWeight: 'bold',
-    },
-    descriptionContainer: {
-        flex: 2,
-        height: '100%',
-        justifyContent: 'center',
-        marginLeft: 10,
-        paddingRight: 5,
-    },
-});
+    title: { fontSize: 16, fontWeight: "bold" },
+  });
+
 
 export default AtlanticupMapScreen;

@@ -1,0 +1,203 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, PanResponder} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Carousel from "react-native-snap-carousel";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, Easing, withTiming, useDerivedValue } from "react-native-reanimated";
+
+
+
+const { width, height } = Dimensions.get('window');
+const ITEMS_PER_PAGE = 10;
+const MIN_HEIGHT = 100;
+const MAX_HEIGHT = 500;
+
+interface SportItemProps {
+    item: any;
+}
+
+interface User {
+    id: string;
+}
+
+
+const AtlanticupMapScreen: React.FC<any> = () => {
+
+    const mapRef = useRef<MapView>(null);
+    const carouselRef = useRef(null);
+    const height = useSharedValue(MIN_HEIGHT);
+    const [expanded, setExpanded] = useState(false);
+    const [selectedMarkerId, setSelectedMarkerId] = useState(null);
+
+
+    const gesture = Gesture.Pan()
+    .onUpdate((event) => {
+        // Mise à jour fluide en fonction du mouvement du doigt
+        height.value = Math.max(
+            MIN_HEIGHT, 
+            Math.min(MAX_HEIGHT, height.value - event.translationY/5)
+        );
+    })
+    .onEnd((event) => {
+        // Détection du seuil dynamique en direct
+        const threshold = (MAX_HEIGHT - MIN_HEIGHT) / 5;
+        const shouldExpand = event.translationY < -threshold;
+        
+        // Mise à jour de l'état
+        runOnJS(setExpanded)(shouldExpand);
+
+        // Animation vers la position finale
+        height.value = withTiming(shouldExpand ? MAX_HEIGHT : MIN_HEIGHT,{
+            duration:500, 
+            easing : Easing.out(Easing.quad)
+        });
+    });
+
+    const expansion = useDerivedValue(() => {
+        return (height.value - MIN_HEIGHT)/(MAX_HEIGHT - MIN_HEIGHT)
+    })
+
+    const onSnapToItem = (index: number) => {
+        const location = locations[index];
+        setSelectedMarkerId(location.id);
+        mapRef.current?.animateToRegion(
+            {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.004,
+            longitudeDelta: 0.004,
+            },
+        1000
+        );
+    };
+
+    const onMarkerPress = (location) => {
+        const index = locations.findIndex((loc) => loc.id === location.id);
+        if (index !== -1) {
+            carouselRef.current?.snapToItem(index);
+            onSnapToItem(index);  // Déplace la caméra
+        }
+    };
+
+    const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value,
+    }));
+
+
+
+
+    useEffect(() => {
+    }, []);
+
+    const locations = [
+        { id: 1, title: "Terrain de foot", latitude: 48.359396, longitude: -4.573559 },
+        { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
+        { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
+      ];
+
+
+      const initialRegion = {
+        latitude : 48.358616,
+        longitude : -4.571361,
+        latitudeDelta : 0.006,
+        longitudeDelta : 0.006,
+      }
+
+      const renderCarouselItem = ({item, index}) => {
+        return (
+            <View style={styles.card}>
+                <View style={styles.left_compressed_container}>
+                    <Text style={styles.title}>{ item.title }</Text>
+                </View>
+                <View style={styles.right_compressed_container}>
+                    <Text style={styles.title}>Coucou</Text>
+                </View>
+            </View>
+        );
+    }
+
+
+    return(
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={styles.container}>
+            <MapView
+                ref={mapRef}
+                style={styles.map}
+                initialRegion={initialRegion}
+                customMapStyle={[  //cache les Point Of Interest pour Android
+                    {
+                      featureType: "poi",
+                      elementType: "labels",
+                      stylers: [{ visibility: "off" }],
+                    },
+                  ]}
+                  showsPointsOfInterest={false}  //cache les Point Of Interest pour iOS
+            >
+                {locations.map((loc) => (
+                    <Marker 
+                        key={loc.id} 
+                        coordinate={{ latitude: loc.latitude, longitude: loc.longitude }} 
+                        title={loc.title} 
+                        pinColor={loc.id === selectedMarkerId ? "blue" : "red"} // Bleu = actif, Rouge = normal
+                        onPress={() => onMarkerPress(loc)}/>
+                ))}
+            </MapView>
+            {/* Zone du carousel */}
+
+        </View>
+
+
+        <GestureDetector gesture={gesture}>
+            <Animated.View style={[styles.carouselContainer, animatedStyle]}>
+            <Carousel
+                ref={carouselRef}
+                data={locations}
+                renderItem={renderCarouselItem}
+                sliderWidth={width}
+                itemWidth={width * 0.8}
+                onSnapToItem={onSnapToItem}
+            />
+            </Animated.View>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    )
+};
+
+const styles = StyleSheet.create({
+    container: { flex: 1 },
+    map: { flex: 1 },
+    carouselContainer: {
+      position: "absolute",
+      bottom:100,
+      alignSelf:"center",
+      elevation: 5,
+    },
+    card: {
+      backgroundColor: "rgba(250,250,250,0.9)",
+      borderRadius: 10,
+      padding: 20,
+      height:'100%',
+      alignItems: "center",
+      justifyContent:"center",
+      flexDirection:'row',
+    },
+    left_compressed_container:{
+        backgroundColor:'green',
+        alignSelf:'flex-start',
+        flex:1,
+    },
+    right_compressed_container:{
+        backgroundColor:'red',
+        alignSelf:'flex-start',
+        flex:1,
+    },
+    title: { 
+        fontSize: 16, 
+        fontWeight: "bold" 
+    },
+  });
+
+
+export default AtlanticupMapScreen;
