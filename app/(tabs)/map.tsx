@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Dimensions, Image, RefreshControl, ActivityIndicator, Animated, TouchableWithoutFeedback} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, Image, RefreshControl, ActivityIndicator, Animated, TouchableOpacity} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import features from '../../constants/AtlanticupBuildungFeatures';
 import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId } from '../../backend/atlanticupBackendFunctions';
