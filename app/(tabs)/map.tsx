@@ -35,10 +35,6 @@ const SportItem: React.FC<SportItemProps> = ({ item }) => {
 };
 
 const AtlanticupMapScreen: React.FC<any> = () => {
-    //const mapRef = useRef<MapboxGL.MapView>(null);
-    //const bottomSheetRef = useRef<BottomSheet>(null);
-    //const cameraRef = useRef<MapboxGL.Camera>(null);
-
     const [loading, setLoading] = useState(false);
     const [selectedFeature, setSelectedFeature] = useState<any>(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
@@ -74,7 +70,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
             const placeDetails = await atlanticupGetPlaceFromId(feature.properties.id);
             setPlaceDetails(placeDetails);
-            setLoading(false);
+            setLoading(false); 
 
             await loadSportsList(placeDetails.sports_id_list);
             await fetchInitialEvents();

@@ -11,7 +11,13 @@
       "ios": {
         "supportsTablet": true,
         "bundleIdentifier": "com.evimt.evimt",
-        "googleServicesFile": "./GoogleService-Info.plist"
+        "googleServicesFile": "./GoogleService-Info.plist",
+        "entitlements": {
+          "aps-environment": "production"
+        },
+        "infoPlist": {
+          "UIBackgroundModes": ["remote-notification"]
+        }
       },
       "android": {
         "adaptiveIcon": {
@@ -44,12 +50,6 @@
             "ios": {
               "useFrameworks": "static"
             }
-          }
-        ],
-        [
-          "@rnmapbox/maps",
-          {
-            "RNMapboxMapsDownloadToken": "sk.eyJ1IjoidmFyaWJhdWQiLCJhIjoiY201aTRxdXZ5MG82bTJqc2d6azduM20wdiJ9.Mi1V7hLL0mJUjm8Rmkntjg"
           }
         ]
       ],

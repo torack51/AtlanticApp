@@ -8,9 +8,6 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import MapboxGL from '@rnmapbox/maps';
-
-MapboxGL.setAccessToken("pk.eyJ1IjoidmFyaWJhdWQiLCJhIjoiY2x6MXI4NXdhMzkyczJxczY4MmRldzFqayJ9.FKIRuCkTJg6l7zUzLwBP8Q");
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

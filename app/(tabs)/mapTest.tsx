@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
+import MapView, { Marker} from 'react-native-maps';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Carousel from "react-native-snap-carousel";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, Easing, withTiming, useDerivedValue } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue } from "react-native-reanimated";
+import AnimatedMarker from '@/components/Atlanticup/Map/AnimatedMarker';
+import TextTicker from 'react-native-text-ticker';
+import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces} from '../../backend/atlanticupBackendFunctions';
 
 
 
@@ -26,10 +28,11 @@ interface User {
 const AtlanticupMapScreen: React.FC<any> = () => {
 
     const mapRef = useRef<MapView>(null);
-    const carouselRef = useRef(null);
+    const carouselRef = useRef<Carousel<any>>(null);
     const height = useSharedValue(MIN_HEIGHT);
     const [expanded, setExpanded] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState(null);
+    const [places, setPlaces] = useState<any[]>([]);
 
 
     const gesture = Gesture.Pan()
@@ -58,21 +61,30 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     
 
     const onSnapToItem = (index: number) => {
-        const location = locations[index];
-        setSelectedMarkerId(location.id);
+        const location = places[index];
+        setSelectedMarkerId(location.id); // Déclenche l'animation dans AnimatedMarker
         mapRef.current?.animateToRegion(
             {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.004,
-            longitudeDelta: 0.004,
+                latitude: location.position.latitude,
+                longitude: location.position.longitude,
+                latitudeDelta: 0.004,
+                longitudeDelta: 0.004,
             },
-        1000
+            1000
         );
     };
+    
+
+    const expandCarousel = () => {
+        height.value = withTiming(MAX_HEIGHT,{
+            duration:500, 
+            easing : Easing.out(Easing.quad)
+        });
+        setExpanded(true);
+    }
 
     const onMarkerPress = (location) => {
-        const index = locations.findIndex((loc) => loc.id === location.id);
+        const index = places.findIndex((loc) => loc.id === location.id);
         if (index !== -1) {
             carouselRef.current?.snapToItem(index);
             onSnapToItem(index);  // Déplace la caméra
@@ -103,7 +115,13 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
 
     useEffect(() => {
+        atlanticupGetAllPlaces().then((data) => {
+            setPlaces(data);
+        });
     }, []);
+
+
+
 
     const locations = [
         { id: 1, title: "Terrain de fooooooooooooooooooooooot", latitude: 48.359396, longitude: -4.573559 },
@@ -124,15 +142,26 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             <View style={styles.card}>
                 <View style={styles.card_header}>
                     <Animated.View style={[styles.card_header_top_bar, animatedCardHeaderTopBarHeight]}>
-                        <View style={styles.title_container}>
-                            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Text>
-                        </View>
+                        <Pressable onPress={expandCarousel}>
+                            <View style={styles.title_container}>
+                                <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Text>
+                            </View>
+                        </Pressable>
                         <View style={styles.sports_container}>
                             <Text style={styles.title}>Liste des sports</Text>
                         </View>
                     </Animated.View>
                     <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
-                        <Text>Current activity container</Text>
+                        <Pressable onPress={expandCarousel}>
+                            <TextTicker
+                                style={{ fontSize: 16, color: 'red', fontWeight: 'bold'}}
+                                duration={300}
+                                loop
+                                repeatSpacer={0}
+                            >   
+                                - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS -
+                            </TextTicker>
+                        </Pressable>
                     </Animated.View>
                 </View>
 
@@ -160,13 +189,17 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                   ]}
                   showsPointsOfInterest={false}  //cache les Point Of Interest pour iOS
             >
-                {locations.map((loc) => (
+                {places.map((loc) => (
                     <Marker 
                         key={loc.id} 
-                        coordinate={{ latitude: loc.latitude, longitude: loc.longitude }} 
-                        title={loc.title} 
-                        pinColor={loc.id === selectedMarkerId ? "blue" : "red"} // Bleu = actif, Rouge = normal
-                        onPress={() => onMarkerPress(loc)}/>
+                        coordinate={{ latitude: loc.position.latitude, longitude: loc.position.longitude }} 
+                        onPress={() => onMarkerPress(loc)}
+                    >
+                        <AnimatedMarker
+                            loc={loc}
+                            isFocused={loc.id === selectedMarkerId}
+                        />
+                    </Marker>
                 ))}
             </MapView>
             {/* Zone du carousel */}
@@ -178,7 +211,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             <Animated.View style={[styles.carouselContainer, animatedStyle]}>
             <Carousel
                 ref={carouselRef}
-                data={locations}
+                data={places}
                 renderItem={renderCarouselItem}
                 sliderWidth={width}
                 itemWidth={width * 0.8}
@@ -201,7 +234,7 @@ const styles = StyleSheet.create({
     },
     card: {
       backgroundColor: "rgba(250,250,250,0.9)",
-      borderRadius: 10,
+      borderRadius: 25,
       height:'100%',
       alignItems: "center",
     },
