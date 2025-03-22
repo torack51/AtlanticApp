@@ -83,7 +83,6 @@ const ProfileScreen: React.FC = () => {
             return new Date(b.time_sent).getTime() - new Date(a.time_sent).getTime();
         });
         sortedAnnouncements = sortedAnnouncements.slice(0, 3);
-        console.log('sorted announcements : ',sortedAnnouncements)
         return sortedAnnouncements.map((announcement, key) => (
             <View key={key} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 20, height: 200, width: 200, justifyContent: 'center', alignItems: 'center' }}>
                 <View>

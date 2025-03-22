@@ -13,9 +13,6 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-# @generated begin @rnmapbox/maps-rnmapboxmapsimpl - expo prebuild (DO NOT MODIFY) sync-0d5a144ad284851734485625b149bc9783129a2a
-$RNMapboxMapsDownloadToken = 'sk.eyJ1IjoidmFyaWJhdWQiLCJhIjoiY201aTRxdXZ5MG82bTJqc2d6azduM20wdiJ9.Mi1V7hLL0mJUjm8Rmkntjg'
-# @generated end @rnmapbox/maps-rnmapboxmapsimpl
 target 'AtlanticApp' do
   use_expo_modules!
 
@@ -41,9 +38,6 @@ target 'AtlanticApp' do
 
 # @generated begin pre_installer - expo prebuild (DO NOT MODIFY) sync-c8812095000d6054b846ce74840f0ffb540c2757
   pre_install do |installer|
-# @generated begin @rnmapbox/maps-pre_installer - expo prebuild (DO NOT MODIFY) sync-ea4905840bf9fcea0acc62e92aa2e784f9d760f8
-    $RNMapboxMaps.pre_install(installer)
-# @generated end @rnmapbox/maps-pre_installer
   end
 # @generated end pre_installer
   use_react_native!(
@@ -55,9 +49,6 @@ target 'AtlanticApp' do
   )
 
   post_install do |installer|
-# @generated begin @rnmapbox/maps-post_installer - expo prebuild (DO NOT MODIFY) sync-c4e8f90e96f6b6c6ea9241dd7b52ab5f57f7bf36
-    $RNMapboxMaps.post_install(installer)
-# @generated end @rnmapbox/maps-post_installer
     react_native_post_install(
       installer,
       config[:reactNativePath],

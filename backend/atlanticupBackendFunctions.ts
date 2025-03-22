@@ -667,6 +667,21 @@ const atlanticupFetchRanking = async (): Promise<any> => {
     }
 }
 
+const atlanticupGetAllPlaces = async (): Promise<any[]> => {
+    try {
+        const querySnapshot = await firestore().collection('atlanticup_places').get();
+        const places: any[] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        return places;
+    }
+    catch (error) {
+        console.error("Erreur lors de la récupération des emplacements:", error);
+        return [];
+    }
+}
+
 export {
     atlanticupGetAllDelegations,
     atlanticupGetDelegationFromId,
@@ -693,4 +708,5 @@ export {
     atlanticupUpdateType2MatchScore,
     atlanticupUpdateType3MatchScore,
     atlanticupFetchRanking,
+    atlanticupGetAllPlaces,
 }

@@ -21,6 +21,11 @@ class MainActivity : ReactActivity() {
     SplashScreenManager.registerOnActivity(this)
     // @generated end expo-splashscreen
     super.onCreate(null)
+
+    // Demander la permission de notifications sur Android 13 (Tiramisu) et supérieur
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+    }
   }
 
   /**
