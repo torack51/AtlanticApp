@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, 
 import { atlanticupGetSportFromId } from '../../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
 import { Link, router} from 'expo-router';
+import ContextMenu from 'react-native-context-menu-view';
 
 const width = Dimensions.get('window').width;
 
@@ -78,24 +79,33 @@ class AtlanticupEventItem extends React.Component<Props, State> {
     renderEvent(event: Event, scaleInterpolation1: Animated.AnimatedInterpolation<number>, opacityInterpolation1: Animated.AnimatedInterpolation<number>, borderWidthInterpolation1: Animated.AnimatedInterpolation<number>) {
         const start_time = new Date(event.start_time);
         return (
-            <Link href={`/atlanticupEventDetail/${event.id}`}>
-            <View style={[styles.main_container, { borderRadius: 5 }]}>
-                <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
-                    <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
-                        <View style={{ flex: 1, alignItems: 'center' }}>
-                            <Text style={styles.text}>{event.title}</Text>
-                        </View>
-                        <View style={{ flex: 1, padding: 5, width: '100%' }}>
-                            <Text style={{ alignSelf: 'flex-start' }}>{event.description.replace(/\\n/g, "\n")}</Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
-                            <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
-                        </View>
-                    </TouchableOpacity>
-                </LinearGradient>
-            </View>
-            </Link>
+            <ContextMenu
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
+            >
+                <Link href={`/atlanticupEventDetail/${event.id}`}>
+                    <View style={[styles.main_container, { borderRadius: 5 }]}>
+                        <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
+                            <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
+                                <View style={{ flex: 1, alignItems: 'center' }}>
+                                    <Text style={styles.text}>{event.title}</Text>
+                                </View>
+                                <View style={{ flex: 1, padding: 5, width: '100%' }}>
+                                    <Text style={{ alignSelf: 'flex-start' }}>{event.description.replace(/\\n/g, "\n")}</Text>
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                    </View>
+                </Link>
+            </ContextMenu>
         );
     }
 
