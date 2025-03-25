@@ -509,6 +509,18 @@ const atlanticupGetMatchFromId = async (match_id: string): Promise<any> => {
 
 const atlanticupGetEventsFromPlaceId = async (itemsPerPage: number, place_id: string, lastVisible: any): Promise<{ items: any[], lastVisible: any }> => {
     try {
+        const teamsDic = await atlanticupGetAllTeams();
+        const delegationsDic = await atlanticupGetAllDelegations();
+
+        // Associer les délégations aux équipes
+        teamsDic.forEach((team) => {
+            const delegation = delegationsDic.find((delegation) => delegation.id == team.delegation);
+            if (delegation) {
+                team.delegation = delegation;
+            }
+        });
+
+
         const querySnapshot = await firestore()
             .collection('atlanticup_matches')
             .where('place_id', '==', place_id)
@@ -529,10 +541,25 @@ const atlanticupGetEventsFromPlaceId = async (itemsPerPage: number, place_id: st
                 data.start_time = new Date().toISOString();
             }
 
+            try {
+                data.end_time = data.end_time.toDate().toISOString();
+            } catch (error) {
+                data.end_time = null;
+            }
+
+            let teams = teamsDic.filter((team) => team.id == data.team1_id || team.id == data.team2_id);
+            if (teams.length == 0 && data.kind == 'match') {
+                teams = data.teams_id.map((team_id: string) => teamsDic.find((team) => team.id == team_id));
+            }
+            data.teams = teams;
+
+
             items.push(data);
         });
 
         const lastVisibleItem = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        
 
         return { items, lastVisible: lastVisibleItem };
     }
