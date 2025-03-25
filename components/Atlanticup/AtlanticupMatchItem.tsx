@@ -70,45 +70,54 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         const team2 = match.teams.find((team) => team.id === match.team2_id);
         if (!team1 || !team2) return null;
         return (
-            <Pressable onPress={() => router.push(`/atlanticupMatchDetail/${match.id}`)} onLongPress={() => console.log('long pressed')}>
-                <View style={styles.main_container}>
-                    {match.status === "playing" && (
-                        <Animated.View
-                            style={[
-                                styles.animated_rectangle,
-                                { borderColor: 'red', transform: [{ scale: scaleInterpolation1 }], opacity: opacityInterpolation1, borderWidth: borderWidthInterpolation1 },
-                            ]} 
-                        />
-                    )}
-                    <View style={styles.touchable_container}>
-                        <LinearGradient colors={[team1.delegation.color, team2.delegation.color]} style={styles.touchable_container} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
-                            <View style={{ position: 'absolute', top: 0 }}>
-                                <Image source={{ uri: image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
-                            </View>
-                            <View style={{ position: 'absolute', width: '100%', height: '100%', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
-                                <View style={{ opacity: 0.35, transform: [{ rotate: '-30deg' }] }}>
-                                    <Image source={{ uri: team1.delegation.image }} style={{ width: 150, height: 150 }}/>
+            <ContextMenu
+                            actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                            onPress={(e) => {
+                            console.warn(
+                                `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                            );
+                            }}
+            >
+                <Pressable onPress={() => router.push(`/atlanticupMatchDetail/${match.id}`)} onLongPress={() => console.log('long pressed')}>
+                    <View style={styles.main_container}>
+                        {match.status === "playing" && (
+                            <Animated.View
+                                style={[
+                                    styles.animated_rectangle,
+                                    { borderColor: 'red', transform: [{ scale: scaleInterpolation1 }], opacity: opacityInterpolation1, borderWidth: borderWidthInterpolation1 },
+                                ]} 
+                            />
+                        )}
+                        <View style={styles.touchable_container}>
+                            <LinearGradient colors={[team1.delegation.color, team2.delegation.color]} style={styles.touchable_container} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
+                                <View style={{ position: 'absolute', top: 0 }}>
+                                    <Image source={{ uri: image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
                                 </View>
-                                <View style={{ opacity: 0.35, transform: [{ rotate: '-30deg' }] }}>
-                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 150, height: 150 }}/>
+                                <View style={{ position: 'absolute', width: '100%', height: '100%', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
+                                    <View style={{ opacity: 0.35, transform: [{ rotate: '-30deg' }] }}>
+                                        <Image source={{ uri: team1.delegation.image }} style={{ width: 150, height: 150 }}/>
+                                    </View>
+                                    <View style={{ opacity: 0.35, transform: [{ rotate: '-30deg' }] }}>
+                                        <Image source={{ uri: team2.delegation.image }} style={{ width: 150, height: 150 }}/>
+                                    </View>
                                 </View>
-                            </View>
 
-                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
-                            </View>
-                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
-                            </View>
+                                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                </View>
+                                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                </View>
 
-                            <View style={{ position: 'absolute', bottom: 5 }}>
-                                <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
-                                <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
-                            </View>
-                        </LinearGradient>
+                                <View style={{ position: 'absolute', bottom: 5 }}>
+                                    <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                            </LinearGradient>
+                        </View>
                     </View>
-                </View>
-            </Pressable>
+                </Pressable>
+            </ContextMenu>
         );
     };
 
