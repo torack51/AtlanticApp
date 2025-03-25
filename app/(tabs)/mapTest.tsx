@@ -70,20 +70,22 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         });
     });
 
-    
-
-    const onSnapToItem = (index: number) => {
-        const location = places[index];
-        setSelectedMarkerId(location.id); // Déclenche l'animation dans AnimatedMarker
+    const moveToPosition = (position: {latitude :  number, longitude : number}) => {
         mapRef.current?.animateToRegion(
             {
-                latitude: location.position.latitude,
-                longitude: location.position.longitude,
+                latitude: position.latitude,
+                longitude: position.longitude,
                 latitudeDelta: 0.004,
                 longitudeDelta: 0.004,
             },
             1000
         );
+    };
+
+    const onSnapToItem = (index: number) => {
+        const location = places[index];
+        setSelectedMarkerId(location.id); // Déclenche l'animation dans AnimatedMarker
+        moveToPosition(location.position);
     };
     
     const toggleCarousel = () => {
@@ -142,25 +144,15 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     useEffect(() => {
         atlanticupGetAllPlaces().then((data) => {
             setPlaces(data);
+            const firstPlace = data[0];
+            setSelectedPlace(firstPlace);
+            setSelectedMarkerId(firstPlace.id);
+            moveToPosition(firstPlace.position);
         });
     }, []);
 
     useEffect(() => {
         console.log('lieu changé : ', selectedMarkerId)
-        const place = places.find((loc) => loc.id === selectedMarkerId);
-        if (place) {
-            setSelectedPlace(place);
-            atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
-                setEvents(data.items);
-                console.log('Events : ', data.items)
-            });
-        }
-        else{
-            console.error('Lieu non trouvé')
-        }
-    },[selectedMarkerId])
-
-    useEffect(() => {
         if (expanded){
             const place = places.find((loc) => loc.id === selectedMarkerId);
             if (place) {
@@ -174,9 +166,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 console.error('Lieu non trouvé')
             }
         }
-    }, [expanded])
-
-
+    },[selectedMarkerId, expanded])
 
 
     const locations = [
