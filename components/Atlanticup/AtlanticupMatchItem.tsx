@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing, Pressable} from 'react-native';
 import { atlanticupGetSportFromId } from '../../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
-import { Link } from 'expo-router';
+import { Link, useRouter} from 'expo-router';
 import ScreenLoader from '../ScreenLoader';
-
+import ContextMenu from 'react-native-context-menu-view';
 const width = Dimensions.get('window').width;
 
 interface Match {
@@ -40,6 +40,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         setLoadedImagesCount(prev => prev+1);
     }
     const animatedValue1 = useRef(new Animated.Value(0)).current;
+    const router = useRouter();
 
 
     const startAnimation = () => {
@@ -69,7 +70,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         const team2 = match.teams.find((team) => team.id === match.team2_id);
         if (!team1 || !team2) return null;
         return (
-            <Link href={`/atlanticupMatchDetail/${match.id}`}>
+            <Pressable onPress={() => router.push(`/atlanticupMatchDetail/${match.id}`)} onLongPress={() => console.log('long pressed')}>
                 <View style={styles.main_container}>
                     {match.status === "playing" && (
                         <Animated.View
@@ -79,7 +80,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
                             ]} 
                         />
                     )}
-                    <TouchableOpacity style={styles.touchable_container}>
+                    <View style={styles.touchable_container}>
                         <LinearGradient colors={[team1.delegation.color, team2.delegation.color]} style={styles.touchable_container} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
                             <View style={{ position: 'absolute', top: 0 }}>
                                 <Image source={{ uri: image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
@@ -105,9 +106,9 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
                                 <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
                             </View>
                         </LinearGradient>
-                    </TouchableOpacity>
+                    </View>
                 </View>
-            </Link>
+            </Pressable>
         );
     };
 
