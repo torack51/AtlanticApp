@@ -43,8 +43,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [expanded, setExpanded] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState(null);
     const [places, setPlaces] = useState<any[]>([]);
-    const [selectedPlace, setSelectedPlace] = useState(null);
     const [events, setEvents] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
 
 
     const gesture = Gesture.Pan()
@@ -145,27 +145,27 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         atlanticupGetAllPlaces().then((data) => {
             setPlaces(data);
             const firstPlace = data[0];
-            setSelectedPlace(firstPlace);
             setSelectedMarkerId(firstPlace.id);
             moveToPosition(firstPlace.position);
         });
     }, []);
 
     useEffect(() => {
-        console.log('lieu changé : ', selectedMarkerId)
+        setEvents([]);
         if (expanded){
             const place = places.find((loc) => loc.id === selectedMarkerId);
             if (place) {
-                setSelectedPlace(place);
+                setLoading(true);
                 atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
                     setEvents(data.items);
-                    console.log('Events : ', data.items)
+                    setLoading(false);
                 });
             }
             else{
-                console.error('Lieu non trouvé')
+                console.error('Lieu non trouvé, ', selectedMarkerId)
             }
         }
+
     },[selectedMarkerId, expanded])
 
 
@@ -174,7 +174,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
         { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
       ];
-
 
       const initialRegion = {
         latitude : 48.358616,
@@ -210,14 +209,24 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         </Pressable>
                     </Animated.View>
                 </View>
-
+                {item.id === selectedMarkerId && 
                 <Animated.View style={[styles.card_body, animatedOpacity]}>
-                    <ScrollView contentContainerStyle={{ padding: 10 }}>
-                        {events.map((item, index) => (
-                            <AtlanticupItem key={index} item={item} />
-                        ))}
-                    </ScrollView>
+                    {
+                        loading ? 
+                            <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                                <Text style={{fontSize:20, fontWeight:'bold'}}>Loading</Text>
+                            </View>
+                        : events.length === 0 ?
+                            <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                                <Text style={{fontSize:20, fontWeight:'bold'}}>Aucun évènement</Text>
+                            </View>
+                        :
+                            <ScrollView contentContainerStyle={{ padding: 10 }}>
+                                {events.map((item, index) => (<AtlanticupItem key={index} item={item} />))}
+                            </ScrollView>
+                    }
                 </Animated.View>
+            }
             </Animated.View>
         );
     }
@@ -264,7 +273,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 data={places}
                 renderItem={renderCarouselItem}
                 sliderWidth={width}
-                itemWidth={width * 0.8}
+                itemWidth={width * 0.95}
                 onSnapToItem={onSnapToItem}
             />
             </Animated.View>
@@ -304,7 +313,6 @@ const styles = StyleSheet.create({
     card_body:{
         flex:1,
         height:'100%',
-        backgroundColor:'blue',
     },
     title_container:{
         alignItems:'center',
