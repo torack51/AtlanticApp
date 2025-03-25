@@ -8,7 +8,8 @@ import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming
 import AnimatedMarker from '@/components/Atlanticup/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
 import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces} from '../../backend/atlanticupBackendFunctions';
-
+import AtlanticupEventItem from '@/components/Atlanticup/AtlanticupEventItem';
+import AtlanticupMatchItem from '@/components/Atlanticup/AtlanticupMatchItem';
 
 
 const { width, height } = Dimensions.get('window');
@@ -24,6 +25,15 @@ interface User {
     id: string;
 }
 
+const AtlanticupItem = ({ item }: any) => {
+    if (item.kind === 'event') {
+        return <AtlanticupEventItem event={item} currentUser={{ currentUser: { id: '1' } }} />;
+    }
+    if (item.kind === 'match') {
+        return <AtlanticupMatchItem match={item} currentUser={{ currentUser: { id: '1' } }} />;
+    }
+}
+
 
 const AtlanticupMapScreen: React.FC<any> = () => {
 
@@ -33,6 +43,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [expanded, setExpanded] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState(null);
     const [places, setPlaces] = useState<any[]>([]);
+    const [selectedPlace, setSelectedPlace] = useState(null);
+    const [events, setEvents] = useState<any[]>([]);
 
 
     const gesture = Gesture.Pan()
@@ -133,6 +145,37 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         });
     }, []);
 
+    useEffect(() => {
+        console.log('lieu changé : ', selectedMarkerId)
+        const place = places.find((loc) => loc.id === selectedMarkerId);
+        if (place) {
+            setSelectedPlace(place);
+            atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
+                setEvents(data.items);
+                console.log('Events : ', data.items)
+            });
+        }
+        else{
+            console.error('Lieu non trouvé')
+        }
+    },[selectedMarkerId])
+
+    useEffect(() => {
+        if (expanded){
+            const place = places.find((loc) => loc.id === selectedMarkerId);
+            if (place) {
+                setSelectedPlace(place);
+                atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
+                    setEvents(data.items);
+                    console.log('Events : ', data.items)
+                });
+            }
+            else{
+                console.error('Lieu non trouvé')
+            }
+        }
+    }, [expanded])
+
 
 
 
@@ -180,10 +223,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
                 <Animated.View style={[styles.card_body, animatedOpacity]}>
                     <ScrollView contentContainerStyle={{ padding: 10 }}>
-                        {[1, 2, 3, 4, 5, 6, 7].map((item, index) => (
-                            <View key={index} style={{ height: 100, width:200, backgroundColor: 'red', margin: 10 }}>
-                                <Text style={{ color: 'white', fontSize: 16 }}>Item {item}</Text>
-                            </View>
+                        {events.map((item, index) => (
+                            <AtlanticupItem key={index} item={item} />
                         ))}
                     </ScrollView>
                 </Animated.View>
