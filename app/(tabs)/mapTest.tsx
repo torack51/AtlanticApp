@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
 import MapView, { Marker} from 'react-native-maps';
-import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FlatList, GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 import Carousel from "react-native-snap-carousel";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
 import AnimatedMarker from '@/components/Atlanticup/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
 import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces} from '../../backend/atlanticupBackendFunctions';
@@ -74,13 +74,12 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         );
     };
     
-
-    const expandCarousel = () => {
-        height.value = withTiming(MAX_HEIGHT,{
+    const toggleCarousel = () => {
+        height.value = withTiming(expanded ? MIN_HEIGHT : MAX_HEIGHT,{
             duration:500, 
             easing : Easing.out(Easing.quad)
         });
-        setExpanded(true);
+        setExpanded(!expanded);
     }
 
     const onMarkerPress = (location) => {
@@ -112,6 +111,20 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         opacity: 1-expansion.value,
     }))
 
+    const animatedWhiteColor = useDerivedValue(() => {
+        return interpolateColor(
+            expansion.value,  // Valeur d'entrée
+            [0, 1],          // Plage d'entrée (0 = MIN_HEIGHT, 1 = MAX_HEIGHT)
+            ['rgba(250, 250, 250, 0.9)', 'rgba(250, 250, 250, 0.95)'] // Plage de couleurs (rouge → vert)
+        );
+    });
+
+    const animatedWhiteBackground = useAnimatedStyle(() => {
+    return {
+        backgroundColor: animatedWhiteColor.value, // Utilisation de la couleur animée
+    };
+    });
+
 
 
     useEffect(() => {
@@ -139,10 +152,10 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
       const renderCarouselItem = ({item, index}) => {
         return (
-            <View style={styles.card}>
+            <Animated.View style={[styles.card, animatedWhiteBackground]}>
                 <View style={styles.card_header}>
                     <Animated.View style={[styles.card_header_top_bar, animatedCardHeaderTopBarHeight]}>
-                        <Pressable onPress={expandCarousel}>
+                        <Pressable onPress={toggleCarousel}>
                             <View style={styles.title_container}>
                                 <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Text>
                             </View>
@@ -152,7 +165,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         </View>
                     </Animated.View>
                     <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
-                        <Pressable onPress={expandCarousel}>
+                        <Pressable onPress={toggleCarousel}>
                             <TextTicker
                                 style={{ fontSize: 16, color: 'red', fontWeight: 'bold'}}
                                 duration={300}
@@ -166,9 +179,15 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 </View>
 
                 <Animated.View style={[styles.card_body, animatedOpacity]}>
-                    <Text>Body</Text>
+                    <ScrollView contentContainerStyle={{ padding: 10 }}>
+                        {[1, 2, 3, 4, 5, 6, 7].map((item, index) => (
+                            <View key={index} style={{ height: 100, width:200, backgroundColor: 'red', margin: 10 }}>
+                                <Text style={{ color: 'white', fontSize: 16 }}>Item {item}</Text>
+                            </View>
+                        ))}
+                    </ScrollView>
                 </Animated.View>
-            </View>
+            </Animated.View>
         );
     }
 
@@ -233,7 +252,6 @@ const styles = StyleSheet.create({
       elevation: 5,
     },
     card: {
-      backgroundColor: "rgba(250,250,250,0.9)",
       borderRadius: 25,
       height:'100%',
       alignItems: "center",
