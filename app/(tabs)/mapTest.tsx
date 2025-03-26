@@ -7,9 +7,10 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
 import AnimatedMarker from '@/components/Atlanticup/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
-import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces} from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../../backend/atlanticupBackendFunctions';
 import AtlanticupEventItem from '@/components/Atlanticup/AtlanticupEventItem';
 import AtlanticupMatchItem from '@/components/Atlanticup/AtlanticupMatchItem';
+import SmallSportIcon from '@/components/Atlanticup/Map/SmallSportIcon';
 
 
 const { width, height } = Dimensions.get('window');
@@ -45,6 +46,9 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [places, setPlaces] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [sportsLoading, setSportsLoading] = useState(false);
+    const [sports, setSports] = useState<any[]>([]);
+    const [sportsByPlace, setSportsByPlace] = useState<any[]>([]);
 
 
     const gesture = Gesture.Pan()
@@ -148,6 +152,9 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             setSelectedMarkerId(firstPlace.id);
             moveToPosition(firstPlace.position);
         });
+        atlanticupGetAllSports().then((data) => {
+            setSports(data);
+        });
     }, []);
 
     useEffect(() => {
@@ -167,6 +174,25 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         }
 
     },[selectedMarkerId, expanded])
+
+    useEffect(() => {
+        if ((places.length > 0) && (sports.length > 0)) {
+            setSportsByPlace(
+                places.map((place) => {
+                    return {place_id : place.id, sports : sports.filter((sport) => place.sports_id_list.includes(sport.id))};
+                }
+            ));
+        }
+
+    },[sports])
+
+
+    useEffect(() => {
+        console.log('sportsByPlace : ', sportsByPlace.map((item) => item.sports));
+
+    },[sportsByPlace])
+
+    
 
 
     const locations = [
@@ -193,7 +219,16 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                             </View>
                         </Pressable>
                         <View style={styles.sports_container}>
-                            <Text style={styles.title}>Liste des sports</Text>
+                            {
+                                !sportsLoading && 
+                                <FlatList
+                                data={sportsByPlace[index].sports}
+                                renderItem={({item}) => <SmallSportIcon item={item} />}
+                                horizontal
+                                keyExtractor={(item) => item.id}
+                            />
+                            }
+                            
                         </View>
                     </Animated.View>
                     <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
