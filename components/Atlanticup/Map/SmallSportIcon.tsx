@@ -21,7 +21,7 @@ const SmallSportIcon: React.FC<SmallSportIconProps> = (props) => {
 
       const pathToImage = sportIcons[props.item.id.split("_")[0]] || require("../../../assets/images/icons/logo_ac.png");
       if (pathToImage == require("../../../assets/images/icons/logo_ac.png")) {
-          console.log('item : ', props.item.id.split("_")[0], pathToImage);
+          //console.log('item : ', props.item.id.split("_")[0], pathToImage);
         }
 
     const navigateToSport = () => {
@@ -43,15 +43,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal:5,
+        marginHorizontal: 5,
     },
-    image:{
-        width: 40,
-        height: 40,
-        backgroundColor:"rgb(0,17,250)",
-        borderRadius:40,
-        tintColor:"white",
-        padding:5,
+    image: {
+        aspectRatio: 1, // Ensures width equals height
+        height:'100%', // Initial width (and height due to aspectRatio)
+        backgroundColor: "rgb(0,17,250)",
+        borderRadius: 40,
+        tintColor: "white",
+        padding: 5,
     }
 });
 

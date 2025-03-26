@@ -46,7 +46,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [places, setPlaces] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const [sportsLoading, setSportsLoading] = useState(false);
     const [sports, setSports] = useState<any[]>([]);
     const [sportsByPlace, setSportsByPlace] = useState<any[]>([]);
 
@@ -187,14 +186,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     },[sports])
 
 
-    useEffect(() => {
-        console.log('sportsByPlace : ', sportsByPlace.map((item) => item.sports));
-
-    },[sportsByPlace])
-
-    
-
-
     const locations = [
         { id: 1, title: "Terrain de fooooooooooooooooooooooot", latitude: 48.359396, longitude: -4.573559 },
         { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
@@ -220,7 +211,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         </Pressable>
                         <View style={styles.sports_container}>
                             {
-                                !sportsLoading && 
+                                (sportsByPlace.length > 0) && 
                                 <FlatList
                                 data={sportsByPlace[index].sports}
                                 renderItem={({item}) => <SmallSportIcon item={item} />}
@@ -358,6 +349,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         flex:1,
+        padding:2,
     },
     title: { 
         fontSize:22, 
