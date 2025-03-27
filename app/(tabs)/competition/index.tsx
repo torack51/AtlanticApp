@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScreenLoader from '@/components/ScreenLoader';
 
 const width = Dimensions.get('window').width;
 
@@ -98,7 +99,11 @@ const CompetitionScreen: React.FC<Props> = (props) => {
     return (
         <SafeAreaView style={[styles.container, {paddingBottom: insets.bottom}]}>
             {refreshing ? (
-                <ActivityIndicator size="large" color="#0000ff" />
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{height:200, width:200}}>
+                        <ScreenLoader />
+                    </View>
+                </View>
             ) : (
                 <View style={styles.listContainer}>
                     <FlatList
