@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl } from 'react-native';
 import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AtlanticupAnnouncementItem from '../../../components/Atlanticup/AtlanticupAnnouncementItem';
+import ScreenLoader from '@/components/ScreenLoader';
 
 const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [announcements, setAnnouncements] = useState([]);
@@ -27,7 +28,13 @@ const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigati
 
     return (
         <View style={styles.container}>
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            {loading && 
+                <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                    <View style={{height:200, width:200}}>
+                        <ScreenLoader/>
+                    </View>
+                </View>
+            }
             <FlatList
                 data={announcements}
                 renderItem={({ item }) => <AtlanticupAnnouncementItem item={item} navigation={navigation} />}

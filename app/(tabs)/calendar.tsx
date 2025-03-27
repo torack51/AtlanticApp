@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
@@ -8,6 +8,7 @@ import AtlanticupMatchItem from '@/components/Atlanticup/AtlanticupMatchItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScreenLoader from '@/components/ScreenLoader';
 
 interface User {
     id: string;
@@ -115,8 +116,10 @@ const CalendarTab: React.FC = () => {
 
     const renderFooter = () => {
         return loadingMore ? (
-            <View style={{ padding: 20 }}>
-                <ActivityIndicator size="large" />
+            <View style={{ padding: 20, alignItems: 'center'}}>
+                <View style={{height:100, width:100}}>
+                    <ScreenLoader/>
+                </View>
             </View>
         ) : null;
     };
@@ -151,7 +154,11 @@ const CalendarTab: React.FC = () => {
 
             <View style={styles.listContainer}>
                 {loading ? (
-                    <ActivityIndicator size="large" />
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <View style={{height:200, width:200}}>
+                            <ScreenLoader/>
+                        </View>
+                    </View>
                 ) : (
                     <FlatList
                         data={displayEvents}
