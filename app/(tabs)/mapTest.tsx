@@ -125,8 +125,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     }))
 
     const animatedReverseOpacity = useAnimatedStyle(() => ({
-        opacity: 1-expansion.value,
-    }))
+        opacity: Math.max(0, 1 - Math.pow(expansion.value, 0.05)),
+    }));
 
     const animatedWhiteColor = useDerivedValue(() => {
         return interpolateColor(
