@@ -1,5 +1,5 @@
 import React, { Component, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { atlanticupGetAllSports } from '../../../backend/atlanticupBackendFunctions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
