@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing } from 'react-native';
-import { atlanticupGetSportFromId } from '../../backend/atlanticupBackendFunctions';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing, Pressable} from 'react-native';
+import { atlanticupGetSportFromId } from '../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
 import { Link, router} from 'expo-router';
 import ContextMenu from 'react-native-context-menu-view';
@@ -50,14 +50,6 @@ class AtlanticupEventItem extends React.Component<Props, State> {
     componentDidMount() {
         this.startAnimation();
 
-        /*
-        getParticipationsFromUserId(this.props.currentUser.currentUser.id).then((participations) => {
-            this.setState({ isSubscribed: participations.includes(this.props.event.id) });
-        });
-        getOrganizersFromActivityId(this.props.event.activity_id).then((organizers) => {
-            this.setState({ isOrganizer: organizers.includes(this.props.currentUser.currentUser.id) });
-        });*/
-
         if (this.props.event.kind === "match") {
             this.fetchSportImage(this.props.event.sport_id);
         }
@@ -87,7 +79,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                 );
                 }}
             >
-                <Link href={`/atlanticupEventDetail/${event.id}`}>
+                <Pressable onPress={() => router.push(`/atlanticupEventDetail/${event.id}`)} onLongPress={() => console.log('long pressed')}>
                     <View style={[styles.main_container, { borderRadius: 5 }]}>
                         <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
                             <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
@@ -104,7 +96,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                             </TouchableOpacity>
                         </LinearGradient>
                     </View>
-                </Link>
+                </Pressable>
             </ContextMenu>
         );
     }

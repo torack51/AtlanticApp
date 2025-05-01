@@ -33,7 +33,7 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ loc, isFocused }) => {
                 null
             }
             <View style={styles.imageContainer}>
-                <Image style={styles.image} source={require('../../../assets/images/icons/logo_ac.png')} />
+                <Image style={styles.image} source={require('../../assets/images/icons/logo_ac.png')} />
             </View>
         </Animated.View>
     );

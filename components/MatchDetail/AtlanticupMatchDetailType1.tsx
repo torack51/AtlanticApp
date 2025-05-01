@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider } from 'react-native-paper';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../../backend/atlanticupBackendFunctions';
+import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../backend/atlanticupBackendFunctions';
 import UpdateScoreType1 from '../UpdateScore/AtlanticupUpdateScoreType1';
 import auth from '@react-native-firebase/auth';
+import ScreenLoader from '@/components/ScreenLoader';
 import { Link } from 'expo-router';
 
 const width = Dimensions.get('window').width;
@@ -17,7 +18,7 @@ interface Team{
     description: string;
 }
 
-const AtlanticupMatchDetailType2: React.FC<Props> = ({ match }) => {
+const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     const [state, setState] = useState<{
         match: any;
         sport: any | null;
@@ -142,6 +143,7 @@ const AtlanticupMatchDetailType2: React.FC<Props> = ({ match }) => {
     };
 
     const redirectToMap = () => {
+        console.log('pressed');
         //this.props.navigation.navigate('Carte', { redirect_to_place_id: state.match.place_id });
     };
 
@@ -199,7 +201,7 @@ const AtlanticupMatchDetailType2: React.FC<Props> = ({ match }) => {
     if (team1 == null || team2 == null || delegation1 == null || delegation2 == null) {
         return (
             <SafeAreaView style={styles.container}>
-                <Text>Chargement...</Text>
+                <ScreenLoader/>
             </SafeAreaView>
         );
     }
@@ -277,7 +279,7 @@ const AtlanticupMatchDetailType2: React.FC<Props> = ({ match }) => {
                     }
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={redirectToMap}>
                         <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 18 }}>{state.location == null ? "Voir sur la carte" : state.location.title} </Text>
-                        <Image source={require('../../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
+                        <Image source={require('../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
                     </TouchableOpacity>
                     {state.hasAdministratorRights ?
                         <TouchableOpacity style={{ backgroundColor: '#0269c4', margin: 10, padding: 10, borderRadius: 20 }} onPress={openModal}>
@@ -346,4 +348,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default AtlanticupMatchDetailType2;
+export default AtlanticupMatchDetailType1;

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions, RefreshControl, Image, ScrollView } from 'react-native';
 import { atlanticupGetGroupsFromSportId, atlanticupGetDelegationFromId, atlanticupGetMatchesFromSportId, atlanticupGetTeamFromId, atlanticupGetSportFromId } from '../../../../backend/atlanticupBackendFunctions';
 import { giveResults, sortTeams } from '../../../../backend/pointsPerMatchBySports';
-import AtlanticupRankingType1 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType1';
-import AtlanticupRankingType2 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType2';
-import AtlanticupRankingType3 from '../../../../components/Atlanticup/Ranking/AtlanticupRankingType3';
+import AtlanticupRankingType1 from '../../../../components/Ranking/AtlanticupRankingType1';
+import AtlanticupRankingType2 from '../../../../components/Ranking/AtlanticupRankingType2';
+import AtlanticupRankingType3 from '../../../../components/Ranking/AtlanticupRankingType3';
 
 const width = Dimensions.get('window').width;
 

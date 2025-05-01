@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Provider } from 'react-native-paper';
-import AtlanticupMatchDetailType1 from '../components/Atlanticup/MatchDetail/AtlanticupMatchDetailType1';
-import AtlanticupMatchDetailType2 from '../components/Atlanticup/MatchDetail/AtlanticupMatchDetailType2';
-import AtlanticupMatchDetailType3 from '../components/Atlanticup/MatchDetail/AtlanticupMatchDetailType3';
+import AtlanticupMatchDetailType1 from '../components/MatchDetail/AtlanticupMatchDetailType1';
+import AtlanticupMatchDetailType2 from '../components/MatchDetail/AtlanticupMatchDetailType2';
+import AtlanticupMatchDetailType3 from '../components/MatchDetail/AtlanticupMatchDetailType3';
 
 interface Match {
     sport_id: string;

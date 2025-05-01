@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import { atlanticupGetPlaceFromId } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId } from '../backend/atlanticupBackendFunctions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {

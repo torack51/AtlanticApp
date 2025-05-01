@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { atlanticupGetPlaceFromId, atlanticupGetEventFromId} from '../../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
 import { useRouter, useLocalSearchParams} from 'expo-router';
-import AtlanticupMatchDetailType1 from '@/components/Atlanticup/MatchDetail/AtlanticupMatchDetailType1';
-import AtlanticupMatchDetailType2 from '@/components/Atlanticup/MatchDetail/AtlanticupMatchDetailType2';
-import AtlanticupMatchDetailType3 from '@/components/Atlanticup/MatchDetail/AtlanticupMatchDetailType3';
+import AtlanticupMatchDetailType1 from '@/components/MatchDetail/AtlanticupMatchDetailType1';
+import AtlanticupMatchDetailType2 from '@/components/MatchDetail/AtlanticupMatchDetailType2';
+import AtlanticupMatchDetailType3 from '@/components/MatchDetail/AtlanticupMatchDetailType3';
 
 interface Match {
     title: string;

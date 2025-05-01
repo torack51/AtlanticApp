@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, RefreshControl } from 'react-native';
 import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AtlanticupAnnouncementItem from '../../../components/Atlanticup/AtlanticupAnnouncementItem';
+import AtlanticupAnnouncementItem from '../../../components/AtlanticupAnnouncementItem';
 import ScreenLoader from '@/components/ScreenLoader';
 
 const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {

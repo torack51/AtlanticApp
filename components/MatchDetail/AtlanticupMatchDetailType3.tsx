@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider, Modal, Portal } from 'react-native-paper';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus } from '../../../backend/atlanticupBackendFunctions';
+import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus } from '../../backend/atlanticupBackendFunctions';
 import UpdateScoreType3 from '../UpdateScore/AtlanticupUpdateScoreType3';
 import auth from '@react-native-firebase/auth';
 import { FlatList } from 'react-native-gesture-handler';
@@ -246,7 +246,7 @@ class AtlanticupMatchDetailType3 extends React.Component<Props, State> {
                                 </TouchableOpacity>}
                             <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={this.redirectToMap}>
                                 <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 18 }}>{this.state.location == null ? "Voir sur la carte" : this.state.location.title} </Text>
-                                <Image source={require('../../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
+                                <Image source={require('../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
                             </TouchableOpacity>
                             {this.state.hasAdministratorRights ?
                                 <TouchableOpacity style={{ backgroundColor: '#0269c4', margin: 10, padding: 10, borderRadius: 20 }} onPress={this.openModal}>

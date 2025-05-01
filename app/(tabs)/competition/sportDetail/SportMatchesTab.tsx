@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import { atlanticupGetMatchesFromSportId } from '../../../../backend/atlanticupBackendFunctions';
-import { User } from '../../../../types';
-import AtlanticupEventItem from '../../../../components/Atlanticup/AtlanticupEventItem';
-import AtlanticupMatchItem from '../../../../components/Atlanticup/AtlanticupMatchItem';
+import { User } from '../../../types';
+import AtlanticupEventItem from '../../../../components/AtlanticupEventItem';
+import AtlanticupMatchItem from '../../../../components/AtlanticupMatchItem';
 
 interface SportMatchesTabProps {
     sport_id: any;

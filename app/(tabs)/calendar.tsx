@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, FlatList, RefreshControl, Alert } from 'react-n
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
-import AtlanticupEventItem from '../../components/Atlanticup/AtlanticupEventItem';
-import AtlanticupMatchItem from '@/components/Atlanticup/AtlanticupMatchItem';
+import AtlanticupEventItem from '../../components/AtlanticupEventItem';
+import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -104,13 +104,9 @@ const CalendarTab: React.FC = () => {
 
     const renderItem = ({ item }: { item: Event }) => {
         if (item.kind === "match") {
-            return <View style={{margin:5}}>
-                        <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }}/>
-                    </View>;
+            return <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }}/>;
         } else {
-            return <View style={{margin:5}}>
-                        <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }}/>
-                    </View>;
+            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }}/>;
         }
     };
 

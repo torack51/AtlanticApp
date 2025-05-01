@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { atlanticupGetMatchFromId, atlanticupUpdateType2MatchScore } from '../../../backend/atlanticupBackendFunctions';
+import { atlanticupGetMatchFromId, atlanticupUpdateType2MatchScore } from '../../backend/atlanticupBackendFunctions';
 
 //A UTILISER POUR LES SPORTS SUIVANTS : BADMINTON, TENNIS DE TABlE, VOLLEYBALL
 

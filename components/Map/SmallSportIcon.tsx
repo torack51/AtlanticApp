@@ -7,20 +7,20 @@ interface SmallSportIconProps {
 const SmallSportIcon: React.FC<SmallSportIconProps> = (props) => {
 
     const sportIcons: Record<string, any> = {
-        badminton: require("../../../assets/images/icons/sport-icons/badminton.png"),
-        basketball: require("../../../assets/images/icons/sport-icons/basketball.png"),
-        running: require("../../../assets/images/icons/sport-icons/running.png"),
-        climbing: require("../../../assets/images/icons/sport-icons/climbing.png"),
-        football: require("../../../assets/images/icons/sport-icons/football.png"),
-        handball: require("../../../assets/images/icons/sport-icons/handball.png"),
-        rugby: require("../../../assets/images/icons/sport-icons/rugby.png"),
-        "table-tennis": require("../../../assets/images/icons/sport-icons/table-tennis.png"),
-        ultimate: require("../../../assets/images/icons/sport-icons/ultimate.png"),
-        volley: require("../../../assets/images/icons/sport-icons/volley.png"),        
+        badminton: require("../../assets/images/icons/sport-icons/badminton.png"),
+        basketball: require("../../assets/images/icons/sport-icons/basketball.png"),
+        running: require("../../assets/images/icons/sport-icons/running.png"),
+        climbing: require("../../assets/images/icons/sport-icons/climbing.png"),
+        football: require("../../assets/images/icons/sport-icons/football.png"),
+        handball: require("../../assets/images/icons/sport-icons/handball.png"),
+        rugby: require("../../assets/images/icons/sport-icons/rugby.png"),
+        "table-tennis": require("../../assets/images/icons/sport-icons/table-tennis.png"),
+        ultimate: require("../../assets/images/icons/sport-icons/ultimate.png"),
+        volley: require("../../assets/images/icons/sport-icons/volley.png"),        
       };
 
-      const pathToImage = sportIcons[props.item.id.split("_")[0]] || require("../../../assets/images/icons/logo_ac.png");
-      if (pathToImage == require("../../../assets/images/icons/logo_ac.png")) {
+      const pathToImage = sportIcons[props.item.id.split("_")[0]] || require("../../assets/images/icons/logo_ac.png");
+      if (pathToImage == require("../../assets/images/icons/logo_ac.png")) {
           //console.log('item : ', props.item.id.split("_")[0], pathToImage);
         }
 

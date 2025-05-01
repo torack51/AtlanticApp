@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing, Pressable} from 'react-native';
-import { atlanticupGetSportFromId } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetSportFromId } from '../backend/atlanticupBackendFunctions';
 import LinearGradient from 'react-native-linear-gradient';
 import { Link, useRouter} from 'expo-router';
-import ScreenLoader from '../ScreenLoader';
+import ScreenLoader from './ScreenLoader';
 import ContextMenu from 'react-native-context-menu-view';
 const width = Dimensions.get('window').width;
 
