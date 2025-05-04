@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
 import MapView, { Marker} from 'react-native-maps';
 import { FlatList, GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
-import Carousel from "react-native-snap-carousel";
+import Carousel, {ICarouselInstance} from "react-native-reanimated-carousel"
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
 import AnimatedMarker from '../../components/Map/AnimatedMarker';
@@ -11,6 +11,7 @@ import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEvents
 import AtlanticupEventItem from '@/components/AtlanticupEventItem';
 import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
+import { useLocalSearchParams } from 'expo-router';
 
 
 const { width, height } = Dimensions.get('window');
@@ -38,8 +39,10 @@ const AtlanticupItem = ({ item }: any) => {
 
 const AtlanticupMapScreen: React.FC<any> = () => {
 
+    const {location : initialPlaceId} = useLocalSearchParams();
+    const [targetPlace, setTargetPlace] = useState<any>(null);
     const mapRef = useRef<MapView>(null);
-    const carouselRef = useRef<Carousel<any>>(null);
+    const carouselRef = useRef<ICarouselInstance>(null);
     const height = useSharedValue(MIN_HEIGHT);
     const [expanded, setExpanded] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState(null);
@@ -102,7 +105,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const onMarkerPress = (location) => {
         const index = places.findIndex((loc) => loc.id === location.id);
         if (index !== -1) {
-            carouselRef.current?.snapToItem(index);
+            carouselRef.current?.scrollTo({index : index});
             onSnapToItem(index);  // Déplace la caméra
         }
     };
@@ -155,6 +158,42 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             setSports(data);
         });
     }, []);
+
+    useEffect(() => {
+        setLoading(true);
+        atlanticupGetAllPlaces().then(async (allPlaces) => {
+            setPlaces(allPlaces); // Charge tous les lieux
+
+            if (initialPlaceId) {
+                const target = allPlaces.find(place => place.id === initialPlaceId);
+                if (target) {
+                    setTargetPlace(target);
+                    moveToPosition(target.position);
+                    setSelectedMarkerId(target.id);
+                    // Si tu veux que le carousel se positionne aussi sur cet élément
+                    const index = allPlaces.findIndex(place => place.id === initialPlaceId);
+                    if (index !== -1) {
+                        setTimeout(() => { // Petit délai pour s'assurer que le carousel est initialisé
+                            carouselRef.current?.scrollTo({ index: index, animated: true });
+                        }, 500);
+                    }
+                } else {
+                    console.warn(`Lieu avec l'ID ${initialPlaceId} non trouvé.`);
+                    // Tu pourrais centrer la carte sur une région par défaut ici
+                }
+            } else if (allPlaces.length > 0) {
+                // Si pas de place_id, centre sur le premier lieu par défaut
+                const firstPlace = allPlaces[0];
+                setTargetPlace(firstPlace);
+                moveToPosition(firstPlace.position);
+                setSelectedMarkerId(firstPlace.id);
+            }
+            setLoading(false);
+        });
+        atlanticupGetAllSports().then((data) => {
+            setSports(data);
+        });
+    }, [initialPlaceId]); // Le useEffect dépend de initialPlaceId
 
     useEffect(() => {
         setEvents([]);
@@ -296,10 +335,10 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             <Animated.View style={[styles.carouselContainer, animatedStyle]}>
             <Carousel
                 ref={carouselRef}
+                width={width}
+                height={width / 2}
                 data={places}
                 renderItem={renderCarouselItem}
-                sliderWidth={width}
-                itemWidth={width * 0.95}
                 onSnapToItem={onSnapToItem}
             />
             </Animated.View>
@@ -318,9 +357,10 @@ const styles = StyleSheet.create({
       elevation: 5,
     },
     card: {
-      borderRadius: 25,
-      height:'100%',
-      alignItems: "center",
+        width: width*0.90,
+        borderRadius: 25,
+        height:'100%',
+        alignSelf: "center",
     },
     card_header:{
         height:100,
