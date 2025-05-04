@@ -20,7 +20,7 @@ const SportDetailScreen: React.FC = () => {
     }
     const [routes] = useState<{ key: string; title: string }[]>([
         { key: "rencontres", title: "Rencontres" },
-        { key: "results", title: "Résultats" },
+        { key: "rankings", title: "Classements" },
     ]);
 
     return (
@@ -28,7 +28,7 @@ const SportDetailScreen: React.FC = () => {
             navigationState={{ index, routes }}
             renderScene={SceneMap({
                 rencontres: () => <SportMatchesTab sport_id={sport_id}/>,
-                results: () => <ResultsTab sport_id={sport_id}/>,
+                rankings: () => <ResultsTab sport_id={sport_id}/>,
             }
             )}
             onIndexChange={handleIndexChange}
