@@ -79,10 +79,10 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/atlanticupEventDetail/${event.id}`)} onLongPress={() => console.log('long pressed')}>
+                <Pressable onPress={() => router.push(`/events/${event.id}`)} onLongPress={() => console.log('long pressed')}>
                     <View style={[styles.main_container, { borderRadius: 5 }]}>
                         <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
-                            <TouchableOpacity style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
+                            <View style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
                                 <View style={{ flex: 1, alignItems: 'center' }}>
                                     <Text style={styles.text}>{event.title}</Text>
                                 </View>
@@ -93,7 +93,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                                     <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
                                     <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </View>
                         </LinearGradient>
                     </View>
                 </Pressable>
