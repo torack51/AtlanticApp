@@ -120,7 +120,7 @@ const ProfileScreen: React.FC = () => {
                         {"Liste des annonces :"}
                     </Text>
 
-                    <ScrollView style={{ flex: 1, margin: 10 }} horizontal={true}>
+                    <ScrollView style={{ flex: 1, margin: 10 }} horizontal={true} showsHorizontalScrollIndicator={false}>
                         {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
                     </ScrollView>
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
