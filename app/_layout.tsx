@@ -32,9 +32,9 @@ export default function RootLayout() {
     <GestureHandlerRootView>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false , headerBackTitle:"Retour", headerBackButtonMenuEnabled : true }} />
-        <Stack.Screen name="matches" options={{ headerTitle : "Détails du match", }}/>
-        <Stack.Screen name="events" options={{ headerTitle : "Détails de l'événement",}}/>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
+        <Stack.Screen name="matches" options={{ headerTitle : "Détails du match", headerBackTitle : "Retour"}}/>
+        <Stack.Screen name="events" options={{ headerTitle : "Détails de l'événement", headerBackTitle : "Retour"}}/>
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
