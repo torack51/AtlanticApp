@@ -71,14 +71,14 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         if (!team1 || !team2) return null;
         return (
             <ContextMenu
-                            actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
-                            onPress={(e) => {
-                            console.warn(
-                                `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
-                            );
-                            }}
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
             >
-                <Pressable onPress={() => router.push(`/atlanticupMatchDetail/${match.id}`)} onLongPress={() => console.log('long pressed')}>
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)} onLongPress={() => console.log('long pressed')}>
                     <View style={styles.main_container}>
                         {match.status === "playing" && (
                             <Animated.View
