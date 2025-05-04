@@ -56,6 +56,8 @@ const EventPage: React.FC = () => {
         return totalMilliseconds;
     };
 
+    console.log('event : ', event)
+
     return (
         <View style={{ flex: 1 }}>
             <LinearGradient colors={['rgba(27,73,102,0.7)', 'rgba(255,219,35,0.9)']} style={styles.container} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
