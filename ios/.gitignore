@@ -28,6 +28,3 @@ project.xcworkspace
 
 # CocoaPods
 /Pods/
-
-#google services
-AtlanticApp/GoogleService-Info.plist
