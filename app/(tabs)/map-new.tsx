@@ -102,7 +102,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const onMarkerPress = (location) => {
         const index = places.findIndex((loc) => loc.id === location.id);
         if (index !== -1) {
-            carouselRef.current?.snapToItem(index);
+            carouselRef.current?.scrollTo({index : index});
             onSnapToItem(index);  // Déplace la caméra
         }
     };
@@ -300,6 +300,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                 height={width / 2}
                 data={places}
                 renderItem={renderCarouselItem}
+                onSnapToItem={onSnapToItem}
             />
             </Animated.View>
         </GestureDetector>
