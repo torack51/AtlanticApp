@@ -53,11 +53,11 @@ const CalendarTab: React.FC = () => {
             if (!team) {
                 if (!seeSchoolOnly) {
                     Alert.alert(
-                        "Vous devez d'abord sélectionner une équipe dans la section 'Mon Profil' pour activer cette fonctionnalité",
+                        "Sélectionnez une école à soutenir.",
                         "",
                         [
                             { text: "Annuler", onPress: () => {} },
-                            { text: "M'y emmener", onPress: () => {router.navigate('/other')} }
+                            { text: "OK", onPress: () => {router.navigate('/other')} }
                         ]
                     );
                     return;

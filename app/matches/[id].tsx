@@ -58,7 +58,7 @@ const MatchPage: React.FC<Props> = () => {
         team2_delegation: any | null;
         selectedStatus: string | null;
     }>({
-        match_id : useLocalSearchParams().match_id,
+        match_id : useLocalSearchParams().id,
         match: null,
         sport: null,
         location: null,
@@ -76,6 +76,7 @@ const MatchPage: React.FC<Props> = () => {
     });
 
     const checkForAdministratorRights = async () => {
+        
         const currentUser = auth().currentUser;
         if (currentUser) {
             const user = await atlanticupGetUserFromId(currentUser.uid);
@@ -132,6 +133,7 @@ const MatchPage: React.FC<Props> = () => {
     }, []);
 
     useEffect(() => {
+        console.log("state : ", state)
         checkForAdministratorRights();
         fetchMatch();
     }, []);
