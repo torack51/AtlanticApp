@@ -68,6 +68,11 @@ class AtlanticupEventItem extends React.Component<Props, State> {
         ).start();
     }
 
+    getDayOfWeek = (date: Date): string => {
+        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        return days[date.getDay()];
+    };
+
     renderEvent(event: Event, scaleInterpolation1: Animated.AnimatedInterpolation<number>, opacityInterpolation1: Animated.AnimatedInterpolation<number>, borderWidthInterpolation1: Animated.AnimatedInterpolation<number>) {
         const start_time = new Date(event.start_time);
         return (
@@ -90,7 +95,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                                     <Text style={{ alignSelf: 'flex-start' }}>{event.description.replace(/\\n/g, "\n")}</Text>
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
+                                    <Text style={styles.small_text}>{this.getDayOfWeek(start_time)}</Text>
                                     <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
                                 </View>
                             </View>
@@ -106,6 +111,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
             this.setState({ image: sport.image });
         });
     }
+
 
     render() {
         const { event } = this.props;
@@ -134,7 +140,7 @@ const styles = StyleSheet.create({
     main_container: {
         width: width * 0.9,
         margin: 10,
-        height: 120,
+        height: 100,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',

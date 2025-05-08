@@ -64,6 +64,11 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         } 
     };
 
+    const getDayOfWeek = (date: Date): string => {
+        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        return days[date.getDay()];
+    };
+
     const renderMatch = (match: Match, scaleInterpolation1: Animated.AnimatedInterpolation<number>, opacityInterpolation1: Animated.AnimatedInterpolation<number>, borderWidthInterpolation1: Animated.AnimatedInterpolation<number>) => {
         const start_time = new Date(match.start_time);
         const team1 = match.teams.find((team) => team.id === match.team1_id);
@@ -110,7 +115,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
                                 </View>
 
                                 <View style={{ position: 'absolute', bottom: 5 }}>
-                                    <Text style={styles.small_text}>{start_time.toLocaleDateString('en-GB')}</Text>
+                                    <Text style={styles.small_text}>{getDayOfWeek(start_time)}</Text>
                                     <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
                                 </View>
                             </LinearGradient>
@@ -148,7 +153,7 @@ const styles = StyleSheet.create({
     main_container: {
         width: width * 0.9,
         margin: 10,
-        height: 120,
+        height: 100,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
