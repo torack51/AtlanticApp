@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Alert, Animated, Dimensions, ImageBackground} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
@@ -15,6 +15,8 @@ interface User {
 }
 
 const ITEMS_PER_PAGE = 10;
+
+const { height: screenHeight } = Dimensions.get('window');
 
 interface Event {
     id: string;
@@ -41,6 +43,13 @@ const CalendarTab: React.FC = () => {
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
 
     const insets = useSafeAreaInsets();
+
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const listHeight = scrollY.interpolate({
+        inputRange: [0, screenHeight * 0.3], // Point où le scroll commence à influencer la hauteur
+        outputRange: [screenHeight * 0.5, screenHeight * 0.8],
+        extrapolate: 'clamp',
+    });
 
     const getTeamFromStorage = async () => {
         const team = await AsyncStorage.getItem("atlanticup_team");
@@ -128,50 +137,95 @@ const CalendarTab: React.FC = () => {
 
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
-            <View style={styles.topBar}>
-                <Text style={styles.topText}>Evénements futurs</Text>
-            </View>
-            <TouchableOpacity
-                style={{
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: '60%',
-                    borderRadius: 20,
-                    backgroundColor: seeSchoolOnly ? '#1d4966' : 'rgba(0,0,0,0)'
-                }}
-                onPress={seeSchoolOnlyPressed}
+            <ImageBackground
+                source={require('../../assets/images/calendar-image-background.png')}
+                style={styles.headerImage}
+                resizeMode="cover"
             >
-                <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold', color: seeSchoolOnly ? 'white' : 'black' }}>
-                    Voir pour mon école uniquement
-                </Text>
-            </TouchableOpacity>
+            </ImageBackground>
 
-            <View style={styles.listContainer}>
-                {loading ? (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                        <View style={{height:200, width:200}}>
-                            <ScreenLoader/>
+            <Animated.View style={[styles.eventListContainer, { height: listHeight }]}>
+                <FlatList
+                    data={events}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    ListHeaderComponent={
+                        <View>
+                            <TouchableOpacity
+                                style={{
+                                    alignItems: 'center',
+                                    alignSelf: 'center',
+                                    justifyContent: 'center',
+                                    height: 50,
+                                    width: '60%',
+                                    borderRadius: 20,
+                                    backgroundColor: seeSchoolOnly ? '#1d4966' : 'white',
+                                    marginTop:20,
+                                }}
+                                onPress={seeSchoolOnlyPressed}
+                            >
+                                <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold', color: seeSchoolOnly ? 'white' : 'black' }}>
+                                    Voir pour mon école uniquement
+                                </Text>
+                            </TouchableOpacity>
                         </View>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={displayEvents}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.id}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={loading}
-                                onRefresh={fetchInitialEvents}
-                            />
-                        }
-                        onEndReached={fetchMoreEvents}
-                        onEndReachedThreshold={0.5}
-                        ListFooterComponent={renderFooter}
-                    />
-                )}
-            </View>
+                    }
+                    stickyHeaderIndices={[0]}
+                    contentContainerStyle={styles.eventListContent}
+                    showsVerticalScrollIndicator={false}
+                    onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false } // Important pour interpoler la hauteur
+                    )}
+                    scrollEventThrottle={16}
+                    ListEmptyComponent={() => (
+                    <Text style={styles.loadingText}>Chargement des événements...</Text>
+                    )}
+                />
+            </Animated.View>
+            {/*<Animated.View style={[styles.eventListContainer, { height: listHeight }]}>
+                <TouchableOpacity
+                    style={{
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        justifyContent: 'center',
+                        height: 50,
+                        width: '60%',
+                        borderRadius: 20,
+                        backgroundColor: seeSchoolOnly ? '#1d4966' : 'rgba(0,0,0,0)'
+                    }}
+                    onPress={seeSchoolOnlyPressed}
+                >
+                    <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold', color: seeSchoolOnly ? 'white' : 'black' }}>
+                        Voir pour mon école uniquement
+                    </Text>
+                </TouchableOpacity>
+
+                <View style={styles.listContainer}>
+                    {loading ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <View style={{height:200, width:200}}>
+                                <ScreenLoader/>
+                            </View>
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={displayEvents}
+                            renderItem={renderItem}
+                            keyExtractor={(item) => item.id}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={loading}
+                                    onRefresh={fetchInitialEvents}
+                                />
+                            }
+                            onEndReached={fetchMoreEvents}
+                            onEndReachedThreshold={0.5}
+                            ListFooterComponent={renderFooter}
+                        />
+                    )}
+                </View>
+            </Animated.View>*/}
         </SafeAreaView>
     );
 };
@@ -194,6 +248,25 @@ const styles = StyleSheet.create({
     listContainer: {
         alignItems: 'center',
         flex: 1,
+    },
+    eventListContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'white', // Couleur de fond de la liste
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        overflow: 'hidden', // Important pour que le borderRadius fonctionne bien
+    },
+    eventListContent: {
+        padding: 20,
+        paddingBottom: screenHeight * 0.6, // Pour permettre de scroller jusqu'en bas confortablement
+    },
+    headerImage: {
+        height: '100%',
+        width: '100%',
+        position:'absolute',
     },
 });
 

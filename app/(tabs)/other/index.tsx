@@ -5,7 +5,6 @@ import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
