@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
 import MapView, { Marker} from 'react-native-maps';
 import { FlatList, GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
-import Carousel from "react-native-snap-carousel";
+import Carousel, {ICarouselInstance} from "react-native-reanimated-carousel"
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
-import AnimatedMarker from '../../components/Map/AnimatedMarker';
+import AnimatedMarker from '../components/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
-import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../backend/atlanticupBackendFunctions';
 import AtlanticupEventItem from '@/components/AtlanticupEventItem';
 import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
@@ -39,7 +39,7 @@ const AtlanticupItem = ({ item }: any) => {
 const AtlanticupMapScreen: React.FC<any> = () => {
 
     const mapRef = useRef<MapView>(null);
-    const carouselRef = useRef<Carousel<any>>(null);
+    const carouselRef = useRef<ICarouselInstance>(null);
     const height = useSharedValue(MIN_HEIGHT);
     const [expanded, setExpanded] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState(null);
@@ -102,7 +102,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const onMarkerPress = (location) => {
         const index = places.findIndex((loc) => loc.id === location.id);
         if (index !== -1) {
-            carouselRef.current?.snapToItem(index);
+            carouselRef.current?.scrollTo({index : index});
             onSnapToItem(index);  // Déplace la caméra
         }
     };
@@ -296,10 +296,10 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             <Animated.View style={[styles.carouselContainer, animatedStyle]}>
             <Carousel
                 ref={carouselRef}
+                width={width}
+                height={width / 2}
                 data={places}
                 renderItem={renderCarouselItem}
-                sliderWidth={width}
-                itemWidth={width * 0.95}
                 onSnapToItem={onSnapToItem}
             />
             </Animated.View>
@@ -318,9 +318,10 @@ const styles = StyleSheet.create({
       elevation: 5,
     },
     card: {
-      borderRadius: 25,
-      height:'100%',
-      alignItems: "center",
+        width: width*0.90,
+        borderRadius: 25,
+        height:'100%',
+        alignSelf: "center",
     },
     card_header:{
         height:100,
