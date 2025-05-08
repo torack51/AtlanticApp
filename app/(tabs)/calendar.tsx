@@ -183,49 +183,6 @@ const CalendarTab: React.FC = () => {
                     )}
                 />
             </Animated.View>
-            {/*<Animated.View style={[styles.eventListContainer, { height: listHeight }]}>
-                <TouchableOpacity
-                    style={{
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        height: 50,
-                        width: '60%',
-                        borderRadius: 20,
-                        backgroundColor: seeSchoolOnly ? '#1d4966' : 'rgba(0,0,0,0)'
-                    }}
-                    onPress={seeSchoolOnlyPressed}
-                >
-                    <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold', color: seeSchoolOnly ? 'white' : 'black' }}>
-                        Voir pour mon école uniquement
-                    </Text>
-                </TouchableOpacity>
-
-                <View style={styles.listContainer}>
-                    {loading ? (
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                            <View style={{height:200, width:200}}>
-                                <ScreenLoader/>
-                            </View>
-                        </View>
-                    ) : (
-                        <FlatList
-                            data={displayEvents}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={loading}
-                                    onRefresh={fetchInitialEvents}
-                                />
-                            }
-                            onEndReached={fetchMoreEvents}
-                            onEndReachedThreshold={0.5}
-                            ListFooterComponent={renderFooter}
-                        />
-                    )}
-                </View>
-            </Animated.View>*/}
         </SafeAreaView>
     );
 };
@@ -260,8 +217,8 @@ const styles = StyleSheet.create({
         overflow: 'hidden', // Important pour que le borderRadius fonctionne bien
     },
     eventListContent: {
-        padding: 20,
-        paddingBottom: screenHeight * 0.6, // Pour permettre de scroller jusqu'en bas confortablement
+        padding: 10,
+        paddingBottom: screenHeight * 0.6, // Pour permettre de scroller jusqu'en bas confortablement,
     },
     headerImage: {
         height: '100%',
