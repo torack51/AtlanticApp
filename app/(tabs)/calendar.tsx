@@ -156,21 +156,39 @@ const CalendarTab: React.FC = () => {
                     ListHeaderComponent={
                         <View>
                             <TouchableOpacity
-                                style={{
+                                onPress={seeSchoolOnlyPressed}
+                                style={styles.topBar}
+                            >
+                                <Animated.View style={{
                                     alignItems: 'center',
                                     alignSelf: 'center',
                                     justifyContent: 'center',
                                     height: 50,
-                                    width: '60%',
                                     borderRadius: 20,
-                                    backgroundColor: seeSchoolOnly ? '#1d4966' : 'white',
-                                    marginTop:20,
-                                }}
-                                onPress={seeSchoolOnlyPressed}
-                            >
-                                <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: 'bold', color: seeSchoolOnly ? 'white' : 'black' }}>
-                                    Voir pour mon école uniquement
-                                </Text>
+                                    paddingHorizontal:20,
+                                    backgroundColor: scrollY.interpolate({
+                                        inputRange: [0, screenHeight * 0.3],
+                                        outputRange: ['white', '#1d4966'],
+                                        extrapolate: 'clamp',
+                                    }),
+                                }}>
+                                    <Animated.Text style={{ textAlign: 'center', fontWeight: 'bold', 
+                                        color: scrollY.interpolate({
+                                            inputRange: [0, screenHeight * 0.3],
+                                            outputRange: ['#1d4966', 'white'],
+                                            extrapolate: 'clamp',
+                                        }),
+                                        fontSize: scrollY.interpolate({
+                                            inputRange: [0, screenHeight * 0.3],
+                                            outputRange: [18, 12],
+                                            extrapolate: 'clamp',
+                                        }),
+                                    }}>
+                                        {
+                                            seeSchoolOnly ? "Retirer le filtre" : "Filtrer mon école"
+                                        }
+                                    </Animated.Text>
+                                </Animated.View>
                             </TouchableOpacity>
                         </View>
                     }
