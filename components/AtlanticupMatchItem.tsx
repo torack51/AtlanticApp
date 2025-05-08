@@ -27,10 +27,9 @@ interface User {
 
 interface Props {
     match: Match;
-    currentUser: { currentUser: User };
 }
 
-const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
+const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
     if (!match) return null;
 
     const [image, setImage] = useState<string | null>(null);
@@ -42,19 +41,10 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
     const animatedValue1 = useRef(new Animated.Value(0)).current;
     const router = useRouter();
 
+    useEffect(() => {
+        fetchSportImage(match.sport_id);
+    }, [match.sport_id]);
 
-    const startAnimation = () => {
-        Animated.loop(
-            Animated.parallel([
-                Animated.timing(animatedValue1, {
-                    toValue: 1,
-                    duration: 3000,
-                    easing: Easing.out(Easing.cubic),
-                    useNativeDriver: false,
-                }),
-            ])
-        ).start();
-    };
 
     const fetchSportImage = (sport_id: string) => {
         if (!image){
@@ -65,7 +55,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
     };
 
     const getDayOfWeek = (date: Date): string => {
-        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const days = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
         return days[date.getDay()];
     };
 
@@ -75,24 +65,63 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
         const team2 = match.teams.find((team) => team.id === match.team2_id);
         if (!team1 || !team2) return null;
         return (
+            <View style={styles.main_container}>
             <ContextMenu
                 actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
                 onPress={(e) => {
                 console.warn(
                     `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/matches/${match.id}`)} onLongPress={() => console.log('long pressed')}>
-                    <View style={styles.main_container}>
-                        {match.status === "playing" && (
-                            <Animated.View
-                                style={[
-                                    styles.animated_rectangle,
-                                    { borderColor: 'red', transform: [{ scale: scaleInterpolation1 }], opacity: opacityInterpolation1, borderWidth: borderWidthInterpolation1 },
-                                ]} 
-                            />
-                        )}
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                        <View style={styles.touchable_container}>
+                            <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
+                                    <Image source={{ uri: team1.delegation.image }} style={{ width:50, height:50, marginRight:5}}/>
+                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                </View>
+
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
+                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 50, height: 50, marginRight:5 }}/>
+                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                </View>
+                            </View>
+
+                            <LinearGradient
+                                colors={['rgba(0, 0, 0, 0)', 'black', 'rgba(0, 0, 0, 0)']}
+                                style={styles.gradientBorder}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                            />                          
+
+                            <View style={{ height:'100%', width:'35%', flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingRight: 20, paddingLeft: 10}}>
+                                <View style={{ justifyContent:'center', alignItems:'center' }}>
+                                    <Text style={styles.small_text}>{getDayOfWeek(start_time)}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                                <View style={{ }}>
+                                    <Image source={{ uri: image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
+                                </View>
+                            </View>
+                        </View>
+                </Pressable>
+            </ContextMenu>
+            </View>
+        );
+        return (
+            <View style={styles.main_container}>
+            <ContextMenu
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
+            >
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
                         <View style={styles.touchable_container}>
                             <LinearGradient colors={[team1.delegation.color, team2.delegation.color]} style={styles.touchable_container} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
                                 <View style={{ position: 'absolute', top: 0 }}>
@@ -120,9 +149,9 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
                                 </View>
                             </LinearGradient>
                         </View>
-                    </View>
                 </Pressable>
             </ContextMenu>
+            </View>
         );
     };
 
@@ -151,43 +180,35 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match, currentUser }) => {
 
 const styles = StyleSheet.create({
     main_container: {
-        width: width * 0.9,
-        margin: 10,
-        height: 100,
+        width: '100%',
+        height:'100%',
         justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
         overflow: 'hidden',
         borderRadius: 30,
     },
     touchable_container: {
-        width: width * 0.9,
-        margin: 10,
-        height: 120,
-        borderColor: 'rgba(50,50,50,0.4)',
-        borderWidth: 1,
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        flexDirection: 'row',
         overflow: 'hidden',
+        flexDirection: 'row',
         borderRadius: 30,
     },
     text: {
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'bold',
         textAlign: 'center',
     },
     small_text: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    animated_rectangle: {
-        position: "absolute",
-        width: width * 0.90 + 5,
-        height: 120 + 5,
-        borderRadius: 23,
-    },
+    gradientBorder: {
+        width: 1,
+        height: '80%',
+      },
 });
 
 export default AtlanticupMatchItem;
