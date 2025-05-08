@@ -113,9 +113,13 @@ const CalendarTab: React.FC = () => {
 
     const renderItem = ({ item }: { item: Event }) => {
         if (item.kind === "match") {
-            return <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }}/>;
+            return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
+                        <AtlanticupMatchItem match={item}/>
+                    </View>;
         } else {
-            return <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }}/>;
+            return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
+                        <AtlanticupEventItem event={item}/>;
+                    </View>;
         }
     };
 
@@ -173,14 +177,23 @@ const CalendarTab: React.FC = () => {
                     stickyHeaderIndices={[0]}
                     contentContainerStyle={styles.eventListContent}
                     showsVerticalScrollIndicator={false}
-                    onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false } // Important pour interpoler la hauteur
-                    )}
+                    onScroll={
+                        Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: false } // Important pour interpoler la hauteur
+                        )
+                    }
                     scrollEventThrottle={16}
                     ListEmptyComponent={() => (
-                    <Text style={styles.loadingText}>Chargement des événements...</Text>
+                        <Text style={styles.loadingText}>Chargement des événements...</Text>
                     )}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={loading}
+                            onRefresh={fetchInitialEvents}
+                            tintColor="#1d4966"
+                        />
+                    }
                 />
             </Animated.View>
         </SafeAreaView>

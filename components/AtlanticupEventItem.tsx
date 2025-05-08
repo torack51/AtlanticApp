@@ -27,7 +27,6 @@ interface User {
 
 interface Props {
     event: Event;
-    currentUser: { currentUser: User };
 }
 
 interface State {
@@ -69,7 +68,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
     }
 
     getDayOfWeek = (date: Date): string => {
-        const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const days = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
         return days[date.getDay()];
     };
 
@@ -78,6 +77,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
         return (
             <ContextMenu
                 actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
                 onPress={(e) => {
                 console.warn(
                     `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
@@ -85,9 +85,9 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                 }}
             >
                 <Pressable onPress={() => router.push(`/events/${event.id}`)} onLongPress={() => console.log('long pressed')}>
-                    <View style={[styles.main_container, { borderRadius: 5 }]}>
+                    <View style={styles.main_container}>
                         <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
-                            <View style={[styles.touchable_container, { flexDirection: 'column', borderRadius: 5 }]}>
+                            <View style={[styles.touchable_container, { flexDirection: 'column'}]}>
                                 <View style={{ flex: 1, alignItems: 'center' }}>
                                     <Text style={styles.text}>{event.title}</Text>
                                 </View>
@@ -138,25 +138,19 @@ class AtlanticupEventItem extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
     main_container: {
-        width: width * 0.9,
-        margin: 10,
-        height: 100,
+        width: '100%',
+        height:'100%',
         justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
         overflow: 'hidden',
         borderRadius: 30,
     },
     touchable_container: {
-        width: width * 0.9,
-        margin: 10,
-        height: 120,
-        borderColor: 'rgba(50,50,50,0.4)',
-        borderWidth: 1,
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        flexDirection: 'row',
         overflow: 'hidden',
+        flexDirection: 'row',
         borderRadius: 30,
     },
     text: {
@@ -168,12 +162,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         textAlign: 'center',
-    },
-    animated_rectangle: {
-        position: "absolute",
-        width: width * 0.90 + 5,
-        height: 120 + 5,
-        borderRadius: 23,
     },
 });
 

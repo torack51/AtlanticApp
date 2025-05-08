@@ -29,10 +29,14 @@ interface User {
 
 const AtlanticupItem = ({ item }: any) => {
     if (item.kind === 'event') {
-        return <AtlanticupEventItem event={item} currentUser={{ currentUser: { id: '1' } }} />;
+        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
+                    <AtlanticupEventItem event={item}/>;
+                </View>;
     }
     if (item.kind === 'match') {
-        return <AtlanticupMatchItem match={item} currentUser={{ currentUser: { id: '1' } }} />;
+        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
+                    <AtlanticupMatchItem match={item}/>
+                 </View>;
     }
 }
 
