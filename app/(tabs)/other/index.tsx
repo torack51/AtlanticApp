@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScreenLoader from '@/components/ScreenLoader';
 
 const width = Dimensions.get('window').width;
 
@@ -116,16 +117,20 @@ const ProfileScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.annoucements_container}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>
-                        {"Liste des annonces :"}
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20}}>
+                        {"⚠️ ANNONCES ⚠️"}
                     </Text>
 
-                    <ScrollView style={{ flex: 1, margin: 10 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
-                    </ScrollView>
-                    <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
-                        <Text style={{ color: 'blue', fontWeight: 'bold' }}>Tout voir</Text>
-                    </TouchableOpacity>
+                    {loadingAnnouncements ? <View style={{height:200,width:200, alignSelf:'center'}}><ScreenLoader /></View> : 
+                        <>
+                        <ScrollView style={{ flex: 1, margin: 10 }} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
+                        </ScrollView>
+                        <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
+                            <Text style={{ color: 'blue', fontWeight: 'bold' }}>Tout voir</Text>
+                        </TouchableOpacity>
+                        </>
+                    }
                 </View>
 
                 <View style={styles.team_selection_container}>
@@ -216,6 +221,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     annoucements_container: {
+        height:300,
         borderRadius: 20,
         backgroundColor: 'rgba(0,0,0,0.1)',
         marginBottom: 20,
