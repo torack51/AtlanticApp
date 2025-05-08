@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, RefreshControl } from 'react-native-gesture-handler';
-import { getAuth } from 'firebase/auth';
+import auth from '@react-native-firebase/auth';
 import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -31,11 +31,22 @@ const ProfileScreen: React.FC = () => {
     const [loadingAnnouncements, setLoadingAnnouncements] = useState<boolean>(false);
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
-    const navigation = useNavigation();
+    
+    const [user, setUser] = useState<auth.User | null>(null);
+    const [initializing, setInitializing] = useState<boolean>(true);
 
     const insets = useSafeAreaInsets();
 
+    const onAuthStateChanged = (currentUser: auth.User | null) => {
+        setUser(currentUser);
+        if (initializing) {
+          setInitializing(false);
+        }
+    };
+
     useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+
         fetchAnnouncements();
         getTeamFromStorage();
         fetchTeams();
@@ -67,16 +78,18 @@ const ProfileScreen: React.FC = () => {
     };
 
     const signInButtonPressed = () => {
-        /*const auth = getAuth(app);
-        if (auth.currentUser) {
-            auth.signOut().then(() => {
-                // Handle sign out
-            }).catch((error) => {
+        router.push("/auth/connexion");
+    };
+
+    const signOutButtonPressed = () => {
+        auth()
+            .signOut()
+            .then(() => {
+                Alert.alert('Déconnexion réussie', 'Vous êtes maintenant déconnecté.');
+            })
+            .catch((error) => {
                 console.log(error);
             });
-        } else {
-            router.navigate("/calendar");
-        }*/
     };
 
     const renderAnnouncements = () => {
@@ -167,14 +180,21 @@ const ProfileScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
 
-                {true ?
-                    <TouchableOpacity onPress={signInButtonPressed} style={styles.legal_notices_container}>
-                        <Text style={{ color: 'blue' }}>Se déconnecter</Text>
+                {initializing ?
+                    <TouchableOpacity style={styles.legal_notices_container}>
+                        <Text style={{ color: 'blue' }}>Chargement...</Text>
                     </TouchableOpacity>
                     :
-                    <TouchableOpacity onPress={signInButtonPressed} style={styles.legal_notices_container}>
-                        <Text style={{ color: 'blue' }}>Se connecter en tant qu'organisateur</Text>
-                    </TouchableOpacity>
+                    (
+                    user ?
+                        <TouchableOpacity onPress={signOutButtonPressed} style={styles.legal_notices_container}>
+                            <Text style={{ color: 'blue' }}>Se déconnecter</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity onPress={signInButtonPressed} style={styles.legal_notices_container}>
+                            <Text style={{ color: 'blue' }}>Se connecter</Text>
+                        </TouchableOpacity>
+                    )
                 }
             </SafeAreaView>
             <Modal
