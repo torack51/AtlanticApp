@@ -79,12 +79,12 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
-                                    <Image source={{ uri: team1.delegation.image }} style={{ width:50, height:50, marginRight:5}}/>
+                                    <Image source={{ uri: team1.delegation.image }} style={{ width:40, height:40, marginRight:5}}/>
                                     <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
                                 </View>
 
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
-                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 50, height: 50, marginRight:5 }}/>
+                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
                                     <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
                                 </View>
                             </View>
