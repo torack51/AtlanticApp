@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, Alert, Animated, Dimensions, ImageBackground} from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Alert, Animated, Dimensions, Image} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
+import AnimatedBackground from '@/components/Calendar/AnimatedBackground';
 
 interface User {
     id: string;
@@ -48,6 +49,12 @@ const CalendarTab: React.FC = () => {
     const listHeight = scrollY.interpolate({
         inputRange: [0, screenHeight * 0.3],
         outputRange: [screenHeight * 0.5, screenHeight * 0.8],
+        extrapolate: 'clamp',
+    });
+
+    const headerHeight = scrollY.interpolate({
+        inputRange: [0, screenHeight * 0.3],
+        outputRange: [screenHeight * 0.5 - insets.top, screenHeight * 0.2 - insets.top],
         extrapolate: 'clamp',
     });
 
@@ -143,15 +150,25 @@ const CalendarTab: React.FC = () => {
         fetchInitialEvents();
     }, []);
 
+    const mainLogo = require('../../assets/images/logo-atlanticup-no-background.png');
     const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
-            <ImageBackground
-                source={require('../../assets/images/calendar-image-background.png')}
-                style={styles.headerImage}
-                resizeMode="cover"
-            >
-            </ImageBackground>
+            <View style={[styles.background,{paddingTop: insets.top}]}>
+                <Animated.View 
+                    style={[{ height: headerHeight, width: screenWidth}]}>
+                        {/*<AnimatedBackground
+                            mainLogoSource={mainLogo}
+                            iconSource={mainLogo}
+                            numberOfIcons={15}
+                            numberOfRows={5}
+                        />*/}
+                        <Image 
+                            source={require('../../assets/images/logo-atlanticup-no-background.png')}
+                            style={styles.headerImage}
+                        />
+                </Animated.View>
+            </View>
 
             <Animated.View style={[styles.eventListContainer, { height: listHeight, margin: listMargin }]}>
                 <FlatList
@@ -259,8 +276,12 @@ const styles = StyleSheet.create({
     headerImage: {
         height: '100%',
         width: '100%',
-        position:'absolute',
+        resizeMode: 'contain',
     },
+    background:{
+        flex:1,
+        position:'absolute',
+    }
 });
 
 export default CalendarTab;
