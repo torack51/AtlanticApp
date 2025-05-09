@@ -119,7 +119,7 @@ const CompetitionScreen: React.FC<Props> = (props) => {
                         ListHeaderComponent={
                             <TouchableOpacity onPress={() => router.navigate('/competition/generalRanking')}>
                                 <View style={styles.last_container}>
-                                    <Image source={require('../../../assets/images/icons/logo_ac.png')} style={styles.last_image} defaultSource={require('../../../assets/images/ripple-loading.svg')}/>
+                                    <Image source={require('../../../assets/images/logo-atlanticup-no-background.png')} style={styles.last_image} defaultSource={require('../../../assets/images/ripple-loading.svg')}/>
                                     <Text style={styles.last_text}>Classement général</Text>
                                 </View>
                             </TouchableOpacity>

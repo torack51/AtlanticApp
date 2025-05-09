@@ -16,7 +16,7 @@ interface User {
 
 const ITEMS_PER_PAGE = 10;
 
-const { height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight, width : screenWidth} = Dimensions.get('window');
 
 interface Event {
     id: string;
@@ -46,8 +46,14 @@ const CalendarTab: React.FC = () => {
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const listHeight = scrollY.interpolate({
-        inputRange: [0, screenHeight * 0.3], // Point où le scroll commence à influencer la hauteur
+        inputRange: [0, screenHeight * 0.3],
         outputRange: [screenHeight * 0.5, screenHeight * 0.8],
+        extrapolate: 'clamp',
+    });
+
+    const listMargin = scrollY.interpolate({
+        inputRange: [0, screenHeight * 0.3],
+        outputRange: [screenWidth * 0.03, 0],
         extrapolate: 'clamp',
     });
 
@@ -138,7 +144,6 @@ const CalendarTab: React.FC = () => {
     }, []);
 
     const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
-
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
             <ImageBackground
@@ -148,7 +153,7 @@ const CalendarTab: React.FC = () => {
             >
             </ImageBackground>
 
-            <Animated.View style={[styles.eventListContainer, { height: listHeight }]}>
+            <Animated.View style={[styles.eventListContainer, { height: listHeight, margin: listMargin }]}>
                 <FlatList
                     data={events}
                     renderItem={renderItem}

@@ -120,7 +120,7 @@ const ProfileScreen: React.FC = () => {
         <ScrollView>
             <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
                 <View style={styles.logo_container}> 
-                    <Image source={require('../../../assets/images/logo_avec_titre.png')} style={{ width: width * 0.8, height: width * 0.4 }} />
+                    <Image source={require('../../../assets/images/logo-atlanticup-no-background.png')} style={{ width: width * 0.6, height: width * 0.5}} />
                 </View>
                 <View style={styles.description_container}>
                     <Text>
