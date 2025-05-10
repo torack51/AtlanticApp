@@ -6,6 +6,8 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
+import { ColorMatrix, concatColorMatrices, Grayscale} from 'react-native-color-matrix-image-filters';
+import ColoredImage from '@/components/ColoredImage';
 
 const width = Dimensions.get('window').width;
 
@@ -35,18 +37,15 @@ const interpolateColor = (color1: number[], color2: number[], factor: number): n
     return result;
 };
 
+
 // Convert RGB color to hexadecimal format
 const rgbToHex = (rgb: number[]): string => {
     return `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`;
 };
 
-// Colors in [R, G, B] format
-const endColor = [29, 73, 102]; // Light blue
-const startColor = [255, 219, 35]; // Tomato red
-
 const color1 = '#1A3149'
 const color2 = '#67A3C6'
-const color3 = 'white'
+const color3 = '#ECC250'
 
 // SportItem component with color gradient based on index
 const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props; onImageLoaded : any}> = ({ item, index, totalItems, props, onImageLoaded}) => {
@@ -65,8 +64,9 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
     return (
         <TouchableOpacity style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
             <View style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]}>
-                <Image source={{ uri: item.image }} style={[styles.image, { tintColor: oppositeColor }, ( index % 2 === 0 ? { right : 20} : { left: 20 })]} onLoadEnd={handleImageLoad}/>
-                <Text style={[styles.text, { color : color3 }]} >{item.title.toUpperCase()}</Text>
+                {/*<Image source={{ uri: item.image }} style={[styles.image, { tintColor: oppositeColor }, ( index % 2 === 0 ? { right : 20} : { left: 20 })]} onLoadEnd={handleImageLoad}/>*/}
+                <ColoredImage imageSource={require('../../../assets/images/sports/basketball-cropped.png')} style={styles.image} containerStyle={{height: '100%', width: '100%', position:'absolute'}} color={index % 2 === 0 ? color2 : color2} brightness={2}/>
+                <Text style={[styles.text, { color : index % 2 === 0 ? color2 : color1 }]} >{item.title.toUpperCase()}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -161,17 +161,15 @@ const styles = StyleSheet.create({
     sportItemContainer: {
         margin: 5,
         borderRadius: 30,
-        padding:15,
         width: '70%',
         height: 120,
         alignItems: 'center',
     },
     image: {
-        position:'absolute',
-        height: '120%',
-        aspectRatio: 1,
-        opacity: 0.20,
+        height: '100%',
+        width:'100%',
         overflow: 'hidden',
+        opacity: 0.3,
     },
     last_image: {
         width: width / 2 - 20 - 50,

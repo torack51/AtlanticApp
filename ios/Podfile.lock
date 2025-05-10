@@ -2895,6 +2895,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-color-matrix-image-filters (7.0.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-compressor (1.11.0):
     - DoubleConversion
     - glog
@@ -3550,6 +3571,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-color-matrix-image-filters (from `../node_modules/react-native-color-matrix-image-filters`)
   - react-native-compressor (from `../node_modules/react-native-compressor`)
   - react-native-context-menu-view (from `../node_modules/react-native-context-menu-view`)
   - react-native-maps (from `../node_modules/react-native-maps`)
@@ -3738,6 +3760,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-color-matrix-image-filters:
+    :path: "../node_modules/react-native-color-matrix-image-filters"
   react-native-compressor:
     :path: "../node_modules/react-native-compressor"
   react-native-context-menu-view:
@@ -3904,6 +3928,7 @@ SPEC CHECKSUMS:
   React-logger: f9d104eace4ce03d7d5ab96802069d9905082225
   React-Mapbuffer: 33ee28be239923f0e1db4650f859380c5640562c
   React-microtasksnativemodule: bfacefa4aa4e3f9264d274012de38b314414bf11
+  react-native-color-matrix-image-filters: b6e55aa37b41dad6cf2ed60917a207caeab3ae97
   react-native-compressor: c7bdc4945a636f3097eae268408c6f9d9483e783
   react-native-context-menu-view: f20df4bf07145c6d14ef631c8b8663ccdac9fb7c
   react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
