@@ -6,10 +6,22 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
-import { ColorMatrix, concatColorMatrices, Grayscale} from 'react-native-color-matrix-image-filters';
 import ColoredImage from '@/components/ColoredImage';
 
 const width = Dimensions.get('window').width;
+
+const images = {
+    'basketball': require('../../../assets/images/sports/basketball-cropped.png'),
+    'football': require('../../../assets/images/sports/football-cropped.png'),
+    'handball': require('../../../assets/images/sports/handball-cropped.png'),
+    'volleyball': require('../../../assets/images/sports/volleyball-cropped.png'),
+    'rugby': require('../../../assets/images/sports/rugby-cropped.png'),
+    'badminton' : require('../../../assets/images/sports/badminton-cropped.png'),
+    'relais' : require('../../../assets/images/sports/relais-cropped.png'),
+    'ultimate' : require('../../../assets/images/sports/ultimate-cropped.png'),
+    'table-tennis' : require('../../../assets/images/sports/ultimate-cropped.png'),
+    'climbing' : require('../../../assets/images/sports/escalade-cropped.png'),
+}
 
 type Sport = {
     id: string;
@@ -57,6 +69,8 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
         ? color2
         : color1;
 
+    const sport = item.id.split('_')[0];
+
     const handleImageLoad = () => {
         onImageLoaded();
     }
@@ -64,8 +78,7 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
     return (
         <TouchableOpacity style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
             <View style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]}>
-                {/*<Image source={{ uri: item.image }} style={[styles.image, { tintColor: oppositeColor }, ( index % 2 === 0 ? { right : 20} : { left: 20 })]} onLoadEnd={handleImageLoad}/>*/}
-                <ColoredImage imageSource={require('../../../assets/images/sports/basketball-cropped.png')} style={styles.image} containerStyle={{height: '100%', width: '100%', position:'absolute'}} color={index % 2 === 0 ? color2 : color2} brightness={2}/>
+                <ColoredImage imageSource={images[sport]} style={styles.image} containerStyle={{height: '100%', width: '100%', position:'absolute'}} color={index % 2 === 0 ? color2 : color2} brightness={2}/>
                 <Text style={[styles.text, { color : index % 2 === 0 ? color2 : color1 }]} >{item.title.toUpperCase()}</Text>
             </View>
         </TouchableOpacity>
