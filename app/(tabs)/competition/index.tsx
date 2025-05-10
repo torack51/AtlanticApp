@@ -44,20 +44,29 @@ const rgbToHex = (rgb: number[]): string => {
 const endColor = [29, 73, 102]; // Light blue
 const startColor = [255, 219, 35]; // Tomato red
 
+const color1 = '#1A3149'
+const color2 = '#67A3C6'
+const color3 = 'white'
+
 // SportItem component with color gradient based on index
 const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props; onImageLoaded : any}> = ({ item, index, totalItems, props, onImageLoaded}) => {
-    const factor = index / (totalItems - 1); // Interpolation factor based on index
-    const color = rgbToHex(interpolateColor(startColor, endColor, factor)); // Interpolated color
+    const color = index % 2 === 0
+        ? color1
+        : color2;
+
+    const oppositeColor = index % 2 === 0 
+        ? color2
+        : color1;
 
     const handleImageLoad = () => {
         onImageLoaded();
     }
 
     return (
-        <TouchableOpacity onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
-            <View style={[styles.sportItemContainer]}>
-                <Image source={{ uri: item.image }} style={[styles.image, { tintColor: color }]} onLoadEnd={handleImageLoad}/>
-                <Text style={[styles.text, { color }]}>{item.title}</Text>
+        <TouchableOpacity style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
+            <View style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]}>
+                <Image source={{ uri: item.image }} style={[styles.image, { tintColor: oppositeColor }, ( index % 2 === 0 ? { right : 20} : { left: 20 })]} onLoadEnd={handleImageLoad}/>
+                <Text style={[styles.text, { color : color3 }]} >{item.title.toUpperCase()}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -108,7 +117,6 @@ const CompetitionScreen: React.FC<Props> = (props) => {
                 <View style={styles.listContainer}>
                     <FlatList
                         data={sports}
-                        numColumns={2}
                         renderItem={({ item, index }) => (
                             <SportItem item={item} index={index} totalItems={sports.length} props={props} onImageLoaded={handleImageLoad}/>
                         )}
@@ -152,25 +160,27 @@ const styles = StyleSheet.create({
     },
     sportItemContainer: {
         margin: 5,
-        padding: 10,
         borderRadius: 30,
-        width: width / 2 - 20,
-        height: width / 2 - 20,
-        justifyContent: 'center',
+        padding:15,
+        width: '70%',
+        height: 120,
         alignItems: 'center',
     },
     image: {
-        width: width / 2 - 20 - 50,
-        height: width / 2 - 20 - 50,
-        tintColor: 'black',
+        position:'absolute',
+        height: '120%',
+        aspectRatio: 1,
+        opacity: 0.20,
+        overflow: 'hidden',
     },
     last_image: {
         width: width / 2 - 20 - 50,
         height: width / 2 - 20 - 50,
     },
     text: {
-        fontSize: 18,
+        fontSize: 26,
         fontWeight: 'bold',
+        margin:15,
     },
     last_text: {
         fontSize: 24,
