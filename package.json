@@ -45,6 +45,7 @@
     "react-content-loader": "^7.0.2",
     "react-dom": "^18.2.0",
     "react-native": "0.76.7",
+    "react-native-color-matrix-image-filters": "^7.0.2",
     "react-native-compressor": "^1.10.3",
     "react-native-context-menu-view": "^1.18.0",
     "react-native-draggable-flatlist": "^4.0.1",
