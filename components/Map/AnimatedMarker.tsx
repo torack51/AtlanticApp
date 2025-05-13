@@ -24,7 +24,7 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ loc, isFocused }) => {
     }));
 
     return (
-        <Animated.View style={[styles.container, animatedStyle, isFocused ? {zIndex: 10} : {zIndex:1}]}>
+        <Animated.View style={[styles.container, animatedStyle]}>
             {isFocused ? 
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>{loc.title}</Text> 
@@ -33,7 +33,7 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ loc, isFocused }) => {
                 null
             }
             <View style={styles.imageContainer}>
-                <Image style={styles.image} source={require('../../assets/images/icons/logo_ac.png')} />
+                <Image style={styles.image} source={require('../../assets/images/logo-atlanticup-no-background.png')} />
             </View>
         </Animated.View>
     );
@@ -48,9 +48,8 @@ const styles = StyleSheet.create({
     },
     textContainer:{
         backgroundColor:'white',
-        borderRadius:25,
-        paddingHorizontal:5,
-        paddingVertical:10,
+        borderRadius:10,
+        padding:5,
         margin:5,
     },
     text: {
@@ -58,13 +57,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     imageContainer:{
-        backgroundColor:'rgb(14, 30, 250)',
+        backgroundColor:'rgba(255,255,255,0.5)',
         borderRadius:25,
-        padding:5,
+        padding:3,
     },
     image:{
-        height:30,
-        width:30,
+        height:40,
+        width:40,
     }
 });
 
