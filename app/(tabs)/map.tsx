@@ -295,6 +295,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         );
     }
 
+    const focusedLoc = places.find((loc) => loc.id === selectedMarkerId);
+
 
     return(
       <GestureHandlerRootView style={{ flex: 1, paddingBottom: insets.bottom}}>
@@ -317,6 +319,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         key={loc.id} 
                         coordinate={{ latitude: loc.position.latitude, longitude: loc.position.longitude }} 
                         onPress={() => onMarkerPress(loc)}
+                        zIndex={selectedMarkerId === loc.id ? 1 : 0}
                     >
                         <AnimatedMarker
                             loc={loc}
