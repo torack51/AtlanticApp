@@ -126,12 +126,12 @@ const CalendarTab: React.FC = () => {
 
     const renderItem = ({ item }: { item: Event }) => {
         if (item.kind === "match") {
-            return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
+            return  <View style={{marginVertical:5, height:100, alignSelf:'center'}}>
                         <AtlanticupMatchItem match={item}/>
                     </View>;
         } else {
-            return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                        <AtlanticupEventItem event={item}/>;
+            return  <View style={{marginVertical:5, height:100, alignSelf:'center'}}>
+                        <AtlanticupEventItem event={item}/>
                     </View>;
         }
     };
@@ -152,6 +152,7 @@ const CalendarTab: React.FC = () => {
 
     const mainLogo = require('../../assets/images/logo-atlanticup-no-background.png');
     const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
+    
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
             <View style={[styles.background,{paddingTop: insets.top}]}>
@@ -225,7 +226,11 @@ const CalendarTab: React.FC = () => {
                     }
                     scrollEventThrottle={16}
                     ListEmptyComponent={() => (
-                        <Text style={styles.loadingText}>Chargement des événements...</Text>
+                        <View style={{ height:300, width:'100%', alignItems:'center', justifyContent:'center'}}>
+                            <View style={{height:200, width:200}}>
+                                <ScreenLoader/>
+                            </View>
+                        </View>
                     )}
                     refreshControl={
                         <RefreshControl
