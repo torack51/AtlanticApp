@@ -12,11 +12,12 @@ import AtlanticupEventItem from '@/components/AtlanticupEventItem';
 import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
 import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 const { width, height } = Dimensions.get('window');
 const ITEMS_PER_PAGE = 10;
-const MIN_HEIGHT = 100;
+const MIN_HEIGHT = 200;
 const MAX_HEIGHT = 500;
 
 interface SportItemProps {
@@ -30,13 +31,13 @@ interface User {
 const AtlanticupItem = ({ item }: any) => {
     if (item.kind === 'event') {
         return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                    <AtlanticupEventItem event={item}/>;
-                </View>;
+                    <AtlanticupEventItem event={item}/>
+                </View>
     }
     if (item.kind === 'match') {
         return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
                     <AtlanticupMatchItem match={item}/>
-                 </View>;
+                 </View>
     }
 }
 
@@ -55,6 +56,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [loading, setLoading] = useState(false);
     const [sports, setSports] = useState<any[]>([]);
     const [sportsByPlace, setSportsByPlace] = useState<any[]>([]);
+
+    const insets = useSafeAreaInsets();
 
 
     const gesture = Gesture.Pan()
@@ -201,21 +204,20 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     useEffect(() => {
         setEvents([]);
-        if (expanded){
-            const place = places.find((loc) => loc.id === selectedMarkerId);
-            if (place) {
-                setLoading(true);
-                atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
-                    setEvents(data.items);
-                    setLoading(false);
-                });
-            }
-            else{
-                console.error('Lieu non trouvé, ', selectedMarkerId)
+        const place = places.find((loc) => loc.id === selectedMarkerId);
+        if (place) {
+            setLoading(true);
+            atlanticupGetEventsFromPlaceId(10, place.id, null).then((data) => {
+                setEvents(data.items);
+                setLoading(false);
+            });
+        }
+        else{
+            if (selectedMarkerId !== null) {
+                console.warn(`Lieu avec l'ID ${selectedMarkerId} non trouvé.`);
             }
         }
-
-    },[selectedMarkerId, expanded])
+    },[selectedMarkerId])
 
     useEffect(() => {
         if ((places.length > 0) && (sports.length > 0)) {
@@ -228,13 +230,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     },[sports])
 
-
-    const locations = [
-        { id: 1, title: "Terrain de fooooooooooooooooooooooot", latitude: 48.359396, longitude: -4.573559 },
-        { id: 2, title: "Parking", latitude: 48.358243, longitude: -4.571987},
-        { id: 3, title: "B01", latitude: 48.358711, longitude: -4.570921 },
-      ];
-
       const initialRegion = {
         latitude : 48.358616,
         longitude : -4.571361,
@@ -244,7 +239,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
       const renderCarouselItem = ({item, index}) => {
         return (
-            <Animated.View style={[styles.card, animatedWhiteBackground]}>
+            <Animated.View style={styles.card}>
                 <View style={styles.card_header}>
                     <Animated.View style={[styles.card_header_top_bar, animatedCardHeaderTopBarHeight]}>
                         <Pressable onPress={toggleCarousel}>
@@ -266,7 +261,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         </View>
                     </Animated.View>
                     <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
-                        <Pressable onPress={toggleCarousel}>
+                        {/*<Pressable onPress={toggleCarousel}>
                             <TextTicker
                                 style={{ fontSize: 16, color: 'red', fontWeight: 'bold'}}
                                 duration={300}
@@ -275,7 +270,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                             >   
                                 - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS -
                             </TextTicker>
-                        </Pressable>
+                        </Pressable>*/}
                     </Animated.View>
                 </View>
                 {item.id === selectedMarkerId && 
@@ -302,7 +297,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
 
     return(
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, paddingBottom: insets.bottom}}>
         <View style={styles.container}>
             <MapView
                 ref={mapRef}
@@ -337,14 +332,15 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
         <GestureDetector gesture={gesture}>
             <Animated.View style={[styles.carouselContainer, animatedStyle]}>
-            <Carousel
-                ref={carouselRef}
-                width={width}
-                height={width / 2}
-                data={places}
-                renderItem={renderCarouselItem}
-                onSnapToItem={onSnapToItem}
-            />
+                <Carousel
+                    ref={carouselRef}
+                    width={width}
+                    height={width / 2}
+                    data={places}
+                    renderItem={renderCarouselItem}
+                    onSnapToItem={onSnapToItem}
+                    style={styles.carouselStyle}
+                />
             </Animated.View>
         </GestureDetector>
       </GestureHandlerRootView>
@@ -353,21 +349,22 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    map: { flex: 1 },
+    map: { 
+        flex: 1,
+        height: "100%",
+        width: "100%",
+    },
     carouselContainer: {
-      position: "absolute",
-      bottom:100,
-      alignSelf:"center",
-      elevation: 5,
+    },
+    carouselStyle:{
+        height:'100%',
     },
     card: {
-        width: width*0.90,
-        borderRadius: 25,
-        height:'100%',
+        height:450,
+        width: '100%',
         alignSelf: "center",
     },
     card_header:{
-        height:100,
         padding:5,
         width:'100%',
         alignItems:'center',
