@@ -37,7 +37,7 @@ async function atlanticupGetDelegationFromId(delegation_id: string): Promise<any
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetDelegationFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -82,7 +82,7 @@ async function atlanticupGetSportFromId(sport_id: string): Promise<any> {
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetSportFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -104,7 +104,7 @@ async function atlanticupGetTeamFromId(team_id: string): Promise<any> {
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetTeamFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -183,7 +183,7 @@ const atlanticupGetPlaceFromId = async (id: string): Promise<any> => {
             };
             return data;
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetPlaceFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     } catch (error) {
@@ -474,7 +474,7 @@ const atlanticupGetEventFromId = async (event_id: string): Promise<any> => {
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetEventFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -496,7 +496,7 @@ const atlanticupGetMatchFromId = async (match_id: string): Promise<any> => {
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetMatchFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -607,7 +607,7 @@ const atlanticupGetUserFromId = async (user_id: string): Promise<any> => {
                 ...doc.data()
             };
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupGetUserFromId - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
@@ -684,7 +684,7 @@ const atlanticupFetchRanking = async (): Promise<any> => {
         if (doc.exists) {
             return doc.data();
         } else {
-            console.log("Aucun document trouvé avec cet ID.");
+            console.log("atlanticupFetchRanking - Aucun document trouvé avec cet ID.");
             return null;
         }
     }
