@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { atlanticupGetPlaceFromId } from '../backend/atlanticupBackendFunctions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { useRouter } from 'expo-router';
 interface Props {
     item: {
         id: string;
@@ -11,7 +11,7 @@ interface Props {
         time_sent: string;
         place_id: string | null;
     };
-    navigation: any;
+    router: any;
 }
 
 interface State {
@@ -27,7 +27,7 @@ interface State {
     noPlace: boolean;
 }
 
-class AtlanticupAnnouncementannouncement extends React.Component<Props, State> {
+class AtlanticupAnnouncementItem extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -37,6 +37,7 @@ class AtlanticupAnnouncementannouncement extends React.Component<Props, State> {
             noPlace : true,
         };
     }
+
 
     fetchPlace = async () =>{
         this.setState({loading:true});
@@ -69,7 +70,7 @@ class AtlanticupAnnouncementannouncement extends React.Component<Props, State> {
         }
     return (
         <SafeAreaView style={styles.announcementContainer}>
-            <View>
+            <View style={{padding:5}}>
                 <Text>{time_sent.toLocaleDateString()} {time_sent.getHours()}:{time_sent.getMinutes().toString().padStart(2,"0")}</Text>
             </View>
             <View style={{padding:5}}>
@@ -80,24 +81,32 @@ class AtlanticupAnnouncementannouncement extends React.Component<Props, State> {
             </View>
             {
                 !this.state.noPlace &&
-                <View style={{position:'absolute', bottom:0, right:0, padding:5}}>
-                <TouchableOpacity onPress={() => null}>
+                <TouchableOpacity onPress={() => this.props.router.navigate(`/map?location=${this.state.place.id}`)} style={{padding:10, alignItems:'center'}}>
                     <Text style={[styles.smallText, {color:'blue'}]}>{this.state.place ? this.state.place.title : ''}</Text>
                 </TouchableOpacity>
-                </View>
             }
         </SafeAreaView>
+        
     )
     }
 }
 
 const styles = StyleSheet.create({
     announcementContainer:{
-        padding:15,
-        paddingBottom:30,
-        margin:10,
-        borderRadius:10,
-        backgroundColor:'rgba(0,0,0,0.1)',
+        width: '90%',
+        padding:20,
+        marginVertical: 10,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        alignSelf: 'center',
+        borderColor: 'rgba(0,0,0,0.1)',
     },
     bigText:{
         fontSize:20,
@@ -106,7 +115,7 @@ const styles = StyleSheet.create({
     },
     smallText:{
         fontSize:15,
-    }
+    },
 });
 
-export default AtlanticupAnnouncementannouncement;
+export default AtlanticupAnnouncementItem;

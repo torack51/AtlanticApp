@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, RefreshControl } from 'react-native';
 import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
 import { FlatList } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import AtlanticupAnnouncementItem from '../../../components/AtlanticupAnnouncementItem';
 import ScreenLoader from '@/components/ScreenLoader';
 
@@ -26,6 +26,8 @@ const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigati
         fetchAnnouncements();
     }, [fetchAnnouncements]);
 
+    const router = useRouter();
+
     return (
         <View style={styles.container}>
             {loading && 
@@ -37,7 +39,7 @@ const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigati
             }
             <FlatList
                 data={announcements}
-                renderItem={({ item }) => <AtlanticupAnnouncementItem item={item} navigation={navigation} />}
+                renderItem={({ item }) => <AtlanticupAnnouncementItem item={item} router={router} />}
                 keyExtractor={item => item.id}
                 refreshControl={
                     <RefreshControl
@@ -45,7 +47,7 @@ const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigati
                         onRefresh={fetchAnnouncements}
                     />
                 }
-                style={{ width: '100%', padding: 10, alignSelf: 'center' }}
+                style={{ width: '100%', alignSelf: 'center'}}
             />
         </View>
     );
