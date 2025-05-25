@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable, PanResponder} from 'react-native';
 import MapView, { Marker} from 'react-native-maps';
 import { FlatList, GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 import Carousel, {ICarouselInstance} from "react-native-reanimated-carousel"
@@ -294,8 +294,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             </Animated.View>
         );
     }
-
-    const focusedLoc = places.find((loc) => loc.id === selectedMarkerId);
 
 
     return(
