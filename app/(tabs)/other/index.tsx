@@ -204,21 +204,21 @@ const ProfileScreen: React.FC = () => {
             >
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modal_container}>
-                        <FlatList
-                            numColumns={2}
-                            data={teams}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => { setSelectedTeam(item.id); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", item.id); }} style={{ width: width * 0.4, height: 150, margin: 10, padding: 10, backgroundColor: 'white', borderRadius: 20 }}>
-                                    <Text style={{ fontWeight: 'bold', fontSize: 14, alignSelf: 'center' }}>
-                                        {item.title}
-                                    </Text>
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                        <Image source={{ uri: item.image }} style={{ width: width * 0.3, height: width * 0.3 }} />
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        />
+                        <View style={styles.modal_list_container}>
+                            <FlatList
+                                numColumns={2}
+                                data={teams}
+                                keyExtractor={(item) => item.id}
+                                contentContainerStyle={{ alignItems: 'center', justifyContent: 'center'}}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity onPress={() => { setSelectedTeam(item.id); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", item.id); }} style={styles.team_card}>
+                                        <Image source={{ uri: item.image }} style={styles.team_card_image} />
+                                        <Text style={styles.team_card_text}>{item.title}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
@@ -260,7 +260,36 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
         alignItems: 'center',
-    }
+        justifyContent: 'center',
+    },
+    modal_list_container: {
+        height: '70%',
+        width: '80%',
+        backgroundColor: 'white',
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    team_card: {
+        width: width*0.3,
+        aspectRatio: 1,
+        margin: 10,
+        marginVertical: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    team_card_image: {
+        width: '100%',
+        aspectRatio: 1,
+        borderRadius: 20,
+        marginBottom: 10,
+    },
+    team_card_text: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 5,
+    },
 });
 
 export default ProfileScreen;

@@ -143,7 +143,6 @@ const Type3Match =  ({ match, router, dayOfWeek, start_time, sport_image}: { mat
 
                                 <View style={{ height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}>
                                     <Text style={styles.big_text}>{match.title}</Text>
-                                    <Text style={styles.text}>{match.description}</Text>
                                 </View>
                             </View>
 
@@ -383,7 +382,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     big_text: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 5,
