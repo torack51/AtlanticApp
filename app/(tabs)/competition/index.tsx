@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
 import ColoredImage from '@/components/ColoredImage';
+import ScrollingText from '@/components/ScrollingText';
 
 const width = Dimensions.get('window').width;
 
@@ -76,12 +77,18 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
     }
 
     return (
-        <TouchableOpacity style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
-            <View style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]}>
+        <View style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }}>
+            <TouchableOpacity style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
                 <ColoredImage imageSource={images[sport]} style={styles.image} containerStyle={{height: '100%', width: '100%', position:'absolute'}} color={index % 2 === 0 ? color2 : color2} brightness={2}/>
                 <Text style={[styles.text, { color : index % 2 === 0 ? color2 : color1 }]} >{item.title.toUpperCase()}</Text>
-            </View>
-        </TouchableOpacity>
+                {/*<ScrollingText   ne fonctionne pas pour le moment
+                    text={item.title.toUpperCase()}
+                    containerWidth={width / 2 - 20 - 50}
+                    speed={100}
+                    spacing={10}
+                />   */}                 
+            </TouchableOpacity>
+        </View>
     );
 };
 

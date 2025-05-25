@@ -2,7 +2,6 @@ import firestore, { Filter } from "@react-native-firebase/firestore";
 import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc, addDoc, updateDoc, query, limit, orderBy, startAfter, where } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
 
-
 async function atlanticupGetAllDelegations(): Promise<any[]> {
     try {
         const querySnapshot = await firestore()

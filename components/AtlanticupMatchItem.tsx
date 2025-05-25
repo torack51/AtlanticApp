@@ -29,6 +29,147 @@ interface Props {
     match: Match;
 }
 
+const Type1Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: any, team2: any, dayOfWeek: string, start_time: Date, sport_image: any }) => {
+    return (
+        <View style={styles.main_container}>
+            <ContextMenu
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
+            >
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                        <View style={styles.touchable_container}>
+                            <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
+                                    <Image source={{ uri: team1.delegation.image }} style={{ width:40, height:40, marginRight:5}}/>
+                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                </View>
+
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
+                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
+                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                </View>
+                            </View>
+
+                            <LinearGradient
+                                colors={['rgba(0, 0, 0, 0)', 'black', 'rgba(0, 0, 0, 0)']}
+                                style={styles.gradientBorder}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                            />                          
+
+                            <View style={{ height:'100%', width:'35%', flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingRight: 20, paddingLeft: 10}}>
+                                <View style={{ justifyContent:'center', alignItems:'center' }}>
+                                    <Text style={styles.small_text}>{dayOfWeek}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                                <View style={{ }}>
+                                    <Image source={{ uri: sport_image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
+                                </View>
+                            </View>
+                        </View>
+                </Pressable>
+            </ContextMenu>
+            </View>
+    );
+}
+const Type2Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: any, team2: any, dayOfWeek: string, start_time: Date, sport_image: any }) => {
+    return (
+        <View style={styles.main_container}>
+            <ContextMenu
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
+            >
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                        <View style={styles.touchable_container}>
+                            <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
+                                    <Image source={{ uri: team1.delegation.image }} style={{ width:40, height:40, marginRight:5}}/>
+                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                </View>
+
+                                <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
+                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
+                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                </View>
+                            </View>
+
+                            <LinearGradient
+                                colors={['rgba(0, 0, 0, 0)', 'black', 'rgba(0, 0, 0, 0)']}
+                                style={styles.gradientBorder}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                            />                          
+
+                            <View style={{ height:'100%', width:'35%', flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingRight: 20, paddingLeft: 10}}>
+                                <View style={{ justifyContent:'center', alignItems:'center' }}>
+                                    <Text style={styles.small_text}>{dayOfWeek}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                                <View style={{ }}>
+                                    <Image source={{ uri: sport_image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
+                                </View>
+                            </View>
+                        </View>
+                </Pressable>
+            </ContextMenu>
+            </View>
+    );
+}
+const Type3Match =  ({ match, router, dayOfWeek, start_time, sport_image}: { match: Match, router: any, dayOfWeek: string, start_time: Date, sport_image: any }) => {
+    return (
+        <View style={styles.main_container}>
+            <ContextMenu
+                actions={[{ title: "Créer un rappel" }, { title: "Title 2" }]}
+                borderRadius={35}
+                onPress={(e) => {
+                console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+                );
+                }}
+            >
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                        <View style={styles.touchable_container}>
+                            <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
+
+                                <View style={{ height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}>
+                                    <Text style={styles.big_text}>{match.title}</Text>
+                                    <Text style={styles.text}>{match.description}</Text>
+                                </View>
+                            </View>
+
+                            <LinearGradient
+                                colors={['rgba(0, 0, 0, 0)', 'black', 'rgba(0, 0, 0, 0)']}
+                                style={styles.gradientBorder}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                            />                          
+
+                            <View style={{ height:'100%', width:'35%', flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingRight: 20, paddingLeft: 10}}>
+                                <View style={{ justifyContent:'center', alignItems:'center' }}>
+                                    <Text style={styles.small_text}>{dayOfWeek}</Text>
+                                    <Text style={styles.small_text}>{start_time.getHours()}:{start_time.getMinutes().toString().padStart(2, "0")}</Text>
+                                </View>
+                                <View style={{ }}>
+                                    <Image source={{ uri: sport_image || '' }} style={{ width: 50, height: 50, tintColor: 'black' }}/>
+                                </View>
+                            </View>
+                        </View>
+                </Pressable>
+            </ContextMenu>
+            </View>
+    );
+}
+
 const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
     if (!match) return null;
 
@@ -59,11 +200,57 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
         return days[date.getDay()];
     };
 
+    const getMatchType = (match: Match): 'type1' | 'type2' | 'type3' => {
+        switch (match.sport_id) {
+            case 'basketball_f':
+            case 'basketball_m':
+            case 'football_f':
+            case 'football_m':
+            case 'handball':
+            case 'rugby':
+            case 'ultimate':
+                return 'type1';
+            case 'volleyball_f':
+            case 'volleyball_m':
+            case 'badminton':
+            case 'table_tennis':
+                return 'type2';
+            case 'relais':
+            case 'climbing_f':
+            case 'climbing_m':
+                return 'type3';
+            default:
+                throw new Error(`Unknown match type: ${match.sport_id}`);
+        }
+    };
+
     const renderMatch = (match: Match, scaleInterpolation1: Animated.AnimatedInterpolation<number>, opacityInterpolation1: Animated.AnimatedInterpolation<number>, borderWidthInterpolation1: Animated.AnimatedInterpolation<number>) => {
-        const start_time = new Date(match.start_time);
-        const team1 = match.teams.find((team) => team.id === match.team1_id);
-        const team2 = match.teams.find((team) => team.id === match.team2_id);
-        if (!team1 || !team2) return null;
+        
+        const matchType = getMatchType(match);
+
+        if (matchType === 'type3') {
+            const start_time = new Date(match.start_time);
+            return <Type3Match match={match} router={router} dayOfWeek={getDayOfWeek(start_time)} start_time={start_time} sport_image={image} />
+        }
+
+        else if (matchType === 'type2') {
+            const start_time = new Date(match.start_time);
+            const team1 = match.teams.find((team) => team.id === match.team1_id);
+            const team2 = match.teams.find((team) => team.id === match.team2_id);
+            if (!team1 || !team2) return null;
+            return <Type2Match match={match} router={router} team1={team1} team2={team2} dayOfWeek={getDayOfWeek(start_time)} start_time={start_time} sport_image={image} />;
+        }
+
+        else if (matchType === 'type1') {
+            const start_time = new Date(match.start_time);
+            const team1 = match.teams.find((team) => team.id === match.team1_id);
+            const team2 = match.teams.find((team) => team.id === match.team2_id);
+            if (!team1 || !team2) return null;
+            return <Type1Match match={match} router={router} team1={team1} team2={team2} dayOfWeek={getDayOfWeek(start_time)} start_time={start_time} sport_image={image} />;
+        }
+
+        else
+            throw new Error(`Unknown match type: ${matchType}, ${match}`);
         return (
             <View style={styles.main_container}>
             <ContextMenu
@@ -194,6 +381,12 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         flexDirection: 'row',
         borderRadius: 30,
+    },
+    big_text: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 5,
     },
     text: {
         fontSize: 14,

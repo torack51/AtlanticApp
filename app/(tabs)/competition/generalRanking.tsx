@@ -48,14 +48,8 @@ const GeneralRanking: React.FC = () => {
         setLoading(false);
     }, [fetchRanking, fetchDelegations, rankingId, delegations]);
 
-    useEffect(() => {
-        fetchAll();
-    }, [fetchAll]);
-
     console.log('ranking : ', ranking);
-    return (
-        <Text>Texte</Text>
-    );
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchAll} />}>
