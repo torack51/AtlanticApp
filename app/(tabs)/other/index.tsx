@@ -129,7 +129,7 @@ const ProfileScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.annoucements_container}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20}}>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, color:'white' }}>
                         {"⚠️ ANNONCES ⚠️"}
                     </Text>
 
@@ -139,7 +139,7 @@ const ProfileScreen: React.FC = () => {
                             {announcements.length > 0 ? renderAnnouncements() : <Text style={{ textAlign: 'center' }}>Aucune annonce pour le moment.</Text>}
                         </ScrollView>
                         <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => router.navigate("/other/announcements")}>
-                            <Text style={{ color: 'blue', fontWeight: 'bold' }}>Tout voir</Text>
+                            <Text style={{ color: 'white', fontWeight: 'bold' }}>Tout voir</Text>
                         </TouchableOpacity>
                         </>
                     }
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     annoucements_container: {
         height:300,
         borderRadius: 20,
-        backgroundColor: 'rgba(0,0,0,0.1)',
+        backgroundColor: '#4287f5',
         marginBottom: 20,
         padding: 10,
     },
