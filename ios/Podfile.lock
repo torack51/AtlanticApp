@@ -2939,8 +2939,51 @@ PODS:
     - Yoga
   - react-native-context-menu-view (1.19.0):
     - React
-  - react-native-maps (1.18.0):
+  - react-native-maps (1.23.8):
+    - react-native-maps/Maps (= 1.23.8)
+  - react-native-maps/Generated (1.23.8):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-maps/Maps (1.23.8):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - react-native-maps/Generated
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-pager-view (6.7.1):
     - DoubleConversion
     - glog
@@ -3931,7 +3974,7 @@ SPEC CHECKSUMS:
   react-native-color-matrix-image-filters: b6e55aa37b41dad6cf2ed60917a207caeab3ae97
   react-native-compressor: c7bdc4945a636f3097eae268408c6f9d9483e783
   react-native-context-menu-view: f20df4bf07145c6d14ef631c8b8663ccdac9fb7c
-  react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
+  react-native-maps: 6cb437bd2094a0ef9a6e1203a19871cf034b9744
   react-native-pager-view: a7532c71b33752aac567ee7852f42aa8c629d5ff
   react-native-safe-area-context: d71edcee579673b370c053804f34c40c1f250976
   react-native-webview: 47c9d892756ec3930810f2b539e732c01858e1c9

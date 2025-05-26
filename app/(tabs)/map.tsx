@@ -310,7 +310,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                       stylers: [{ visibility: "off" }],
                     },
                   ]}
-                  showsPointsOfInterest={false}  //cache les Point Of Interest pour iOS
+                  //showsPointsOfInterest={false}  //cache les Point Of Interest pour iOS
+                
             >
                 {places.map((loc) => (
                     <Marker 
