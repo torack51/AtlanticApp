@@ -41,3 +41,6 @@ app-example
 # google services
 google-services.json
 GoogleService-Info.plist
+
+# android
+/android/app/src/main/AndroidManifest.xml
