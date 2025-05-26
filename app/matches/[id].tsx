@@ -105,7 +105,7 @@ const MatchPage: React.FC<Props> = () => {
             case 'football_f':
             case 'football_m':
             case 'handball':
-            case 'rugby':
+            case 'rugby_m':
             case 'ultimate':
                 return 'type1';
             case 'volleyball_f':

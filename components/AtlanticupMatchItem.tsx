@@ -206,7 +206,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
             case 'football_f':
             case 'football_m':
             case 'handball':
-            case 'rugby':
+            case 'rugby_m':
             case 'ultimate':
                 return 'type1';
             case 'volleyball_f':
