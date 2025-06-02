@@ -229,7 +229,6 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        margin: 30
     },
     logo_container: {
         alignItems: 'center',
@@ -238,10 +237,11 @@ const styles = StyleSheet.create({
     },
     description_container: {
         marginBottom: 20,
+        marginHorizontal: 20,
     },
     annoucements_container: {
         height:300,
-        borderRadius: 20,
+        borderRadius: 0,
         backgroundColor: '#4287f5',
         marginBottom: 20,
         padding: 10,
