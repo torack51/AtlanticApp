@@ -10,6 +10,7 @@ export default ({ config }) => ({
   scheme: "myapp",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  entryPoint:"./index.js",
 
   ios: {
     supportsTablet: true,
