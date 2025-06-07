@@ -38,10 +38,8 @@ export default function RootLayout() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const getToken = async () => {
-
-
       const authStatus = await messaging().requestPermission();
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -57,15 +55,24 @@ export default function RootLayout() {
     };
 
     getToken();
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     const checkOnboarding = async () => {
+      await AsyncStorage.setItem('hasSeenOnboarding', 'false');
       const seen = await AsyncStorage.getItem('hasSeenOnboarding');
-      if (!seen) {
+      console.log('seen : ', seen);
+
+      if (seen==='false' || seen === null) {
+        console.log('Onboarding not seen, redirecting to onboarding');
         router.replace('/(onboarding)');
       }
-      setChecking(false);
+      else {
+        console.log('Onboarding already seen, redirecting to tabs');
+        router.replace('/(tabs)/calendar');
+      }
+
+      console.log('Onboarding check complete');
     };
     checkOnboarding();
   }, []);
@@ -75,20 +82,19 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-
+ 
   if (!loaded) {
     return null;
   }
 
-  if (checking) {
-    return null; // or a loading spinner
-  }
+  
+
   return (
     <GestureHandlerRootView>
       <Stack
         initialRouteName="(tabs)"
       >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="matches" options={{ headerTitle : "Détails du match", headerBackTitle : "Retour"}}/>
         <Stack.Screen name="events" options={{ headerTitle : "Détails de l'événement", headerBackTitle : "Retour"}}/>
