@@ -21,7 +21,7 @@ const images = [
 const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
 
     const [fadeInAnim] = React.useState(new Animated.Value(0));
-    const [fadeOutAnim] = React.useState(new Animated.Value(0.5));
+    const [fadeOutAnim] = React.useState(new Animated.Value(0.75));
     const [currentImage, setCurrentImage] = React.useState(0); 
     const [nextImage, setNextImage] = React.useState(1);
     const selectedSchoolImage = props.selectedSchoolImage ? { uri: props.selectedSchoolImage } : images[0];
@@ -35,13 +35,13 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
             Animated.delay(500),
             Animated.parallel([
                 Animated.timing(fadeInAnim, {
-                    toValue: 0.5,
+                    toValue: 0.75,
                     duration: 1000,
                     useNativeDriver: true,
                 }),
                 Animated.timing(fadeOutAnim, {
                     toValue: 0,
-                    duration: 1000,
+                    duration: 500,
                     useNativeDriver: true,
                 })
             ]),
@@ -50,7 +50,7 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
             setCurrentImage((currentImage + 1) % (images.length));
             setNextImage((nextImage + 1) % (images.length));
             fadeInAnim.setValue(0);
-            fadeOutAnim.setValue(0.5);
+            fadeOutAnim.setValue(0.75);
         });
     };
 

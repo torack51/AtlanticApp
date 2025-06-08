@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, Modal, FlatList, Image, Dimensions} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, FlatList, Image, Dimensions, Alert} from 'react-native';
 import { Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -30,7 +30,16 @@ const Preferences: React.FC<PreferencesProps> = () => {
     };
 
     const continueOnboarding = async () => {
-        await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+        console.log("Selected School ID:", selectedSchoolID);
+        if (selectedSchoolID === null || selectedSchoolID === 'null') {
+            console.log("No school selected");
+            Alert.alert(
+                "Vous n'avez pas sélectionné d'école",
+                "Êtes-vous sûr de vouloir continuer ?",
+                [{ text: "Oui", onPress: () => router.push('/(onboarding)/preferencesSports') },{ text: "Non", onPress: () => null }],
+            );
+            return;
+        }
         router.push('/(onboarding)/preferencesSports');
     };
 
@@ -103,22 +112,22 @@ const Preferences: React.FC<PreferencesProps> = () => {
             >
                 <View style={styles.modal_container}>
                     <View style={styles.modal_list_container}>
-                        <FlatList
-                            numColumns={2}
-                            data={teams}
-                            keyExtractor={(item) => item.id}
-                            contentContainerStyle={{ alignItems: 'center', justifyContent: 'center'}}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => { setSelectedSchoolID(item.id); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", item.id); }} style={styles.team_card}>
-                                    <Image source={{ uri: item.image }} style={styles.team_card_image} />
-                                    <Text style={styles.team_card_text}>{item.title}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
-                        <Button mode="contained" onPress={() => {setSelectedSchoolID(null); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", 'null')}} style={{ marginTop: 20 }}>
-                            Passer
-                        </Button>
+                            <FlatList
+                                numColumns={2}
+                                data={teams}
+                                keyExtractor={(item) => item.id}
+                                contentContainerStyle={{ alignItems: 'center', justifyContent: 'center'}}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity onPress={() => { setSelectedSchoolID(item.id); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", item.id); }} style={styles.team_card}>
+                                        <Image source={{ uri: item.image }} style={styles.team_card_image} />
+                                        <Text style={styles.team_card_text}>{item.title}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                            <Button mode="contained" onPress={() => {setSelectedSchoolID(null); setModalVisible(false); AsyncStorage.setItem("atlanticup_team", 'null')}} style={{ marginTop: 20 }}>
+                                Passer
+                            </Button>
                     </View>
                 </View>
             </Modal>

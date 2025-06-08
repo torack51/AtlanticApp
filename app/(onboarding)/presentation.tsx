@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet, Image} from 'react-native';
 import { Button } from 'react-native-paper';
 import React from 'react';
 import { useRouter } from 'expo-router';
