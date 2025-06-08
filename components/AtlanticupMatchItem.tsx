@@ -41,7 +41,7 @@ const Type1Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)} onLongPress={() => null}>
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
@@ -89,7 +89,7 @@ const Type2Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)} onLongPress={() => null}>
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
@@ -137,7 +137,7 @@ const Type3Match =  ({ match, router, dayOfWeek, start_time, sport_image}: { mat
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/matches/${match.id}`)}>
+                <Pressable onPress={() => router.push(`/matches/${match.id}`)} onLongPress={() => null}>
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
 
