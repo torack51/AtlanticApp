@@ -15,24 +15,61 @@ const PreferencesSports = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text>Preferences Sports Screen</Text>
-            <Button mode="contained" onPress={finishBoarding}>
-                Continue
-            </Button>
-            <Button mode="contained" onPress={() => router.back()}>
-                Revenir en arrière
-            </Button>
-            {/* Add your preferences UI components here */}
-        </SafeAreaView>
+        <SafeAreaView style={styles.main_container}>
+                    <View style={styles.title_container}>
+                        <Text style={styles.title}>Quels sports te font vibrer?</Text>
+                    </View>
+                    <View style={styles.team_selection_container}>
+                    
+                    </View>
+                    <View style={styles.buttons_container}>        
+                        <Button mode="contained" onPress={() => router.back()}>
+                            Revenir en arrière
+                        </Button>    
+                        <Button mode="contained" onPress={finishBoarding}>
+                            Terminer
+                        </Button>
+                    </View>
+        
+                    {/* Add your preferences UI components here */}
+                </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    main_container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    title_container: {
+        flex:1,
+        marginBottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#333',
+    },
+    team_selection_container: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor:'red',
+
+    },
+    buttons_container: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal:20,
     },
 });
 
