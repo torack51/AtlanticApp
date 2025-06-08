@@ -174,6 +174,7 @@ const CalendarTab: React.FC = () => {
             <Animated.View style={[styles.eventListContainer, { height: listHeight, margin: listMargin }]}>
                 <FlatList
                     data={events}
+                    scrollEnabled={!loading}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                     ListHeaderComponent={
