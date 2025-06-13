@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { switchToAccountWithRights } from '@/backend/auth/authService';
 import { router } from 'expo-router';
 
 const ConnexionScreen: React.FC = () => {
@@ -9,8 +10,8 @@ const ConnexionScreen: React.FC = () => {
 
     const handleLogin = async () => {
         try {
-            await auth().signInWithEmailAndPassword(email, password);
-            Alert.alert('Success', 'You are now logged in!');
+            const uid = await switchToAccountWithRights(email, password);
+            Alert.alert('Success', 'You are now logged in! UID: ' + uid);
             router.back();
 
         } catch (error: any) {

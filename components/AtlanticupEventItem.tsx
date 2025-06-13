@@ -84,7 +84,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
                 );
                 }}
             >
-                <Pressable onPress={() => router.push(`/events/${event.id}`)} onLongPress={() => console.log('long pressed')}>
+                <Pressable onPress={() => router.push(`/events/${event.id}`)} onLongPress={null}>
                     <View style={styles.main_container}>
                         <LinearGradient colors={['rgba(255,219,35,0.7)', 'rgba(27,73,102,0.7)']} style={[styles.touchable_container, { borderRadius: 5 }]} start={{ x: 0.4, y: 0 }} end={{ x: 0.6, y: 1 }}>
                             <View style={[styles.touchable_container, { flexDirection: 'column'}]}>

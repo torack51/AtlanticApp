@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, RefreshControl } from 'react-native-gesture-handler';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
+import { getUserByUid } from '@/backend/firestore/usersService';
+import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 
 const width = Dimensions.get('window').width;
 
@@ -31,17 +33,45 @@ const ProfileScreen: React.FC = () => {
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
     
-    const [user, setUser] = useState<auth.User | null>(null);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [initializing, setInitializing] = useState<boolean>(true);
 
     const insets = useSafeAreaInsets();
 
-    const onAuthStateChanged = (currentUser: auth.User | null) => {
-        setUser(currentUser);
-        if (initializing) {
-          setInitializing(false);
+    const onAuthStateChanged = async (user: FirebaseAuthTypes.User | null) => {
+        if (!user) {
+            setCurrentUser(null);
+            return;
         }
+
+        let userData = null;
+        let attempts = 0;
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        while (!userData && attempts < 5) {
+            try {
+                userData = await getUserByUid(user.uid);
+                setInitializing(false);
+                console.log("Utilisateur récupéré :", userData);
+            if (userData) break;
+            } catch (err) {
+                console.warn("Erreur pendant getUserByUid:", err);
+            }
+
+            attempts++;
+            await new Promise((res) => setTimeout(res, 300)); // 300ms d'attente
+        }
+
+        if (!userData) {
+            console.warn("Utilisateur authentifié mais document Firestore introuvable :", user.uid);
+            setCurrentUser(null);
+            return;
+        }
+
+        setCurrentUser(userData);
     };
+
 
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
@@ -49,6 +79,8 @@ const ProfileScreen: React.FC = () => {
         fetchAnnouncements();
         getTeamFromStorage();
         fetchTeams();
+
+        return () => subscriber();
     }, []);
 
     const getTeamFromStorage = async () => {
@@ -80,16 +112,11 @@ const ProfileScreen: React.FC = () => {
         router.push("/auth/connexion");
     };
 
-    const signOutButtonPressed = () => {
-        auth()
-            .signOut()
-            .then(() => {
-                Alert.alert('Déconnexion réussie', 'Vous êtes maintenant déconnecté.');
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
+    const signOutButtonPressed = async () =>{
+        setInitializing(true);
+        await switchToAnonymousAfterLogout();
+        setInitializing(false);
+    }
 
     const renderAnnouncements = () => {
         var sortedAnnouncements = announcements.sort((a, b) => {
@@ -184,16 +211,16 @@ const ProfileScreen: React.FC = () => {
                         <Text style={{ color: 'blue' }}>Chargement...</Text>
                     </TouchableOpacity>
                     :
-                    (
-                    user ?
-                        <TouchableOpacity onPress={signOutButtonPressed} style={styles.legal_notices_container}>
-                            <Text style={{ color: 'blue' }}>Se déconnecter</Text>
-                        </TouchableOpacity>
-                        :
+                    (currentUser && (
+                    currentUser.anonymous ?
                         <TouchableOpacity onPress={signInButtonPressed} style={styles.legal_notices_container}>
                             <Text style={{ color: 'blue' }}>Se connecter</Text>
                         </TouchableOpacity>
-                    )
+                        :
+                        <TouchableOpacity onPress={signOutButtonPressed} style={styles.legal_notices_container}>
+                            <Text style={{ color: 'blue' }}>Se déconnecter</Text>
+                        </TouchableOpacity>
+                    ))
                 }
             </SafeAreaView>
             <Modal

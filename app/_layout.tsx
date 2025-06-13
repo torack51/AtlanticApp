@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {PermissionsAndroid, Alert, AppRegistry} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
-import { signInAnonymously } from '../backend/auth';
+import { signInAnonymously } from '../backend/auth/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
