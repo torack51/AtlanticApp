@@ -79,9 +79,9 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
     if (props.selectedSchoolID && props.selectedSchoolName && props.selectedSchoolImage) {
         return(
             <View style={styles.container}>
-                <View style={{height:'100%', alignItems:'center', justifyContent:'center'}}>
+                <View style={styles.item}>
                     <Image source={selectedSchoolImage} 
-                        style={{width: 200, height: 200, resizeMode: 'contain'}} />
+                        style={{flex:1, width: '100%', height: '100%', resizeMode: 'contain'}} />
                 </View>
             </View>
         )
@@ -96,13 +96,13 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
             <Animated.View
                 style={[
                 styles.item,
-                { opacity: getOpacity },
+                { opacity: getOpacity},
                 ]}
                 key={index}
             >
                 <Image
                 source={item}
-                style={{ flex: 1, width: 200, height: 200 }}
+                style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'contain' }}
                 key={index}
                 />
             </Animated.View>
@@ -112,23 +112,18 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
     );
 };
 
-const styes = StyleSheet.create({
-    container: {
-        flex:1,
-    },
-});
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
+},
   item: {
-    height: 200,
-    width: 200,
+    height: '100%',
+    width: '100%',
     position: "absolute",
+    resizeMode: "contain",
   },
 });
 
