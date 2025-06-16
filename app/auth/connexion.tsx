@@ -7,15 +7,22 @@ import { router } from 'expo-router';
 const ConnexionScreen: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
+        setLoading(true);
         try {
             const uid = await switchToAccountWithRights(email, password);
+            if (!uid) {
+                throw new Error('Failed to switch to account with rights.');
+            }
             Alert.alert('Success', 'You are now logged in! UID: ' + uid);
             router.back();
 
         } catch (error: any) {
             Alert.alert('Error', error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -37,7 +44,10 @@ const ConnexionScreen: React.FC = () => {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <Button title="Login" onPress={handleLogin} />
+            {
+                loading ? <Text>Loading...</Text>
+                : <Button title="Login" onPress={handleLogin}/>
+            }
         </View>
     );
 };
