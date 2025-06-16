@@ -21,7 +21,7 @@ export const signInAnonymously = async () => {
       fcmToken,
       anonymous: true,
       platform: Platform.OS,
-      registrationDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
     });
 
@@ -41,25 +41,28 @@ export const switchToAccountWithRights = async (email : string, password : strin
   const currentUser = auth().currentUser;
   const anonymousUid = currentUser?.isAnonymous ? currentUser.uid : null;
 
-  if (!anonymousUid) {
-    throw new Error("Aucun compte anonyme à remplacer.");
-  }
-
   try {
+    let anonymousData: any = { followed_sports: [], supported_school: null };
+    if (anonymousUid){
     // 🔄 Récupérer données du compte anonyme
-    const anonymousDoc = await firestore().collection('users').doc(anonymousUid).get();
-    const anonymousData = anonymousDoc.exists ? anonymousDoc.data() : { followed_sports: [], supported_school: null };
+        const anonymousDoc = await firestore().collection('users').doc(anonymousUid).get();
+        anonymousData = anonymousDoc.exists ? anonymousDoc.data() : { followed_sports: [], supported_school: null };
 
+        // Supprimer document Firestore du compte anonyme
+        await firestore().collection('users').doc(anonymousUid).delete();
 
-    // Supprimer document Firestore du compte anonyme
-    await firestore().collection('users').doc(anonymousUid).delete();
-
-    // Supprimer le compte anonyme dans Firebase Auth
-    if (currentUser) {
-      await currentUser.delete();
-    } else {
-      throw new Error("User is null");
+        // Supprimer le compte anonyme dans Firebase Auth
+        if (currentUser) {
+          await currentUser.delete();
+        } else {
+          throw new Error("User is null");
+        }
     }
+    else{
+        console.warn("Aucun compte anonyme à remplacer, il y a probablement eu une erreur précédemment.");
+    }
+
+    
 
     // Connexion au compte avec droits
     const userCredential = await auth().signInWithEmailAndPassword(email, password);
