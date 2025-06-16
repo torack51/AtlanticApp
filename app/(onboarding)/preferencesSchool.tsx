@@ -90,8 +90,10 @@ const Preferences: React.FC<PreferencesProps> = () => {
                 <Text style={styles.title}>De quelle école est-tu le supporter?</Text>
             </View>
             <View style={styles.team_selection_container}>
-                <TouchableOpacity style={{height:'100%', width:'100%'}} onPress={handleSchoolPickerPress}>
-                    <SchoolPicker selectedSchoolID={selectedSchoolID} selectedSchoolName={selectedSchoolName} selectedSchoolImage={selectedSchoolImage} selectedSchoolColor={selectedSchoolColor} />
+                <TouchableOpacity style={{height:'100%', aspectRatio:1}} onPress={handleSchoolPickerPress}>
+                    <View style={{height:'100%', width:'100%'}}>
+                        <SchoolPicker selectedSchoolID={selectedSchoolID} selectedSchoolName={selectedSchoolName} selectedSchoolImage={selectedSchoolImage} selectedSchoolColor={selectedSchoolColor} />
+                    </View>
                     <Text style={{alignSelf:'center', fontSize:20, fontWeight:'bold'}}>{selectedSchoolName ? selectedSchoolName : 'Choisir une école'}</Text>
                 </TouchableOpacity>
             </View>
