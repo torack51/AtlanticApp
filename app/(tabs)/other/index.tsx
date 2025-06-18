@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, Tou
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { atlanticupGetAllAnnouncements, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
+import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
+import { getAllDelegations} from '@/backend/firestore/schoolsService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +12,7 @@ import ScreenLoader from '@/components/ScreenLoader';
 import { getUserByUid } from '@/backend/firestore/usersService';
 import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 import SchoolPicker from '@/components/SchoolPicker';
+import { updateUser } from '@/backend/firestore/usersService';
 
 const width = Dimensions.get('window').width;
 
@@ -37,6 +39,7 @@ const ProfileScreen: React.FC = () => {
     const [selectedTeamImage, setSelectedTeamImage] = useState<string | null>(null);
     const [selectedTeamColor, setSelectedTeamColor] = useState<string | null>(null);
     const [selectedSports, setSelectedSports] = useState<string[]>([]);
+    const [loadingSelectedTeam, setLoadingSelectedTeam] = useState<boolean>(false);
     const [sports, setSports] = useState<string[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
     
@@ -91,14 +94,16 @@ const ProfileScreen: React.FC = () => {
     }, []);
 
     const getTeamFromStorage = async () => {
+        setLoadingSelectedTeam(true);
         const team = await AsyncStorage.getItem("atlanticup_team");
         if (team) {
             setSelectedTeam(team);
         }
+        setLoadingSelectedTeam(false);
     };
 
     const fetchTeams = async () => {
-        const teams = await atlanticupGetAllDelegations();
+        const teams = await getAllDelegations();
         setTeams(teams);
     };
 
@@ -123,6 +128,46 @@ const ProfileScreen: React.FC = () => {
         setInitializing(true);
         await switchToAnonymousAfterLogout();
         setInitializing(false);
+    }
+
+    const handleSchoolSelected = async (school_id : string | null) => {
+        setSchoolModalVisible(false);
+        setLoadingSelectedTeam(true);
+
+        const uid = currentUser?.uid;
+        if (!uid) {
+            console.warn("Aucun utilisateur connecté pour mettre à jour l'équipe.");
+            Alert.alert("Erreur", "Aucun utilisateur connecté pour mettre à jour l'équipe.");
+            setLoadingSelectedTeam(false);
+            return;
+        }
+        await updateUser(uid, {supported_team: school_id});
+
+        if (school_id === null) {
+            setSelectedTeam(null);
+            setSelectedTeamName(null);
+            setSelectedTeamImage(null);
+            setSelectedTeamColor(null);
+            await AsyncStorage.setItem("atlanticup_team", 'null');
+        } else {
+            const selectedTeamDetails = teams.find(team => team.id === school_id);
+            if (selectedTeamDetails) {
+                setSelectedTeam(school_id);
+                setSelectedTeamName(selectedTeamDetails.title);
+                setSelectedTeamImage(selectedTeamDetails.image);
+                setSelectedTeamColor(selectedTeamDetails.color);
+                await AsyncStorage.setItem("atlanticup_team", school_id);
+            } else {
+                console.warn("Équipe sélectionnée introuvable :", school_id);
+                Alert.alert("Erreur", "Équipe sélectionnée introuvable.");
+                setSelectedTeam(null);
+                setSelectedTeamName(null);
+                setSelectedTeamImage(null);
+                setSelectedTeamColor(null);
+                await AsyncStorage.setItem("atlanticup_team", 'null');
+            }
+        }
+        setLoadingSelectedTeam(false);
     }
 
     const renderAnnouncements = () => {
@@ -178,41 +223,34 @@ const ProfileScreen: React.FC = () => {
 
                     <View style={styles.team_selection_container}>
                         <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>
-                            {"Mon équipe :"}
+                            {"Mon équipe"}
                         </Text>
-
-                        <TouchableOpacity style={{padding: 10, margin: 10, justifyContent: 'center', alignItems: 'center' }} onPress={() => setSchoolModalVisible(true)}>
+                        {!loadingSelectedTeam ? 
+                        <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', backgroundColor:'green', height:100, width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
                             {
                                 selectedTeamDetails != null ?
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                        <Image source={{ uri: selectedTeamDetails.image }} style={{ width: 100, height: 100 }} />
-                                        <Text style={{ textAlign: 'center', fontSize: 16, color: 'white', fontWeight: 'bold' }}>
-                                            {selectedTeamDetails.title}
-                                        </Text>
+                                    <View style={{ justifyContent: 'center', alignItems: 'center'}}>
+                                        <Image source={{ uri: selectedTeamDetails.image }} style={{ height: 100, aspectRatio:1}} />
                                     </View>
                                     :
-                                    <View style={{width:'100%', aspectRatio:1, justifyContent:'center', alignItems:'center', backgroundColor:'green'}}>
+                                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
                                         <SchoolPicker selectedSchoolID={selectedTeam} selectedSchoolName={selectedTeamDetails?.title} selectedSchoolImage={selectedTeamDetails?.image} selectedSchoolColor={selectedTeamDetails?.color} />
                                     </View>
                             }
                         </TouchableOpacity>
+                        : 
+                        null}
                     </View>
 
                     <View style={styles.sports_selection_container}>
                         <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>
-                            {"Mes sports :"}
+                            {"Mes sports"}
                         </Text>
 
-                        <TouchableOpacity style={{ backgroundColor: '#4287f5', borderRadius: 20, padding: 10, margin: 10, justifyContent: 'center', alignItems: 'center' }} onPress={() => setSportsModalVisible(true)}>
+                        <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', height:100, width:'100%',backgroundColor:'blue'}} onPress={() => setSportsModalVisible(true)}>
                             {
 
                             }
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => { setSelectedSports([]); AsyncStorage.removeItem("atlanticup_sports") }} style={{ padding: 5, margin: 5, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ textAlign: 'center', fontSize: 12, color: 'grey', fontWeight: 'bold' }}>
-                                {"Réinitialiser mes sports"}
-                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -257,14 +295,14 @@ const ProfileScreen: React.FC = () => {
                                 contentContainerStyle={{ alignItems: 'center', justifyContent: 'center'}}
                                 showsVerticalScrollIndicator={false}
                                 renderItem={({ item }) => (
-                                    <TouchableOpacity onPress={() => { setSelectedTeam(item.id); setSchoolModalVisible(false); AsyncStorage.setItem("atlanticup_team", item.id); }} style={styles.team_card}>
+                                    <TouchableOpacity onPress={() => handleSchoolSelected(item.id)} style={styles.team_card}>
                                         <Image source={{ uri: item.image }} style={styles.team_card_image} />
                                         <Text style={styles.team_card_text}>{item.title}</Text>
                                     </TouchableOpacity>
                                 )}
                                 ListEmptyComponent={<Text>Aucune équipe trouvée</Text>}
                             />
-                                <TouchableOpacity onPress={() => { setSelectedTeam(null); setSchoolModalVisible(false); AsyncStorage.setItem("atlanticup_team", 'null'); }} style={{ margin: 10, padding: 10, backgroundColor: '#4287f5', borderRadius: 20 }}>
+                                <TouchableOpacity onPress={() => handleSchoolSelected(null)} style={{ margin: 10, padding: 10, backgroundColor: '#4287f5', borderRadius: 20 }}>
                                     <Text style={{ color: 'white', fontWeight: 'bold' }}>Réinitialiser</Text>
                                 </TouchableOpacity>
                         </View>
@@ -305,11 +343,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flex:2,
+        height: 140,
     },
     sports_selection_container: {
         alignItems: 'center',
         justifyContent: 'center',
         flex:3,
+        height: 140,
     },
     legal_notices_container: {
         alignItems: 'center',
