@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SchoolPicker from '@/components/SchoolPicker';
-import { atlanticupGetAllDelegations } from '@/backend/atlanticupBackendFunctions';
+import { getAllDelegations } from '@/backend/firestore/schoolsService';
 
 const width = Dimensions.get('window').width;
 
@@ -24,7 +24,7 @@ const Preferences: React.FC<PreferencesProps> = () => {
     const [loadingTeams, setLoadingTeams] = useState(true);
 
     const fetchTeams = async () => {
-        const teams = await atlanticupGetAllDelegations();
+        const teams = await getAllDelegations();
         setTeams(teams);
         setLoadingTeams(false);
     };
