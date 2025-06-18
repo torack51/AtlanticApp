@@ -17,7 +17,7 @@ export const signInAnonymously = async () => {
 
     await userRef.set({
       followed_sports: [], // valeur par défaut
-      supported_school: null, // valeur par défaut
+      supported_team: null, // valeur par défaut
       fcmToken,
       anonymous: true,
       platform: Platform.OS,
@@ -42,11 +42,11 @@ export const switchToAccountWithRights = async (email : string, password : strin
   const anonymousUid = currentUser?.isAnonymous ? currentUser.uid : null;
 
   try {
-    let anonymousData: any = { followed_sports: [], supported_school: null };
+    let anonymousData: any = { followed_sports: [], supported_team: null };
     if (anonymousUid){
     // 🔄 Récupérer données du compte anonyme
         const anonymousDoc = await firestore().collection('users').doc(anonymousUid).get();
-        anonymousData = anonymousDoc.exists ? anonymousDoc.data() : { followed_sports: [], supported_school: null };
+        anonymousData = anonymousDoc.exists ? anonymousDoc.data() : { followed_sports: [], supported_team: null };
 
         // Supprimer document Firestore du compte anonyme
         await firestore().collection('users').doc(anonymousUid).delete();
@@ -83,7 +83,7 @@ export const switchToAccountWithRights = async (email : string, password : strin
         lastLogin: firestore.FieldValue.serverTimestamp(),
         platform: Platform.OS,
         followed_sports: anonymousData?.followed_sports || [],
-        supported_school: anonymousData?.supported_school || null,
+        supported_team: anonymousData?.supported_team || null,
       });
     } else {
       await userDocRef.update({
@@ -92,7 +92,7 @@ export const switchToAccountWithRights = async (email : string, password : strin
         anonymous: false,
         lastLogin: firestore.FieldValue.serverTimestamp(),
         followed_sports: anonymousData?.followed_sports || [],
-        supported_school: anonymousData?.supported_school || null,
+        supported_team: anonymousData?.supported_team || null,
       });
     }
 
@@ -111,7 +111,7 @@ export const switchToAnonymousAfterLogout = async () => {
     const currentUser = auth().currentUser;
     const uidPrecedent = currentUser?.uid;
 
-    let previousData = { followed_sports: [], supported_school: null };
+    let previousData = { followed_sports: [], supported_team: null };
     if (uidPrecedent) {
       const doc = await firestore().collection('users').doc(uidPrecedent).get();
       if (doc.exists) {
@@ -119,7 +119,7 @@ export const switchToAnonymousAfterLogout = async () => {
         if (data) {
           previousData = {
             followed_sports: data.followed_sports || [],
-            supported_school: data.supported_school || null
+            supported_team: data.supported_team || null
           };
         }
       }
@@ -137,7 +137,7 @@ export const switchToAnonymousAfterLogout = async () => {
       createdAt: firestore.FieldValue.serverTimestamp(),
       platform: Platform.OS,
       followed_sports: [],
-      supported_school: null,
+      supported_team: null,
     });
 
     console.log("Nouveau compte anonyme créé après déconnexion.");
