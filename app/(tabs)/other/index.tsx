@@ -13,6 +13,7 @@ import { getUserByUid } from '@/backend/firestore/usersService';
 import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 import SchoolPicker from '@/components/SchoolPicker';
 import { updateUser } from '@/backend/firestore/usersService';
+import AnimatedSportsCard from '@/components/AnimatedSportsCard';
 
 const width = Dimensions.get('window').width;
 
@@ -226,7 +227,7 @@ const ProfileScreen: React.FC = () => {
                             {"Mon équipe"}
                         </Text>
                         {!loadingSelectedTeam ? 
-                        <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', backgroundColor:'green', height:100, width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
+                        <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', height:100, width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
                             {
                                 selectedTeamDetails != null ?
                                     <View style={{ justifyContent: 'center', alignItems: 'center'}}>
@@ -246,15 +247,11 @@ const ProfileScreen: React.FC = () => {
                         <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>
                             {"Mes sports"}
                         </Text>
-
-                        <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', height:100, width:'100%',backgroundColor:'blue'}} onPress={() => setSportsModalVisible(true)}>
-                            {
-
-                            }
-                        </TouchableOpacity>
+                            <AnimatedSportsCard height={3*width/10} width={3*width/5}/>
                     </View>
 
                 </View>
+                
 
                 <View style={styles.legal_notices_container}>
                     <TouchableOpacity onPress={() => router.navigate("/other/legalNotices")}>
@@ -349,7 +346,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flex:3,
-        height: 140,
     },
     legal_notices_container: {
         alignItems: 'center',
