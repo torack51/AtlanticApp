@@ -12,6 +12,7 @@ interface Category{
 interface Sport {
     id: string;
     image: string;
+    title: string;
     categories: {[key: string]: Category};
 }
 
