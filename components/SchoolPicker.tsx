@@ -10,16 +10,6 @@ interface SchoolPickerProps {
     selectedSchoolColor: string | null;
 }
 
-const images = [
-    require('@/assets/images/schools/logo_enib.png'),
-    require('@/assets/images/schools/logo_enssat_lannion.png'),
-    require('@/assets/images/schools/logo_ensta_bretagne.png'),
-    require('@/assets/images/schools/logo_imt_atlantique.png'),
-    require('@/assets/images/schools/logo_isen.png'),
-    require('@/assets/images/schools/logo_ubo.png'),
-]
-
-
 const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
 
     const animations = new Animated.Value(0);
@@ -35,7 +25,7 @@ const SchoolPicker: React.FC<SchoolPickerProps> = (props) => {
     const length = data.length;
     const duration = 1500; // Set transition duration
     const opacity = [];
-    const selectedSchoolImage = props.selectedSchoolImage ? { uri: props.selectedSchoolImage } : images[0];
+    const selectedSchoolImage = props.selectedSchoolImage ? { uri: props.selectedSchoolImage } : data[0];
 
 
     // set the opacity value for every item on our data

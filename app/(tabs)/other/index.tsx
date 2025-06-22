@@ -93,16 +93,18 @@ const ProfileScreen: React.FC = () => {
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
         fetchAnnouncements();
-        getTeamFromStorage();
+        fetchSelectedTeamFromUser();
         fetchTeams();
         fetchSports();
 
         return () => subscriber();
     }, []);
 
-    const getTeamFromStorage = async () => {
+    const fetchSelectedTeamFromUser = async () => {
         setLoadingSelectedTeam(true);
-        const team = await AsyncStorage.getItem("atlanticup_team");
+        const user = currentUser;
+        console.log("Récupération de l'équipe sélectionnée pour l'utilisateur :", selectedTeam);
+        const team = user?.supported_team || null;
         if (team) {
             setSelectedTeam(team);
         }
@@ -161,6 +163,7 @@ const ProfileScreen: React.FC = () => {
             await AsyncStorage.setItem("atlanticup_team", 'null');
         } else {
             const selectedTeamDetails = teams.find(team => team.id === school_id);
+            console.log("Équipe sélectionnée :", selectedTeamDetails);
             if (selectedTeamDetails) {
                 setSelectedTeam(school_id);
                 setSelectedTeamColor(selectedTeamDetails.color);
@@ -194,7 +197,6 @@ const ProfileScreen: React.FC = () => {
             return;
         }
         await updateUser(uid, {followed_sports: selectedSports});
-        console.log("Sports mis à jour pour l'utilisateur :", uid, selectedSports);
         Alert.alert("Succès", "Vos sports ont été mis à jour.");
     };
 
@@ -268,11 +270,11 @@ const ProfileScreen: React.FC = () => {
                             <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
                                 {
                                     selectedTeamDetails != null ?
-                                        <View style={{ justifyContent: 'center', alignItems: 'center'}}>
-                                            <Image source={{ uri: selectedTeamDetails.image }} style={{ height: 100, aspectRatio:1}} />
+                                        <View style={{ justifyContent: 'center', alignItems: 'center', width:width*2/5, aspectRatio:1, padding:10}}>
+                                            <Image source={{ uri: selectedTeamDetails.image }} style={{ width: '100%', aspectRatio:1}} />
                                         </View>
                                         :
-                                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                                        <View style={{justifyContent: 'center', alignItems: 'center', width:width*2/5, aspectRatio:1, padding:10}}>
                                             <SchoolPicker selectedSchoolID={selectedTeam} selectedSchoolName={selectedTeamDetails?.title} selectedSchoolImage={selectedTeamDetails?.image} selectedSchoolColor={selectedTeamDetails?.color} />
                                         </View>
                                 }
