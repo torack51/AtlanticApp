@@ -13,8 +13,7 @@ import messaging from '@react-native-firebase/messaging';
 import { signInAnonymously } from '../backend/auth/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
+//PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,27 +34,27 @@ export default function RootLayout() {
       Alert.alert('Notification!', remoteMessage.notification?.title);
     });
 
+
+    messaging().subscribeToTopic('allUsers')
+      .then(() => console.log('Abonné au topic allUsers !'))
+      .catch(error => console.error('Erreur d\'abonnement au topic allUsers:', error));
+
     return unsubscribe;
   }, []);
 
-  /*useEffect(() => {
-    const getToken = async () => {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  useEffect(() => {
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
 
-      if (enabled) {
-        const token = await messaging().getToken();
-        console.log('🔥 FCM Token:', token);
-        Alert.alert("FCM Token", token);
-      } else {
-        console.warn("Notifications non autorisées");
-      }
-    };
-
-    getToken();
-  }, []);*/
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('Notification caused app to open', remoteMessage);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     const checkOnboarding = async () => {
