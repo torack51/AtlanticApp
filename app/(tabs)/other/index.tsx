@@ -45,7 +45,7 @@ const ProfileScreen: React.FC = () => {
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
     const [selectedTeamColor, setSelectedTeamColor] = useState<string | null>(null);
     const [selectedSports, setSelectedSports] = useState<string[]>([]);
-    const [loadingSelectedTeam, setLoadingSelectedTeam] = useState<boolean>(false);
+    const [loadingUser, setLoadingUser] = useState<boolean>(false);
     const [sports, setSports] = useState<Sport[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
     
@@ -55,7 +55,9 @@ const ProfileScreen: React.FC = () => {
     const insets = useSafeAreaInsets();
 
     const onAuthStateChanged = async (user: FirebaseAuthTypes.User | null) => {
+        setLoadingUser(true);
         if (!user) {
+            setLoadingUser(false);
             setCurrentUser(null);
             return;
         }
@@ -82,10 +84,22 @@ const ProfileScreen: React.FC = () => {
         if (!userData) {
             console.warn("Utilisateur authentifié mais document Firestore introuvable :", user.uid);
             setCurrentUser(null);
+            setLoadingUser(false);
             return;
         }
 
+        const team = userData?.supported_team || null;
+        const sports = userData?.followed_sports || [];
+        if (team) {
+            setSelectedTeam(team);
+        }
+        if (sports && sports.length > 0) {
+            setSelectedSports(sports);
+        } else {
+            setSelectedSports([]);
+        }
         setCurrentUser(userData);
+        setLoadingUser(false);
     };
 
 
@@ -93,23 +107,11 @@ const ProfileScreen: React.FC = () => {
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
         fetchAnnouncements();
-        fetchSelectedTeamFromUser();
         fetchTeams();
         fetchSports();
 
         return () => subscriber();
     }, []);
-
-    const fetchSelectedTeamFromUser = async () => {
-        setLoadingSelectedTeam(true);
-        const user = currentUser;
-        console.log("Récupération de l'équipe sélectionnée pour l'utilisateur :", selectedTeam);
-        const team = user?.supported_team || null;
-        if (team) {
-            setSelectedTeam(team);
-        }
-        setLoadingSelectedTeam(false);
-    };
 
     const fetchTeams = async () => {
         const teams = await getAllDelegations();
@@ -146,13 +148,13 @@ const ProfileScreen: React.FC = () => {
 
     const handleSchoolSelected = async (school_id : string | null) => {
         setSchoolModalVisible(false);
-        setLoadingSelectedTeam(true);
+        setLoadingUser(true);
 
         const uid = currentUser?.uid;
         if (!uid) {
             console.warn("Aucun utilisateur connecté pour mettre à jour l'équipe.");
             Alert.alert("Erreur", "Aucun utilisateur connecté pour mettre à jour l'équipe.");
-            setLoadingSelectedTeam(false);
+            setLoadingUser(false);
             return;
         }
         await updateUser(uid, {supported_team: school_id});
@@ -163,7 +165,6 @@ const ProfileScreen: React.FC = () => {
             await AsyncStorage.setItem("atlanticup_team", 'null');
         } else {
             const selectedTeamDetails = teams.find(team => team.id === school_id);
-            console.log("Équipe sélectionnée :", selectedTeamDetails);
             if (selectedTeamDetails) {
                 setSelectedTeam(school_id);
                 setSelectedTeamColor(selectedTeamDetails.color);
@@ -177,7 +178,7 @@ const ProfileScreen: React.FC = () => {
             }
         }
         Alert.alert("Succès", "Votre délégation a été mise à jour.");
-        setLoadingSelectedTeam(false);
+        setLoadingUser(false);
     }
 
     const handleSportToggled = async (sport_id: string) => {
@@ -226,7 +227,7 @@ const ProfileScreen: React.FC = () => {
     const selectedTeamDetails = teams.find(team => team.id === selectedTeam);
     
     return (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
             <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
                 <View style={styles.logo_container}> 
                     <Image source={require('../../../assets/images/logo-atlanticup-no-background.png')} style={{ width: width * 0.6, height: width * 0.5}} />
@@ -266,15 +267,15 @@ const ProfileScreen: React.FC = () => {
 
                     <View style={{flexDirection:'row', justifyContent:'space-around', alignItems:'center', width:'100%'}}>
                         <View style={styles.team_selection_container}>
-                            {!loadingSelectedTeam ? 
-                            <TouchableOpacity style={{margin: 5, justifyContent: 'center', alignItems: 'center', width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
+                            {!loadingUser ? 
+                            <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width:'100%'}} onPress={() => setSchoolModalVisible(true)}>
                                 {
                                     selectedTeamDetails != null ?
-                                        <View style={{ justifyContent: 'center', alignItems: 'center', width:width*2/5, aspectRatio:1, padding:10}}>
+                                        <View style={{ justifyContent: 'center', alignItems: 'center', width:width*3/10, aspectRatio:1}}>
                                             <Image source={{ uri: selectedTeamDetails.image }} style={{ width: '100%', aspectRatio:1}} />
                                         </View>
                                         :
-                                        <View style={{justifyContent: 'center', alignItems: 'center', width:width*2/5, aspectRatio:1, padding:10}}>
+                                        <View style={{justifyContent: 'center', alignItems: 'center', width:width*3/10, aspectRatio:1}}>
                                             <SchoolPicker selectedSchoolID={selectedTeam} selectedSchoolName={selectedTeamDetails?.title} selectedSchoolImage={selectedTeamDetails?.image} selectedSchoolColor={selectedTeamDetails?.color} />
                                         </View>
                                 }

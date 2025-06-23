@@ -38,11 +38,12 @@ const styles = StyleSheet.create({
     title_container: {
         flex:1,
         marginBottom: 20,
+        paddingHorizontal: 20,
         alignItems: 'center',
         justifyContent: 'center',
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
         color: '#333',
