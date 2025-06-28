@@ -49,17 +49,14 @@ const giveResults = (
     let team2_points: number;
 
     switch (sport_id) {
-        case 'football_m':
-        case 'football_f':
+        case 'football':
         case 'handball':
-        case 'basketball_m':
-        case 'basketball_f':
-        case 'rugby_m':
+        case 'basketball':
+        case 'rugby':
         case 'ultimate':
             result = giveWinnerType1(team1_score as number, team2_score as number);
             switch (sport_id) {
-                case 'football_m':
-                case 'football_f':
+                case 'football':
                 case 'ultimate': //Victoire = 3, Nul = 1, Défaite = 0
                     team1_points = result.winner === 1 ? 3 : result.winner === 0 ? 1 : 0;
                     team2_points = result.winner === 2 ? 3 : result.winner === 0 ? 1 : 0;
@@ -83,8 +80,7 @@ const giveResults = (
                     }
                     return { winner: result.winner, team1_points, team2_points, team1_score: newTeam1_score, team2_score: newTeam2_score };
 
-                case 'basketball_m':
-                case 'basketball_f': //Victoire = 3, Nul = 2, Défaite = 1, Forfait = 0
+                case 'basketball': //Victoire = 3, Nul = 2, Défaite = 1, Forfait = 0
                     team1_points = result.winner === 1 ? 3 : result.winner === 0 ? 2 : 1;
                     team2_points = result.winner === 2 ? 3 : result.winner === 0 ? 2 : 1;
 
@@ -97,7 +93,7 @@ const giveResults = (
                     }
                     return { winner: result.winner, team1_points, team2_points, team1_score, team2_score };
 
-                case 'rugby_m': //Victoire = 4, Nul = 2, Défaite = 1, Forfait = 0
+                case 'rugby': //Victoire = 4, Nul = 2, Défaite = 1, Forfait = 0
                     team1_points = result.winner === 1 ? 4 : result.winner === 0 ? 2 : 1;
                     team2_points = result.winner === 2 ? 4 : result.winner === 0 ? 2 : 1;
 
@@ -114,14 +110,12 @@ const giveResults = (
                     console.error("giveResults - sport pas reconnu");
             }
 
-        case 'volleyball_m':
-        case 'volleyball_f':
+        case 'volleyball':
         case 'badminton':
         case 'table_tennis':
             result = giveWinnerType2(team1_score as number[], team2_score as number[]);
             switch (sport_id) {
-                case 'volleyball_m':
-                case 'volleyball_f': //Victoire 2-0 = 3, Victoire 2-1 = 2, Défaite 2-1 = 1, Défaite 2-0 = 0
+                case 'volleyball': //Victoire 2-0 = 3, Victoire 2-1 = 2, Défaite 2-1 = 1, Défaite 2-0 = 0
                     team1_points = result.winner === 1 ? (result.team1_score - result.team2_score === 2 ? 3 : 2) : result.team2_score - result.team1_score === 2 ? 0 : 1;
                     team2_points = result.winner === 2 ? (result.team2_score - result.team1_score === 2 ? 3 : 2) : result.team1_score - result.team2_score === 2 ? 0 : 1;
                     return { winner: result.winner, team1_points, team2_points, team1_score: result.team1_score, team2_score: result.team2_score };
@@ -151,15 +145,12 @@ type Team = {
 
 const sortTeams = (teams: Team[], sport_id: string): Team[] | void => {
     switch (sport_id) {
-        case 'football_m':
-        case 'football_f':
+        case 'football':
         case 'handball':
-        case 'rugby_m':
+        case 'rugby':
         case 'ultimate':
-        case 'basketball_m':
-        case 'basketball_f':
-        case 'volleyball_m':
-        case 'volleyball_f': //On compte le nombre de points
+        case 'basketball':
+        case 'volleyball': //On compte le nombre de points
             return teams.sort((team1, team2) => {
                 if (team1.points !== team2.points) {
                     return team2.points - team1.points; // Sort by points in descending order
