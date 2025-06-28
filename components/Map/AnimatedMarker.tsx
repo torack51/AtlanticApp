@@ -17,7 +17,7 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ loc, isFocused }) => {
     return (
         <>
             {Platform.OS === 'ios' ?
-                <IosAnimatedMarker loc={loc} isFocused={isFocused} />
+                <IosAnimatedMarker loc={loc} isFocused={isFocused}/>
                 :
                 <AndroidAnimatedMarker loc={loc} isFocused={isFocused} />
             }

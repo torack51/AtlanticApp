@@ -13,10 +13,10 @@ interface AnimatedMarkerProps {
 }
 
 const IosAnimatedMarker: React.FC<AnimatedMarkerProps> = ({ loc, isFocused }) => {
-    const scale = useSharedValue(isFocused ? 1.5 : 1); // Départ avec 1 si pas sélectionné
+    const scale = useSharedValue(isFocused ? 1 : 1); // Départ avec 1 si pas sélectionné
 
     useEffect(() => {
-        scale.value = withTiming(isFocused ? 1.5 : 1, { duration: 300 });
+        scale.value = withTiming(isFocused ? 1 : 1, { duration: 300 });
     }, [isFocused]);
 
     const animatedStyle = useAnimatedStyle(() => ({
