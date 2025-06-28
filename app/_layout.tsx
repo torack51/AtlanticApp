@@ -31,7 +31,12 @@ export default function RootLayout() {
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('🔔 Notification reçue en foreground :', remoteMessage);
-      Alert.alert('Notification!', remoteMessage.notification?.title);
+      if (remoteMessage.notification && remoteMessage.notification.title) {
+        Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
+      }
+      else{
+        Alert.alert('Notification reçue', 'Vous avez reçu une notification sans titre ni corps.');
+      }
     });
 
 
