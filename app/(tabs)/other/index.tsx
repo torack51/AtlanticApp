@@ -10,10 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
-import { getUserByUid } from '@/backend/firestore/usersService';
+import { getUserByUid, updateUserFollowedSports } from '@/backend/firestore/usersService';
 import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 import SchoolPicker from '@/components/SchoolPicker';
-import { updateUser } from '@/backend/firestore/usersService';
+import { updateUser, updateUserSupportedTeam} from '@/backend/firestore/usersService';
 import AnimatedSportsCard from '@/components/AnimatedSportsCard';
 
 const width = Dimensions.get('window').width;
@@ -102,7 +102,6 @@ const ProfileScreen: React.FC = () => {
         setLoadingUser(false);
     };
 
-
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
@@ -157,7 +156,8 @@ const ProfileScreen: React.FC = () => {
             setLoadingUser(false);
             return;
         }
-        await updateUser(uid, {supported_team: school_id});
+
+        await updateUserSupportedTeam(uid, school_id);
 
         if (school_id === null) {
             setSelectedTeam(null);
@@ -197,7 +197,7 @@ const ProfileScreen: React.FC = () => {
             Alert.alert("Erreur", "Aucun utilisateur connecté pour mettre à jour les sports.");
             return;
         }
-        await updateUser(uid, {followed_sports: selectedSports});
+        await updateUserFollowedSports(uid, selectedSports);
         Alert.alert("Succès", "Vos sports ont été mis à jour.");
     };
 
