@@ -319,6 +319,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                         coordinate={{ latitude: loc.position.latitude, longitude: loc.position.longitude }} 
                         onPress={() => onMarkerPress(loc)}
                         zIndex={selectedMarkerId === loc.id ? 1 : 0}
+                        anchor={{ x: 0.5, y: 0.5 }} // Centrer le marqueur
                     >
                         <AnimatedMarker
                             loc={loc}
