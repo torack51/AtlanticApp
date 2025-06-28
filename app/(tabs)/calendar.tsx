@@ -152,7 +152,7 @@ const CalendarTab: React.FC = () => {
 
     const mainLogo = require('../../assets/images/logo-atlanticup-no-background.png');
     const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
-    
+
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
             <View style={[styles.background,{paddingTop: insets.top}]}>
@@ -173,7 +173,7 @@ const CalendarTab: React.FC = () => {
 
             <Animated.View style={[styles.eventListContainer, { height: listHeight, margin: listMargin }]}>
                 <FlatList
-                    data={events}
+                    data={displayEvents}
                     scrollEnabled={!loading}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
