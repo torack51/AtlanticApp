@@ -92,30 +92,24 @@ const MatchPage: React.FC<Props> = () => {
     };
 
     useEffect(() => {
-        console.log("state : ", state)
         checkForAdministratorRights();
         fetchMatch();
     }, []);
 
     const getMatchType = (match: Match): 'type1' | 'type2' | 'type3' => {
-        console.log("getMatchType called with match: ", match);
         switch (match.sport_id) {
-            case 'basketball_f':
-            case 'basketball_m':
-            case 'football_f':
-            case 'football_m':
+            case 'basketball':
+            case 'football':
             case 'handball':
-            case 'rugby_m':
+            case 'rugby':
             case 'ultimate':
                 return 'type1';
-            case 'volleyball_f':
-            case 'volleyball_m':
+            case 'volleyball':
             case 'badminton':
-            case 'table_tennis':
+            case 'tableTennis':
                 return 'type2';
-            case 'relais':
-            case 'climbing_f':
-            case 'climbing_m':
+            case 'relay':
+            case 'climbing':
                 return 'type3';
             default:
                 throw new Error(`Unknown match type: ${match.sport_id}`);
