@@ -189,7 +189,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
     const fetchSportImage = (sport_id: string) => {
         if (!image){
             atlanticupGetSportFromId(sport_id).then((sport) => {
-                setImage(sport.image);
+-                setImage(sport.image);
             });
         } 
     };
@@ -201,22 +201,18 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
 
     const getMatchType = (match: Match): 'type1' | 'type2' | 'type3' => {
         switch (match.sport_id) {
-            case 'basketball_f':
-            case 'basketball_m':
-            case 'football_f':
-            case 'football_m':
+            case 'basketball':
+            case 'football':
             case 'handball':
-            case 'rugby_m':
+            case 'rugby':
             case 'ultimate':
                 return 'type1';
-            case 'volleyball_f':
-            case 'volleyball_m':
+            case 'volleyball':
             case 'badminton':
             case 'table_tennis':
                 return 'type2';
-            case 'relais':
-            case 'climbing_f':
-            case 'climbing_m':
+            case 'relay':
+            case 'climbing':
                 return 'type3';
             default:
                 throw new Error(`Unknown match type: ${match.sport_id}`);
@@ -224,7 +220,6 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
     };
 
     const renderMatch = (match: Match, scaleInterpolation1: Animated.AnimatedInterpolation<number>, opacityInterpolation1: Animated.AnimatedInterpolation<number>, borderWidthInterpolation1: Animated.AnimatedInterpolation<number>) => {
-        
         const matchType = getMatchType(match);
 
         if (matchType === 'type3') {
