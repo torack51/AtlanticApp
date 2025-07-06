@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider } from 'react-native-paper';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus } from '../../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '@/backend/firestore/sportsService';
+import { getUserFromUid } from '@/backend/firestore/usersService';
+import { getMatchFromId } from '@/backend/firestore/matchService';
+import { getTeamFromId } from '@/backend/firestore/teamService';
+import { getAllDelegations } from '@/backend/firestore/schoolsService';
 import UpdateScoreType1 from '../UpdateScore/AtlanticupUpdateScoreType1';
 import auth from '@react-native-firebase/auth';
 import ScreenLoader from '@/components/ScreenLoader';
@@ -54,7 +59,7 @@ const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     const checkForAdministratorRights = async () => {
         const currentUser = auth().currentUser;
         if (currentUser) {
-            const user = await atlanticupGetUserFromId(currentUser.uid);
+            const user = await getUserFromUid(currentUser.uid);
             if (user.is_special_event_organizer) {
                 setState(prevState => ({ ...prevState, hasAdministratorRights: true }));
             }
@@ -62,12 +67,12 @@ const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     };
 
     const fetchSport = async () => {
-        const sport = await atlanticupGetSportFromId(state.match.sport_id);
+        const sport = await getSportFromId(state.match.sport_id);
         setState(prevState => ({ ...prevState, sport: sport }));
     };
 
     const fetchMatch = async () => {
-        const matchData = await atlanticupGetMatchFromId(state.match.id);
+        const matchData = await getMatchFromId(state.match.id);
         const newMatch = { ...state.match };
         newMatch.team1_score = matchData.team1_score;
         newMatch.team2_score = matchData.team2_score;
@@ -77,15 +82,15 @@ const AtlanticupMatchDetailType1: React.FC<Props> = ({ match }) => {
     };
 
     const fetchTeams = async () => {
-        const team1 = await atlanticupGetTeamFromId(state.match.team1_id);
-        const team2 = await atlanticupGetTeamFromId(state.match.team2_id);
+        const team1 = await getTeamFromId(state.match.team1_id);
+        const team2 = await getTeamFromId(state.match.team2_id);
         setState(prevState => ({ ...prevState, team1: team1, team2: team2}));
     }
 
     const fetchDelegations = async () => {
         if (state.team1 != null && state.team2 != null) {
-            const team1_delegation = await atlanticupGetDelegationFromId(state.team1.delegation);
-            const team2_delegation = await atlanticupGetDelegationFromId(state.team2.delegation);
+            const team1_delegation = await getAllDelegations(state.team1.delegation);
+            const team2_delegation = await getAllDelegations(state.team2.delegation);
             setState(prevState => ({ ...prevState, team1_delegation: team1_delegation, team2_delegation: team2_delegation}));
         } else {
             console.warn('team1 or team2 is null');

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing, Pressable} from 'react-native';
-import { atlanticupGetSportFromId } from '../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '@/backend/firestore/sportsService';
 import LinearGradient from 'react-native-linear-gradient';
 import { Link, router} from 'expo-router';
 import ContextMenu from 'react-native-context-menu-view';
@@ -107,7 +107,7 @@ class AtlanticupEventItem extends React.Component<Props, State> {
     }
 
     fetchSportImage(sport_id: string) {
-        atlanticupGetSportFromId(sport_id).then((sport) => {
+        getSportFromId(sport_id).then((sport) => {
             this.setState({ image: sport.image });
         });
     }

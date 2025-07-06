@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../backend/atlanticupBackendFunctions';
+import { getMatchFromId } from '@/backend/firestore/matchService';
+import { getUserFromUid } from '@/backend/firestore/usersService';
 import Type1Match from './Type1Match';
 import Type2Match from './Type2Match';
 import Type3Match from './Type3Match';
@@ -78,7 +79,7 @@ const MatchPage: React.FC<Props> = () => {
         
         const currentUser = auth().currentUser;
         if (currentUser) {
-            const user = await atlanticupGetUserFromId(currentUser.uid);
+            const user = await getUserFromUid(currentUser.uid);
             if (user.is_special_event_organizer) {
                 setState(prevState => ({ ...prevState, hasAdministratorRights: true }));
             }
@@ -86,7 +87,7 @@ const MatchPage: React.FC<Props> = () => {
     };
 
     const fetchMatch = async () => {
-        const matchData = await atlanticupGetMatchFromId(state.match_id);
+        const matchData = await getMatchFromId(state.match_id);
         const newMatch = matchData;
         setState(prevState => ({ ...prevState, match: newMatch }));
     };
@@ -124,11 +125,11 @@ const MatchPage: React.FC<Props> = () => {
         <SafeAreaView style={{flex:1}}>
             {state.match &&
                 (getMatchType(state.match) === 'type1' ? (
-                    <Type1Match match={state.match}/>
+                    <Type1Match match_id={state.match.id}/>
                 ) : getMatchType(state.match) === 'type2' ? (
-                    <Type2Match match={state.match}/>
+                    <Type2Match match_id={state.match.id}/>
                 ) : getMatchType(state.match) === 'type3' ? (
-                    <Type3Match match={state.match}/>
+                    <Type3Match match_id={state.match.id}/>
                 ) :
                     <></>
                 )}

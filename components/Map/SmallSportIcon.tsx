@@ -1,39 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable} from 'react-native';
-interface SmallSportIconProps {
-   item: { id: string }
+import { View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+
+interface Sport {
+    id : string;
+    image : string;
+    title : string;
 }
 
-const SmallSportIcon: React.FC<SmallSportIconProps> = (props) => {
+interface SmallSportIconProps {
+   sport : Sport;
+}
 
-    const sportIcons: Record<string, any> = {
-        badminton: require("../../assets/images/icons/sport-icons/badminton.png"),
-        basketball: require("../../assets/images/icons/sport-icons/basketball.png"),
-        running: require("../../assets/images/icons/sport-icons/running.png"),
-        climbing: require("../../assets/images/icons/sport-icons/climbing.png"),
-        football: require("../../assets/images/icons/sport-icons/football.png"),
-        handball: require("../../assets/images/icons/sport-icons/handball.png"),
-        rugby: require("../../assets/images/icons/sport-icons/rugby.png"),
-        "table-tennis": require("../../assets/images/icons/sport-icons/table-tennis.png"),
-        ultimate: require("../../assets/images/icons/sport-icons/ultimate.png"),
-        volley: require("../../assets/images/icons/sport-icons/volley.png"),        
-      };
-
-      const pathToImage = sportIcons[props.item.id.split("_")[0]] || require("../../assets/images/icons/logo_ac.png");
-      if (pathToImage == require("../../assets/images/icons/logo_ac.png")) {
-          //console.log('item : ', props.item.id.split("_")[0], pathToImage);
-        }
+const SmallSportIcon: React.FC<SmallSportIconProps> = ({sport}) => {
 
     const navigateToSport = () => {
-        console.log('navigate to sport : ', props.item.id);
+        console.log('navigate to sport : ', sport.id);
     }
 
-    //console.log('path : ', pathToImage);
     return (
         <View style={styles.container}>
-            <Pressable onPress={navigateToSport}>
-                <Image source={pathToImage} style={styles.image} />
-            </Pressable>
+            <TouchableOpacity onPress={navigateToSport} style={styles.card}>
+                <Image source={{uri : sport.image}} style={styles.image} />
+                <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>{sport.title}</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -44,14 +33,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 5,
+        paddingVertical:5,
+    },
+    card:{
+        flexDirection: 'row',
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30,
+        paddingLeft:10,
+        paddingRight:10,
     },
     image: {
-        aspectRatio: 1, // Ensures width equals height
-        height:'100%', // Initial width (and height due to aspectRatio)
-        backgroundColor: "rgb(0,17,250)",
-        borderRadius: 40,
+        aspectRatio: 1,
+        height:'80%',
         tintColor: "white",
-        padding: 5,
     }
 });
 

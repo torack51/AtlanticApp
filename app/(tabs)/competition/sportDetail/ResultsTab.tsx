@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions, RefreshControl, Image, ScrollView } from 'react-native';
-import { atlanticupGetGroupsFromSportId, atlanticupGetDelegationFromId, atlanticupGetMatchesFromSportId, atlanticupGetTeamFromId, atlanticupGetSportFromId } from '../../../../backend/atlanticupBackendFunctions';
+import { atlanticupGetGroupsFromSportId, atlanticupGetMatchesFromSportId, atlanticupGetTeamFromId } from '../../../../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '../../../../backend/firestore/sportsService';
+import { getAllDelegations } from '@/backend/firestore/schoolsService';
 import { giveResults, sortTeams } from '../../../../backend/pointsPerMatchBySports';
 import AtlanticupRankingType1 from '../../../../components/Ranking/AtlanticupRankingType1';
 import AtlanticupRankingType2 from '../../../../components/Ranking/AtlanticupRankingType2';
@@ -110,7 +112,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({sport_id}) => {
     };
 
     const fetchDelegations = async (delegations_id_list: string[]) => {
-        const delegations = await Promise.all(delegations_id_list.map(delegation_id => atlanticupGetDelegationFromId(delegation_id)));
+        const delegations = await Promise.all(delegations_id_list.map(delegation_id => getAllDelegations(delegation_id)));
         return delegations;
     };
 
@@ -125,7 +127,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({sport_id}) => {
     const fetchAll = useCallback(async () => {
         setLoaded(false);
         try {
-            const sportData = await atlanticupGetSportFromId(sport_id);
+            const sportData = await getSportFromId(sport_id);
             const groupsData = await atlanticupGetGroupsFromSportId(sport_id);
             const matchesData = await atlanticupGetMatchesFromSportId(sport_id);
             const teamsData = await getTeamsFromGroups(groupsData);

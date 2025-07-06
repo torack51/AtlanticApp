@@ -1,6 +1,4 @@
 import firestore, { Filter } from "@react-native-firebase/firestore";
-import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc, addDoc, updateDoc, query, limit, orderBy, startAfter, where } from "firebase/firestore";
-import { getStorage } from 'firebase/storage';
 
 async function atlanticupGetAllDelegations(): Promise<any[]> {
     try {
@@ -22,95 +20,6 @@ async function atlanticupGetAllDelegations(): Promise<any[]> {
     catch (error) {
         console.error("Erreur lors de la récupération des délégations:", error);
         return [];
-    }
-}
-
-async function atlanticupGetDelegationFromId(delegation_id: string): Promise<any> {
-    try {
-        const doc = await firestore()
-            .collection('atlanticup_delegations')
-            .doc(delegation_id)
-            .get();
-        if (doc.exists) {
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
-        } else {
-            console.log("atlanticupGetDelegationFromId - Aucun document trouvé avec cet ID.");
-            return null;
-        }
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération du document:", error);
-        return null;
-    }
-}
-
-async function atlanticupGetAllSports(): Promise<any[]> {
-    try {
-        const querySnapshot = await firestore()
-            .collection('atlanticup_sports')
-            .get();
-
-        const sports: any[] = [];
-        querySnapshot.forEach((doc) => {
-            const data = {
-                id: doc.id,
-                ...doc.data()
-            };
-            sports.push(data);
-        });
-
-        return sports;
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération des sports:", error);
-        return [];
-    }
-}
-
-async function atlanticupGetSportFromId(sport_id: string): Promise<any> {
-    try {
-        const doc = await firestore()
-            .collection('atlanticup_sports')
-            .doc(sport_id)
-            .get();
-        if (doc.exists) {
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
-        } else {
-            console.log("atlanticupGetSportFromId - Aucun document trouvé avec cet ID.");
-            return null;
-        }
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération du document:", error);
-        return null;
-    }
-}
-
-async function atlanticupGetTeamFromId(team_id: string): Promise<any> {
-    try {
-        const doc = await firestore()
-            .collection('atlanticup_teams')
-            .doc(team_id)
-            .get();
-        if (doc.exists) {
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
-        } else {
-            console.log("atlanticupGetTeamFromId - Aucun document trouvé avec cet ID.");
-            return null;
-        }
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération du document:", error);
-        return null;
     }
 }
 
@@ -484,28 +393,6 @@ const atlanticupGetEventFromId = async (event_id: string): Promise<any> => {
     }
 }
 
-const atlanticupGetMatchFromId = async (match_id: string): Promise<any> => {
-    try {
-        const doc = await firestore()
-            .collection('atlanticup_matches')
-            .doc(match_id)
-            .get();
-        if (doc.exists) {
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
-        } else {
-            console.log("atlanticupGetMatchFromId - Aucun document trouvé avec cet ID.");
-            return null;
-        }
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération du document:", error);
-        return null;
-    }
-}
-
 const atlanticupGetEventsFromPlaceId = async (itemsPerPage: number, place_id: string, lastVisible: any): Promise<{ items: any[], lastVisible: any }> => {
     try {
         const teamsDic = await atlanticupGetAllTeams();
@@ -596,26 +483,6 @@ const atlanticupGetAllTeams = async (): Promise<any[]> => {
         return [];
     }
 };
-
-
-const atlanticupGetUserFromId = async (user_id: string): Promise<any> => {
-    try {
-        const doc = await firestore().collection('users').doc(user_id).get();
-        if (doc.exists) {
-            return {
-                id: doc.id,
-                ...doc.data()
-            };
-        } else {
-            console.log("atlanticupGetUserFromId - Aucun document trouvé avec cet ID.");
-            return null;
-        }
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération du document:", error);
-        return null;
-    }
-}
 
 const atlanticupUpdateMatchStatus = async (match_id: string, status: string): Promise<void> => {
     try {
@@ -709,11 +576,6 @@ const atlanticupGetAllPlaces = async (): Promise<any[]> => {
 }
 
 export {
-    atlanticupGetAllDelegations,
-    atlanticupGetDelegationFromId,
-    atlanticupGetAllSports,
-    atlanticupGetSportFromId,
-    atlanticupGetTeamFromId,
     atlanticupGetMatchesFromSportId,
     atlanticupGetPlaceFromId,
     atlanticupGetAllGroups,
@@ -724,11 +586,9 @@ export {
     atlanticupGetMoreEvents,
     atlanticupGetMoreIncomingEvents,
     atlanticupGetEventFromId,
-    atlanticupGetMatchFromId,
     atlanticupGetEventsFromPlaceId,
     atlanticupGetAllAnnouncements,
     atlanticupGetAllTeams,
-    atlanticupGetUserFromId,
     atlanticupUpdateMatchStatus,
     atlanticupUpdateType1MatchScore,
     atlanticupUpdateType2MatchScore,

@@ -7,7 +7,8 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
 import AnimatedMarker from '../components/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
-import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces } from '../backend/atlanticupBackendFunctions';
+import { getAllSports } from '@/backend/firestore/sportsService';
 import AtlanticupEventItem from '@/components/AtlanticupEventItem';
 import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
@@ -151,7 +152,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             setSelectedMarkerId(firstPlace.id);
             moveToPosition(firstPlace.position);
         });
-        atlanticupGetAllSports().then((data) => {
+        getAllSports().then((data) => {
             setSports(data);
         });
     }, []);

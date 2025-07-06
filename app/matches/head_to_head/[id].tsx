@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider } from 'react-native-paper';
-import { atlanticupUpdateMatchStatus } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupUpdateMatchStatus } from '@/backend/atlanticupBackendFunctions';
 import { getSportFromId } from '@/backend/firestore/sportsService';
 import { getUserFromUid } from '@/backend/firestore/usersService';
 import { getAllDelegations } from '@/backend/firestore/schoolsService';
@@ -17,7 +17,6 @@ import { Link, useLocalSearchParams, useRouter} from 'expo-router';
 const width = Dimensions.get('window').width;
 
 interface Props {
-    match_id: string;
 }
 
 interface Match {
@@ -26,7 +25,6 @@ interface Match {
     sport_id: string;
     start_time: any;
     status: string;
-    teams: Array<{ id: string; delegation: { color: string; image: string; title: string }; description: string }>;
     team1_id: string;
     team2_id: string;
     team1_score : any;
@@ -52,10 +50,11 @@ interface Delegation {
     image: string;
 }
 
-const Type2Match: React.FC<Props> = ({match_id}) => {
+const MatchPage: React.FC<Props> = () => {
     const router = useRouter();
+    const match_id = useLocalSearchParams().id;
     const [match, setMatch] = useState<Match | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [activeFetches, setActiveFetches] = useState(0);
     const [hasAdministratorRights, setHasAdministratorRights] = useState(false);
     const [sport, setSport] = useState<any | null>(null);
     const [team1, setTeam1] = useState<Team | null>(null);
@@ -75,29 +74,31 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
     };
 
     const fetchSport = async (sport_id: string | null) => {
-        setLoading(true);
-        sport_id ? await getSportFromId(sport_id).then(sport => {setSport(sport); setLoading(false)}) : setSport(null);
+        setActiveFetches(prev => prev + 1);
+        sport_id ? await getSportFromId(sport_id).then(sport => {setSport(sport); setActiveFetches(prev => prev - 1)}) : (setSport(null), setActiveFetches(prev => prev - 1));
     };
 
     const fetchMatch = async (match_id : string | null) => {
-        setLoading(true);
-        match_id ? await getMatchFromId(match_id).then(newMatch => {setMatch(newMatch); setLoading(false)}) : setMatch(null);
+        setActiveFetches(prev => prev + 1);
+        match_id ? await getMatchFromId(match_id).then(newMatch => {setMatch(newMatch); setActiveFetches(prev => prev - 1)}) : (setMatch(null), setActiveFetches(prev => prev - 1));
     };
 
     const fetchTeams = async (team1_id : string | null, team2_id : string | null) => {
-        setLoading(true);
-        team1_id ? await getTeamFromId(team1_id).then(newTeam1 => {setTeam1(newTeam1); setLoading(false)}) : setTeam1(null);
-        team2_id ? await getTeamFromId(team2_id).then(newTeam2 => {setTeam2(newTeam2); setLoading(false)}) : setTeam2(null);
+        setActiveFetches(prev => prev + 2);
+        team1_id ? await getTeamFromId(team1_id).then(newTeam1 => {setTeam1(newTeam1); setActiveFetches(prev => prev - 1)}) : (setTeam1(null), setActiveFetches(prev => prev - 1));
+        team2_id ? await getTeamFromId(team2_id).then(newTeam2 => {setTeam2(newTeam2); setActiveFetches(prev => prev - 1)}) : (setTeam2(null), setActiveFetches(prev => prev - 1));
     }
 
     const fetchDelegations = async (delegation1_id : string, delegation2_id : string) => {
-        getDelegationFromId(delegation1_id).then(delegation => {setDelegation1(delegation); setLoading(false)});
-        getDelegationFromId(delegation2_id).then(delegation => {setDelegation2(delegation); setLoading(false)});
+        setActiveFetches(prev => prev + 2);
+        console.log('fetchDelegations', delegation1_id, delegation2_id);
+        getDelegationFromId(delegation1_id).then(delegation => {setDelegation1(delegation); setActiveFetches(prev => prev - 1)});
+        getDelegationFromId(delegation2_id).then(delegation => {setDelegation2(delegation); setActiveFetches(prev => prev - 1)});
     }
 
     const fetchLocation = async (place_id : string | null) => {
-        setLoading(true);
-        place_id ? await getPlaceFromId(place_id).then(location => {setLocation(location); setLoading(false)}) : setLocation(null);
+        setActiveFetches(prev => prev + 1);
+        place_id ? await getPlaceFromId(place_id).then(location => {setLocation(location); setActiveFetches(prev => prev - 1)}) : (setLocation(null), setActiveFetches(prev => prev - 1));
     };
 
     const onRefresh = useCallback(() => {
@@ -111,14 +112,10 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
     }, []);
 
     useEffect(() => {
-        fetchMatch(match_id);
-    }, [match_id]);
+    }, [activeFetches]);
 
     useEffect(() => {
         if (match){
-            fetchTeams(match.team1_id, match.team2_id);
-            fetchLocation(match.place_id);
-            fetchSport(match.sport_id);
             fetchTeams(match.team1_id, match.team2_id);
             fetchLocation(match.place_id);
             fetchSport(match.sport_id);
@@ -126,9 +123,7 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
     }, [match]);
 
     useEffect(() => {
-        console.log('Fetching teams for match:', team1, team2);
         if (team1 && team2) {
-            console.log('Fetching delegations for teams:', team1.delegation_id, team2.delegation_id);
             fetchDelegations(team1.delegation_id, team2.delegation_id);
         }
     }, [team1, team2]);
@@ -156,7 +151,6 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
     };
 
     const redirectToMap = () => {
-        console.log('pressed : ', location);
         if (location){
             router.navigate(`/map?location=${location.id}`);
         }
@@ -230,8 +224,8 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
         }
     })();
 
-    if (loading || !match || !team1 || !team2 || !delegation1 || !delegation2) {
-        console.log('Loading match data...', delegation1, delegation2);
+    if (activeFetches>0 || !match || !team1 || !team2 || !delegation1 || !delegation2) {
+        console.log('loading :', activeFetches, match, team1, team2, delegation1, delegation2);
         return (
             <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 <View style={styles.screen_loader_container}>
@@ -243,7 +237,7 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={{ flex: 1, width: width }} scrollEnabled={false} refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
+            <ScrollView contentContainerStyle={{ flex: 1, width: width }} scrollEnabled={false} refreshControl={<RefreshControl refreshing={activeFetches>0} onRefresh={onRefresh} />}>
                 <View style={styles.upper_container}>
                     <View style={{ position: 'absolute', top: -30, left: -30, opacity: 0.1, transform: [{ rotate: '-30deg' }] }}>
                         <Image source={{ uri: delegation1.image }} style={{ width: 250, height: 250 }} />
@@ -312,7 +306,7 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
                     }
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={redirectToMap}>
                         <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 18 }}>{location == null ? "Voir sur la carte" : location.title} </Text>
-                        <Image source={require('../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
+                        <Image source={require('../../../assets/images/icons/locate-outline.png')} style={{ width: 25, height: 25, tintColor: 'white' }} />
                     </TouchableOpacity>
                     {hasAdministratorRights ?
                         <TouchableOpacity style={{ backgroundColor: '#0269c4', margin: 10, padding: 10, borderRadius: 20 }} onPress={openModal}>
@@ -322,7 +316,7 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
                 </View>
             </ScrollView>
 
-            <Modal
+            {/*<Modal
                 animationType="none"
                 transparent={true}
                 visible={updateModalVisible}
@@ -345,7 +339,7 @@ const Type2Match: React.FC<Props> = ({match_id}) => {
                         </TouchableWithoutFeedback>
                     </View>
                 </TouchableWithoutFeedback>
-            </Modal>
+            </Modal>*/}
         </SafeAreaView>
     );
 };
@@ -385,4 +379,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Type2Match;
+export default MatchPage;

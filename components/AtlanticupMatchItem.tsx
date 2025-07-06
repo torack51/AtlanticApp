@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, Animated, Easing, Pressable} from 'react-native';
-import { atlanticupGetSportFromId } from '../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '@/backend/firestore/sportsService';
 import LinearGradient from 'react-native-linear-gradient';
 import { Link, useRouter} from 'expo-router';
 import ScreenLoader from './ScreenLoader';
@@ -13,12 +13,25 @@ interface Match {
     sport_id: string;
     start_time: string;
     status: string;
-    teams: Array<{ id: string; delegation: { color: string; image: string; title: string }; description: string }>;
+    teams: Array<{ id: string; delegation_id: string; description: string }>;
     team1_id: string;
     team2_id: string;
     title: string;
     description: string;
     activity_id: string;
+}
+
+interface Delegation {
+    id : string;
+    color: string;
+    image: string;
+    title: string;
+}
+
+interface Team {
+    id: string;
+    delegation: Delegation;
+    description: string;
 }
 
 interface User {
@@ -29,7 +42,7 @@ interface Props {
     match: Match;
 }
 
-const Type1Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: any, team2: any, dayOfWeek: string, start_time: Date, sport_image: any }) => {
+const Type1Match =  ({ match, router, team1, team2, delegation1, delegation2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: Team, team2: Team, delegation1: Delegation, delegation2: Delegation, dayOfWeek: string, start_time: Date, sport_image: any }) => {
     return (
         <View style={styles.main_container}>
             <ContextMenu
@@ -45,13 +58,13 @@ const Type1Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
-                                    <Image source={{ uri: team1.delegation.image }} style={{ width:40, height:40, marginRight:5}}/>
-                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                    <Image source={{ uri: delegation1.image }} style={{ width:40, height:40, marginRight:5}}/>
+                                    <Text style={styles.text}>{delegation1.title} {team1.description}</Text>
                                 </View>
 
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
-                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
-                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                    <Image source={{ uri: delegation2.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
+                                    <Text style={styles.text}>{delegation2.title} {team2.description}</Text>
                                 </View>
                             </View>
 
@@ -77,7 +90,7 @@ const Type1Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport
             </View>
     );
 }
-const Type2Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: any, team2: any, dayOfWeek: string, start_time: Date, sport_image: any }) => {
+const Type2Match =  ({ match, router, team1, team2, delegation1, delegation2, dayOfWeek, start_time, sport_image}: { match: Match, router: any, team1: Team, team2: Team, delegation1: Delegation, delegation2: Delegation, dayOfWeek: string, start_time: Date, sport_image: any }) => {
     return (
         <View style={styles.main_container}>
             <ContextMenu
@@ -93,13 +106,13 @@ const Type2Match =  ({ match, router, team1, team2, dayOfWeek, start_time, sport
                         <View style={styles.touchable_container}>
                             <View style={{ height:'100%', width:'65%', flexDirection:'column', padding: 10, justifyContent:'space-between', alignItems:'center'}}>
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row',alignItems:'center'}}>
-                                    <Image source={{ uri: team1.delegation.image }} style={{ width:40, height:40, marginRight:5}}/>
-                                    <Text style={styles.text}>{team1.delegation.title} {team1.description}</Text>
+                                    <Image source={{ uri: delegation1.image }} style={{ width:40, height:40, marginRight:5}}/>
+                                    <Text style={styles.text}>{delegation1.title} {team1.description}</Text>
                                 </View>
 
                                 <View style={{ height:'50%', width:'100%', justifyContent:'flex-start', flexDirection:'row', alignItems:'center'}}>
-                                    <Image source={{ uri: team2.delegation.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
-                                    <Text style={styles.text}>{team2.delegation.title} {team2.description}</Text>
+                                    <Image source={{ uri: delegation2.image }} style={{ width: 40, height: 40, marginRight:5 }}/>
+                                    <Text style={styles.text}>{delegation2.title} {team2.description}</Text>
                                 </View>
                             </View>
 
@@ -188,7 +201,7 @@ const AtlanticupMatchItem: React.FC<Props> = ({ match }) => {
 
     const fetchSportImage = (sport_id: string) => {
         if (!image){
-            atlanticupGetSportFromId(sport_id).then((sport) => {
+            getSportFromId(sport_id).then((sport) => {
 -                setImage(sport.image);
             });
         } 

@@ -42,3 +42,15 @@ export const getAllSports = async (): Promise<Sport[]> => {
         return [];
     }
 }
+
+export const getSportFromId = async (id: string): Promise<Sport> => {
+    const docRef = doc(db, 'atlanticup_sports', id);
+        const docSnap = await getDoc(docRef);
+    
+        if (!docSnap.exists) {
+            console.log('No sport found with id:', id);
+            throw new Error(`Sport with id ${id} not found`);
+        }
+    
+        return { id, ...docSnap.data() } as Sport;
+}

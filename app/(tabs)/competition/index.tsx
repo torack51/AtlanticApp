@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
-import { atlanticupGetAllSports } from '../../../backend/atlanticupBackendFunctions';
+import { getAllSports } from '@/backend/firestore/sportsService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -115,7 +115,7 @@ const CompetitionScreen: React.FC<Props> = (props) => {
         setRefreshing(true);
         setImagesLoaded(0);
         setAllImagesLoaded(false);
-        const sports = await atlanticupGetAllSports();
+        const sports = await getAllSports();
         setSports(sports);
         setRefreshing(false);
     };

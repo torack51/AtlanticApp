@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { atlanticupGetMatchFromId, atlanticupUpdateType3MatchScore } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupUpdateType3MatchScore } from '../../backend/atlanticupBackendFunctions';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
 //A UTILISER POUR LES SPORTS SUIVANTS : FOOTBALL, BASKETBALL, VOLLEY, HANDBALL, RUGBY, ULTIMATE

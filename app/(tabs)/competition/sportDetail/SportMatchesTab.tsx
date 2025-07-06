@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import { atlanticupGetMatchesFromSportId } from '../../../../backend/atlanticupBackendFunctions';
-import { User } from '../../../types';
-import AtlanticupEventItem from '../../../../components/AtlanticupEventItem';
-import AtlanticupMatchItem from '../../../../components/AtlanticupMatchItem';
+import EventCard from '@/components/Event/EventCard';
 
 interface SportMatchesTabProps {
     sport_id: any;
@@ -59,9 +57,7 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
                 contentContainerStyle={{ alignItems: 'center', width: '100%' }}
                 sections={sectionListData}
                 renderItem={({ item }) => (
-                    item.kind === "match" ? 
-                        <AtlanticupMatchItem match={item} currentUser={{ currentUser: {} as User }} /> :
-                        <AtlanticupEventItem event={item} currentUser={{ currentUser: {} as User }} />
+                    <EventCard event={item} />
                 )}
                 renderSectionHeader={({ section: { title } }) => (
                     <View style={{ margin: 10 }}>

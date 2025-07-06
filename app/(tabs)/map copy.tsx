@@ -6,9 +6,9 @@ import Carousel, {ICarouselInstance} from "react-native-reanimated-carousel"
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
 import AnimatedMarker from '../../components/Map/AnimatedMarker';
-import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../../backend/atlanticupBackendFunctions';
-import AtlanticupEventItem from '@/components/AtlanticupEventItem';
-import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
+import { atlanticupGetPlaceFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces } from '../../backend/atlanticupBackendFunctions';
+import { getAllSports } from '@/backend/firestore/sportsService';
+import EventCard from '@/components/Event/EventCard';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,16 +28,7 @@ interface User {
 }
 
 const AtlanticupItem = ({ item }: any) => {
-    if (item.kind === 'event') {
-        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                    <AtlanticupEventItem event={item}/>
-                </View>
-    }
-    if (item.kind === 'match') {
-        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                    <AtlanticupMatchItem match={item}/>
-                 </View>
-    }
+    return <EventCard event={item} />;
 }
 
 
@@ -160,7 +151,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             setSelectedMarkerId(firstPlace.id);
             moveToPosition(firstPlace.position);
         });
-        atlanticupGetAllSports().then((data) => {
+        getAllSports().then((data) => {
             setSports(data);
         });
     }, []);
@@ -196,7 +187,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             }
             setLoading(false);
         });
-        atlanticupGetAllSports().then((data) => {
+        getAllSports().then((data) => {
             setSports(data);
         });
     }, [initialPlaceId]); // Le useEffect dépend de initialPlaceId

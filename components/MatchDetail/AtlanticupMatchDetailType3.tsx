@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider, Modal, Portal } from 'react-native-paper';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus } from '../../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '@/backend/firestore/sportsService';
+import { getUserFromUid } from '@/backend/firestore/usersService';
+import { getMatchFromId } from '@/backend/firestore/matchService';
 import UpdateScoreType3 from '../UpdateScore/AtlanticupUpdateScoreType3';
 import auth from '@react-native-firebase/auth';
 import { FlatList } from 'react-native-gesture-handler';
@@ -87,7 +90,7 @@ class AtlanticupMatchDetailType3 extends React.Component<Props, State> {
     checkForAdministratorRights = async () => {
         const currentUser = auth().currentUser;
         if (currentUser) {
-            const user = await atlanticupGetUserFromId(currentUser.uid);
+            const user = await getUserFromUid(currentUser.uid);
             if (user.is_special_event_organizer) {
                 this.setState({ hasAdministratorRights: true });
             }
@@ -95,7 +98,7 @@ class AtlanticupMatchDetailType3 extends React.Component<Props, State> {
     };
 
     fetchSport = async () => {
-        const sport = await atlanticupGetSportFromId(this.state.match.sport_id);
+        const sport = await getSportFromId(this.state.match.sport_id);
         this.setState({ sport: sport });
         this.props.navigation.setOptions({ title: sport.title });
     }
@@ -108,7 +111,7 @@ class AtlanticupMatchDetailType3 extends React.Component<Props, State> {
     }
 
     fetchMatch() {
-        atlanticupGetMatchFromId(this.state.match.id).then((match) => {
+        getMatchFromId(this.state.match.id).then((match) => {
             const newMatch = { ...this.state.match };
             newMatch.ranking = match.ranking;
             newMatch.teams_id = match.teams_id;

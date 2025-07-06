@@ -23,13 +23,13 @@ const db = getFirestore();
  * @param uid User ID
  * @returns User object or null if not found
  */
-export const getUserByUid = async (uid: string): Promise<User | null> => {
+export const getUserFromUid = async (uid: string): Promise<User> => {
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists) {
         console.log('No user found with uid:', uid);
-        return null;
+        throw new Error(`User with uid ${uid} not found`);
     }
 
     return { uid, ...docSnap.data() } as User;
@@ -66,7 +66,7 @@ export const updateUser = async (uid: string, data: Partial<User>): Promise<void
 
 export const updateUserSupportedTeam = async (uid: string, teamId: string | null): Promise<void> => {
     try {
-        const formerSupportedTeam = (await getUserByUid(uid))?.supported_team || null;
+        const formerSupportedTeam = (await getUserFromUid(uid))?.supported_team || null;
         formerSupportedTeam ? await messaging().unsubscribeFromTopic(formerSupportedTeam) : null;
         teamId ? await messaging().subscribeToTopic(teamId) : null;
 
@@ -80,7 +80,7 @@ export const updateUserSupportedTeam = async (uid: string, teamId: string | null
 
 export const updateUserFollowedSports = async (uid: string, sportsId : string[]): Promise<void> => {
     try {
-        const formerFollowedSports = (await getUserByUid(uid))?.followed_sports || [];
+        const formerFollowedSports = (await getUserFromUid(uid))?.followed_sports || [];
         formerFollowedSports.forEach(async (sportId) => {
             if (sportId) {
                 await messaging().unsubscribeFromTopic(sportId);

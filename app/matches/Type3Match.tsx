@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image, Modal, TouchableOpacity, TouchableWithoutFeedback, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Menu, Button, Provider } from 'react-native-paper';
-import { atlanticupGetSportFromId, atlanticupGetUserFromId, atlanticupGetMatchFromId, atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId, atlanticupGetDelegationFromId} from '../../backend/atlanticupBackendFunctions';
+import { atlanticupGetPlaceFromId, atlanticupUpdateMatchStatus, atlanticupGetTeamFromId } from '../../backend/atlanticupBackendFunctions';
+import { getSportFromId } from '@/backend/firestore/sportsService';
+import { getUserFromUid } from '@/backend/firestore/usersService';
+import { getMatchFromId } from '@/backend/firestore/matchService';
+import { getAllDelegations } from '@/backend/firestore/schoolsService';
 import UpdateScoreType1 from '@/components/UpdateScore/AtlanticupUpdateScoreType1';
 import UpdateScoreType2 from '@/components/UpdateScore/AtlanticupUpdateScoreType2';
 import UpdateScoreType3 from '@/components/UpdateScore/AtlanticupUpdateScoreType3';
@@ -79,7 +83,7 @@ const Type3Match: React.FC<Props> = ({match}) => {
         
         const currentUser = auth().currentUser;
         if (currentUser) {
-            const user = await atlanticupGetUserFromId(currentUser.uid);
+            const user = await getUserFromUid(currentUser.uid);
             if (user.is_special_event_organizer) {
                 setState(prevState => ({ ...prevState, hasAdministratorRights: true }));
             }
@@ -88,13 +92,13 @@ const Type3Match: React.FC<Props> = ({match}) => {
 
     const fetchSport = async () => {
         if (state.match){
-            const sport = await atlanticupGetSportFromId(state.match.sport_id);
+            const sport = await getSportFromId(state.match.sport_id);
             setState(prevState => ({ ...prevState, sport: sport }));
         }
     };
 
     const fetchMatch = async () => {
-        const matchData = await atlanticupGetMatchFromId(state.match_id);
+        const matchData = await getMatchFromId(state.match_id);
         const newMatch = matchData;
         setState(prevState => ({ ...prevState, match: newMatch }));
     };
@@ -109,8 +113,8 @@ const Type3Match: React.FC<Props> = ({match}) => {
 
     const fetchDelegations = async () => {
         if (state.team1 != null && state.team2 != null) {
-            const team1_delegation = await atlanticupGetDelegationFromId(state.team1.delegation);
-            const team2_delegation = await atlanticupGetDelegationFromId(state.team2.delegation);
+            const team1_delegation = await getAllDelegations(state.team1.delegation);
+            const team2_delegation = await getAllDelegations(state.team2.delegation);
             setState(prevState => ({ ...prevState, team1_delegation: team1_delegation, team2_delegation: team2_delegation}));
         } else {
             console.warn('team1 or team2 is null');

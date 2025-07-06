@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { atlanticupGetMatchFromId, atlanticupUpdateType2MatchScore } from '../../backend/atlanticupBackendFunctions';
+import { atlanticupUpdateType2MatchScore } from '../../backend/atlanticupBackendFunctions';
+import { getMatchFromId } from '@/backend/firestore/matchService';
 
 //A UTILISER POUR LES SPORTS SUIVANTS : BADMINTON, TENNIS DE TABlE, VOLLEYBALL
 
@@ -22,7 +23,7 @@ const UpdateScoreType2: React.FC<UpdateScoreType2Props> = ({ match, closeModal }
     const [score2, setScore2] = useState<number[]>([0]);
 
     const fetchMatch = async (match_id: string) => {
-        const match = await atlanticupGetMatchFromId(match_id);
+        const match = await getMatchFromId(match_id);
         setScore1(match.team1_score);
         setScore2(match.team2_score);
     };

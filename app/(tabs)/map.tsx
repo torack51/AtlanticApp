@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable, PanResponder} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Dimensions, Pressable, PanResponder, Platform, Image, Touchable} from 'react-native';
 import MapView, { Marker} from 'react-native-maps';
 import { FlatList, GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 import Carousel, {ICarouselInstance} from "react-native-reanimated-carousel"
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, runOnJS, Easing, withTiming, useDerivedValue, interpolateColor} from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, Easing, withTiming, useDerivedValue} from "react-native-reanimated";
 import AnimatedMarker from '../../components/Map/AnimatedMarker';
 import TextTicker from 'react-native-text-ticker';
-import { atlanticupGetPlaceFromId, atlanticupGetSportFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces, atlanticupGetAllSports} from '../../backend/atlanticupBackendFunctions';
-import AtlanticupEventItem from '@/components/AtlanticupEventItem';
-import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
+import { atlanticupGetPlaceFromId, atlanticupGetEventsFromPlaceId, atlanticupGetAllPlaces } from '../../backend/atlanticupBackendFunctions';
+import { getAllSports } from '@/backend/firestore/sportsService';
+import EventCard from '@/components/Event/EventCard';
 import SmallSportIcon from '@/components/Map/SmallSportIcon';
 import { useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 const { width, height } = Dimensions.get('window');
@@ -29,16 +29,7 @@ interface User {
 }
 
 const AtlanticupItem = ({ item }: any) => {
-    if (item.kind === 'event') {
-        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                    <AtlanticupEventItem event={item}/>
-                </View>
-    }
-    if (item.kind === 'match') {
-        return  <View style={{marginVertical:5, height:100, alignSelf:'center',}}>
-                    <AtlanticupMatchItem match={item}/>
-                 </View>
-    }
+    return <EventCard event={item} />;
 }
 
 
@@ -57,31 +48,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     const [sports, setSports] = useState<any[]>([]);
     const [sportsByPlace, setSportsByPlace] = useState<any[]>([]);
 
-    const insets = useSafeAreaInsets();
+    const tabBarHeight = useBottomTabBarHeight();
 
-
-    const gesture = Gesture.Pan()
-    .onUpdate((event) => {
-        // Mise à jour fluide en fonction du mouvement du doigt
-        height.value = Math.max(
-            MIN_HEIGHT, 
-            Math.min(MAX_HEIGHT, height.value - event.translationY/5)
-        );
-    })
-    .onEnd((event) => {
-        // Détection du seuil dynamique en direct
-        const threshold = (MAX_HEIGHT - MIN_HEIGHT) / 5;
-        const shouldExpand = event.translationY < -threshold;
-        
-        // Mise à jour de l'état
-        runOnJS(setExpanded)(shouldExpand);
-
-        // Animation vers la position finale
-        height.value = withTiming(shouldExpand ? MAX_HEIGHT : MIN_HEIGHT,{
-            duration:500, 
-            easing : Easing.out(Easing.quad)
-        });
-    });
 
     const moveToPosition = (position: {latitude :  number, longitude : number}) => {
         mapRef.current?.animateToRegion(
@@ -97,8 +65,22 @@ const AtlanticupMapScreen: React.FC<any> = () => {
 
     const onSnapToItem = (index: number) => {
         const location = places[index];
-        setSelectedMarkerId(location.id); // Déclenche l'animation dans AnimatedMarker
+        setSelectedMarkerId(location.id);
         moveToPosition(location.position);
+    };
+
+    const snapToNext = () => {
+        const currentIndex = places.findIndex((place) => place.id === selectedMarkerId);
+        const nextIndex = (currentIndex + 1) % places.length;
+        carouselRef.current?.scrollTo({ index: nextIndex, animated: true });
+        onSnapToItem(nextIndex);
+    };
+
+    const snapToPrevious = () => {
+        const currentIndex = places.findIndex((place) => place.id === selectedMarkerId);
+        const previousIndex = (currentIndex - 1) % places.length;
+        carouselRef.current?.scrollTo({ index: previousIndex, animated: true });
+        onSnapToItem(previousIndex);
     };
     
     const toggleCarousel = () => {
@@ -113,7 +95,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         const index = places.findIndex((loc) => loc.id === location.id);
         if (index !== -1) {
             carouselRef.current?.scrollTo({index : index});
-            onSnapToItem(index);  // Déplace la caméra
+            onSnapToItem(index);
         }
     };
 
@@ -125,9 +107,22 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     height: height.value,
     }));
 
+    const animatedCardHeaderHeight = useAnimatedStyle(() => ({
+        height:MIN_HEIGHT - 80*expansion.value,
+    }))
 
-    const animatedCardHeaderTopBarHeight = useAnimatedStyle(() => ({
-        height:75 + 25*expansion.value,
+    const animatedHeaderTitle = useAnimatedStyle(() => ({
+        height: 60 - 30*expansion.value,
+        lineHeight: 60 - 30*expansion.value,
+        fontSize :35 - 15*expansion.value,
+    }))
+
+    const animatedSportsContainerHeight = useAnimatedStyle(() => ({
+        height: 80 - 20*expansion.value,
+    }))
+
+    const animatedDropdownButtonHeight = useAnimatedStyle(() => ({
+        height: 60 - 30*expansion.value,
     }))
 
     const animatedOpacity = useAnimatedStyle(() => ({
@@ -138,21 +133,6 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         opacity: Math.max(0, 1 - Math.pow(expansion.value, 0.05)),
     }));
 
-    const animatedWhiteColor = useDerivedValue(() => {
-        return interpolateColor(
-            expansion.value,  // Valeur d'entrée
-            [0, 1],          // Plage d'entrée (0 = MIN_HEIGHT, 1 = MAX_HEIGHT)
-            ['rgba(250, 250, 250, 0.9)', 'rgba(250, 250, 250, 0.95)'] // Plage de couleurs (rouge → vert)
-        );
-    });
-
-    const animatedWhiteBackground = useAnimatedStyle(() => {
-    return {
-        backgroundColor: animatedWhiteColor.value, // Utilisation de la couleur animée
-    };
-    });
-
-
 
     useEffect(() => {
         atlanticupGetAllPlaces().then((data) => {
@@ -161,7 +141,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             setSelectedMarkerId(firstPlace.id);
             moveToPosition(firstPlace.position);
         });
-        atlanticupGetAllSports().then((data) => {
+        getAllSports().then((data) => {
             setSports(data);
         });
     }, []);
@@ -169,7 +149,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
     useEffect(() => {
         setLoading(true);
         atlanticupGetAllPlaces().then(async (allPlaces) => {
-            setPlaces(allPlaces); // Charge tous les lieux
+            setPlaces(allPlaces);
 
             if (initialPlaceId) {
                 const target = allPlaces.find(place => place.id === initialPlaceId);
@@ -177,19 +157,16 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                     setTargetPlace(target);
                     moveToPosition(target.position);
                     setSelectedMarkerId(target.id);
-                    // Si tu veux que le carousel se positionne aussi sur cet élément
                     const index = allPlaces.findIndex(place => place.id === initialPlaceId);
                     if (index !== -1) {
-                        setTimeout(() => { // Petit délai pour s'assurer que le carousel est initialisé
+                        setTimeout(() => {
                             carouselRef.current?.scrollTo({ index: index, animated: true });
                         }, 500);
                     }
                 } else {
                     console.warn(`Lieu avec l'ID ${initialPlaceId} non trouvé.`);
-                    // Tu pourrais centrer la carte sur une région par défaut ici
                 }
             } else if (allPlaces.length > 0) {
-                // Si pas de place_id, centre sur le premier lieu par défaut
                 const firstPlace = allPlaces[0];
                 setTargetPlace(firstPlace);
                 moveToPosition(firstPlace.position);
@@ -197,10 +174,10 @@ const AtlanticupMapScreen: React.FC<any> = () => {
             }
             setLoading(false);
         });
-        atlanticupGetAllSports().then((data) => {
+        getAllSports().then((data) => {
             setSports(data);
         });
-    }, [initialPlaceId]); // Le useEffect dépend de initialPlaceId
+    }, [initialPlaceId]);
 
     useEffect(() => {
         setEvents([]);
@@ -240,39 +217,59 @@ const AtlanticupMapScreen: React.FC<any> = () => {
       const renderCarouselItem = ({item, index}) => {
         return (
             <Animated.View style={styles.card}>
-                <View style={styles.card_header}>
-                    <Animated.View style={[styles.card_header_top_bar, animatedCardHeaderTopBarHeight]}>
-                        <Pressable onPress={toggleCarousel}>
-                            <View style={styles.title_container}>
-                                <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Text>
-                            </View>
-                        </Pressable>
-                        <View style={styles.sports_container}>
-                            {
-                                (sportsByPlace.length > 0) && 
-                                <FlatList
-                                data={sportsByPlace[index].sports}
-                                renderItem={({item}) => <SmallSportIcon item={item} />}
-                                horizontal
-                                keyExtractor={(item) => item.id}
-                            />
-                            }
-                            
+                <Animated.View style={[styles.card_header, animatedCardHeaderHeight]}>
+                    <View style={styles.card_header_top_bar}>
+                        <View style={styles.title_container}>
+                            <Pressable onPress={toggleCarousel}>
+                                <Animated.Text style={[styles.title, animatedHeaderTitle]} numberOfLines={1} adjustsFontSizeToFit>{ item.title }</Animated.Text>
+                            </Pressable>
                         </View>
-                    </Animated.View>
-                    <Animated.View style={[styles.current_activity_container,animatedReverseOpacity]}>
-                        {/*<Pressable onPress={toggleCarousel}>
-                            <TextTicker
-                                style={{ fontSize: 16, color: 'red', fontWeight: 'bold'}}
-                                duration={300}
-                                loop
-                                repeatSpacer={0}
-                            >   
-                                - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS - EN COURS -
-                            </TextTicker>
-                        </Pressable>*/}
-                    </Animated.View>
-                </View>
+                        <Animated.View style={[styles.header_middle_part, animatedSportsContainerHeight]}>
+                            <View style={{ flex:1, aspectRatio:1, alignSelf:'center' }}>
+                                <Pressable onPress={snapToPrevious} style={{flex:1}}>
+                                    <Image source={require('../../assets/images/icons/chevrons/chevron_left.png')} style={{flex: 1,width:'50%', aspectRatio:1, tintColor:'rgba(0,0,0,0.5)'}}/>
+                                </Pressable>
+                            </View>
+                            {
+                                (sportsByPlace.length > 0) &&
+                                <View style={styles.sports_container}>
+                                    <FlatList
+                                        data={sportsByPlace[index].sports}
+                                        renderItem={({item}) => <SmallSportIcon sport={item} />}
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        keyExtractor={(item) => item.id}
+                                        contentContainerStyle={{ paddingHorizontal: 10}}
+                                    />
+                                    <LinearGradient
+                                        colors={['rgba(255,255,255,1)', 'rgba(255,255,255,0)']}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 0 }}
+                                        style={styles.leftGradient}
+                                        pointerEvents="none"
+                                    />
+                                    <LinearGradient
+                                        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,1)']}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 0 }}
+                                        style={styles.rightGradient}
+                                        pointerEvents="none"
+                                    />
+                                </View>
+                            }
+                            <View style={{ flex:1, aspectRatio:1, alignSelf:'center' }}>
+                                <Pressable onPress={snapToNext} style={{flex:1}}>
+                                    <Image source={require('../../assets/images/icons/chevrons/chevron_right.png')} style={{flex: 1,width:'50%', aspectRatio:1, tintColor:'rgba(0,0,0,0.5)'}}/>
+                                </Pressable>
+                            </View>
+                        </Animated.View>
+                        <Animated.View style={[styles.dropdown_button, animatedDropdownButtonHeight]}>
+                            <Pressable onPress={toggleCarousel} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                                <Image source={require('../../assets/images/icons/chevrons/chevron_down.png')} style={{flex:1, height:'100%', aspectRatio:1, tintColor:'rgba(0,0,0,0.5)'}}/>
+                            </Pressable>
+                        </Animated.View>
+                    </View>
+                </Animated.View>
                 {item.id === selectedMarkerId && 
                 <Animated.View style={[styles.card_body, animatedOpacity]}>
                     {
@@ -295,9 +292,8 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         );
     }
 
-
     return(
-      <GestureHandlerRootView style={{ flex: 1, paddingBottom: insets.bottom}}>
+      <GestureHandlerRootView style={{ flex: 1,  paddingBottom: Platform.OS == "ios" ? tabBarHeight : 0 }}>
         <View style={styles.container}>
             <MapView
                 ref={mapRef}
@@ -333,7 +329,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
         </View>
 
 
-        <GestureDetector gesture={gesture}>
+       {/*} <GestureDetector gesture={gesture}>*/}
             <Animated.View style={[styles.carouselContainer, animatedStyle]}>
                 <Carousel
                     ref={carouselRef}
@@ -345,7 +341,7 @@ const AtlanticupMapScreen: React.FC<any> = () => {
                     style={styles.carouselStyle}
                 />
             </Animated.View>
-        </GestureDetector>
+        {/*</GestureDetector>*/}
       </GestureHandlerRootView>
     )
 };
@@ -356,27 +352,31 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     carouselContainer: {
+        backgroundColor: 'white',
     },
     carouselStyle:{
         height:'100%',
     },
     card: {
-        height:450,
+        height: MAX_HEIGHT,
         width: '100%',
         alignSelf: "center",
     },
     card_header:{
-        padding:5,
         width:'100%',
         alignItems:'center',
     },
     card_header_top_bar:{
+        width:'100%',
     },
     current_activity_container:{
-        position:'absolute',
         justifyContent:'center',
         bottom:0,
         height:25,
+    },
+    dropdown_button:{
+        justifyContent:'center',
+        alignItems:'center',
     },
     card_body:{
         flex:1,
@@ -385,17 +385,30 @@ const styles = StyleSheet.create({
     title_container:{
         alignItems:'center',
         justifyContent:'center',
-        height:30,
+    },
+    header_middle_part:{
+        flexDirection:'row',
+        justifyContent:'center',
     },
     sports_container:{
-        alignItems:'center',
-        justifyContent:'center',
-        flex:1,
-        padding:2,
+        width: '75%',
     },
     title: { 
-        fontSize:22, 
         fontWeight: "bold",
+    },
+    leftGradient: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 10,
+    },
+    rightGradient: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: 10,
     },
   });
 

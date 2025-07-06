@@ -221,9 +221,6 @@ const ProfileScreen: React.FC = () => {
             </View>
         ));
     };
-
-    //const auth = getAuth(app);
-    //const isSignedIn = auth.currentUser ? true : false;
     const selectedTeamDetails = teams.find(team => team.id === selectedTeam);
     
     return (

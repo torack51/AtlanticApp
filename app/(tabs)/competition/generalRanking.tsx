@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, RefreshControl, Image, Dimensions } from 'react-native';
-import { atlanticupFetchRanking, atlanticupGetAllDelegations } from '../../../backend/atlanticupBackendFunctions';
+import { atlanticupFetchRanking } from '../../../backend/atlanticupBackendFunctions';
+import { getAllDelegations } from '@/backend/firestore/schoolsService';
 import { FlatList } from 'react-native-gesture-handler';
 
 const width = Dimensions.get('window').width;
@@ -31,7 +32,7 @@ const GeneralRanking: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const fetchDelegations = useCallback(async () => {
-        const delegations = await atlanticupGetAllDelegations();
+        const delegations = await getAllDelegations();
         setDelegations(delegations);
     }, []);
 

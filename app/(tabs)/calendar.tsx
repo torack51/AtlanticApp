@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
 import AnimatedBackground from '@/components/Calendar/AnimatedBackground';
+import EventCard from '@/components/Event/EventCard';
 
 interface User {
     id: string;
@@ -32,6 +33,23 @@ interface Event {
     location: string;
     description: string;
     activity_id: string;
+}
+
+interface Match {
+    id: string;
+    kind: string;
+    sport_id: string;
+    start_time: any;
+    status: string;
+    teams: Array<{ id: string; delegation: { color: string; image: string; title: string }; description: string }>;
+    team1_id: string;
+    team2_id: string;
+    team1_score : any;
+    team2_score : any;
+    title: string;
+    description: string;
+    category : string;
+    place_id : string | null;
 }
 
 const CalendarTab: React.FC = () => {
@@ -60,7 +78,7 @@ const CalendarTab: React.FC = () => {
 
     const listMargin = scrollY.interpolate({
         inputRange: [0, screenHeight * 0.3],
-        outputRange: [screenWidth * 0.03, 0],
+        outputRange: [screenWidth * 0.08, 0],
         extrapolate: 'clamp',
     });
 
@@ -124,16 +142,8 @@ const CalendarTab: React.FC = () => {
         }
     };
 
-    const renderItem = ({ item }: { item: Event }) => {
-        if (item.kind === "match") {
-            return  <View style={{marginVertical:5, height:100, alignSelf:'center'}}>
-                        <AtlanticupMatchItem match={item}/>
-                    </View>;
-        } else {
-            return  <View style={{marginVertical:5, height:100, alignSelf:'center'}}>
-                        <AtlanticupEventItem event={item}/>
-                    </View>;
-        }
+    const renderItem = ({ item }: { item: Event | Match }) => {
+        return <EventCard event={item} />;
     };
 
     const renderFooter = () => {
@@ -171,7 +181,7 @@ const CalendarTab: React.FC = () => {
                 </Animated.View>
             </View>
 
-            <Animated.View style={[styles.eventListContainer, { height: listHeight, margin: listMargin }]}>
+            <Animated.View style={[styles.eventListContainer, { height: listHeight, marginHorizontal: listMargin }]}>
                 <FlatList
                     data={displayEvents}
                     scrollEnabled={!loading}
@@ -270,10 +280,10 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'white', // Couleur de fond de la liste
+        backgroundColor: 'white',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        overflow: 'hidden', // Important pour que le borderRadius fonctionne bien
+        overflow: 'hidden',
     },
     eventListContent: {
         padding: 10,
