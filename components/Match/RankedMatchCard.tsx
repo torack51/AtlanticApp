@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { getTeamFromId } from '@/backend/firestore/teamService';
 import { getDelegationFromId } from '@/backend/firestore/delegationService';
 import { getPlaceFromId } from '@/backend/firestore/placeService';
+import { getSportFromId } from '@/backend/firestore/sportsService';
+import { translateStatus } from '@/backend/matchStatusTranslator';
 
 interface Match {
     id: string;
@@ -16,19 +18,10 @@ interface Match {
     place_id: string;
 }
 
-interface Delegation {
-    id : string;
-    color: string;
+interface Sport {
+    id: string;
     image: string;
     title: string;
-}
-
-interface Team {
-    id: string;
-    category: string;
-    delegation_id: string;
-    sport : string;
-    description: string;
 }
 
 interface MatchCardProps {
@@ -36,17 +29,9 @@ interface MatchCardProps {
 }
 
 const RankedMatchCard: React.FC<MatchCardProps> = ({ match }) => {
-    const [teams, setTeams] = React.useState<Team | null>(null);
-    const [delegations, setDelegations] = React.useState<Delegation | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(true);
     const [activeFetches, setActiveFetches] = React.useState<number>(0);
+    const [sport, setSport] = React.useState<Sport | null>(null);
     const [location, setLocation] = React.useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-        };
-        fetchData();
-    }, [match.team1_id, match.team2_id]);
 
     useEffect(() => {
         const fetchPlace = async () => {
@@ -66,36 +51,33 @@ const RankedMatchCard: React.FC<MatchCardProps> = ({ match }) => {
     }, [match.place_id]);
 
     useEffect(() => {
-        setLoading(activeFetches > 0);
-    }, [activeFetches]);
+        const fetchSport = async () => {
+            if (match.sport_id) {
+                setActiveFetches(prev => prev + 1);
+                try {
+                    const sportData = await getSportFromId(match.sport_id);
+                    setSport(sportData);
+                } catch (error) {
+                    console.error('Error fetching sport data:', error);
+                } finally {
+                    setActiveFetches(prev => prev - 1);
+                }
+            }
+        };
+        fetchSport();
+    }, [match.sport_id]);
 
     const getDayOfWeek = (date: Date): string => {
         const days = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
         return days[(new Date(date)).getDay()];
     };
 
-    const translateStatus = (status: string): string => {
-        switch (status) {
-            case 'live':
-                return 'En cours';
-            case 'completed':
-                return 'Terminé';
-            case 'upcoming':
-                return 'À venir';
-            case 'cancelled':
-                return 'Annulé';
-            case 'postponed':
-                return 'Reporté';
-            default:
-                return status;
-        }
-    };
-
-    if (!loading){
+    if (activeFetches == 0) {
         return (
             <TouchableOpacity style={styles.container} onPress={() => router.push(`/matches/head_to_head/${match.id}`)} onLongPress={() => null}>
                 <View style={styles.header}>
                     <Text style={styles.dateTime}>{getDayOfWeek(match.start_time)} {(new Date(match.start_time)).getHours()}:{(new Date(match.start_time)).getMinutes().toString().padStart(2, "0")}</Text>
+                    <Image source={{ uri: sport?.image }} style={styles.image} />
                     <Text style={[styles.status, 
                         match.status === 'live' ? styles.liveStatus : 
                         match.status === 'completed' ? styles.completedStatus : 
@@ -103,31 +85,11 @@ const RankedMatchCard: React.FC<MatchCardProps> = ({ match }) => {
                         {translateStatus(match.status).toUpperCase()}
                     </Text>
                 </View>
-                
-                {/*<View style={styles.teamsContainer}>
-                    <View style={styles.teamInfo}>
-                        <Image source={{ uri: delegation1?.image }} style={styles.teamLogo} />
-                        <Text style={styles.teamName}>{delegation1?.title} {team1?.description}</Text>
-                    </View>
-                    
-                    <View style={styles.scoreContainer}>
-                        {match.status !== 'upcoming' && (
-                            <>
-                                <Text style={styles.score}>{match.team1_score ?? 0}</Text>
-                                <Text style={styles.scoreSeparator}>-</Text>
-                                <Text style={styles.score}>{match.team2_score ?? 0}</Text>
-                            </>
-                        )}
-                        {match.status === 'upcoming' && (
-                            <Text style={styles.vsText}>VS</Text>
-                        )}
-                    </View>
-                    
-                    <View style={styles.teamInfo}>
-                        <Image source={{ uri: delegation2?.image }} style={styles.teamLogo} />
-                        <Text style={styles.teamName}>{delegation2?.title} {team2?.description}</Text>
-                    </View>
-                </View> */}
+                        
+                <View style={styles.content_container}>
+                    <Text style={styles.title} numberOfLines={1}>{sport?.title} - {match.title}</Text>
+                    <Text style={styles.description}>{match.description.replace(/\\n/g, "\n")}</Text>
+                </View>
                 
                 <Text style={styles.venue}>{location}</Text>
             </TouchableOpacity>
@@ -136,25 +98,12 @@ const RankedMatchCard: React.FC<MatchCardProps> = ({ match }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.dateTime}>{match.start_time}</Text>
+                <Text style={styles.dateTime}>Chargement...</Text>
                 <Text style={[styles.status, styles.upcomingStatus]}>
-                    LOADING...
+                    Chargement...
                 </Text>
             </View>
-            <View style={styles.teamsContainer}>
-                <View style={styles.teamInfo}>
-                    <Image source={{ uri: 'https://via.placeholder.com/60' }} style={styles.teamLogo} />
-                    <Text style={styles.teamName}>Loading...</Text>
-                </View>
-                <View style={styles.scoreContainer}>
-                    <Text style={styles.vsText}>VS</Text>
-                </View>
-                <View style={styles.teamInfo}>
-                    <Image source={{ uri: 'https://via.placeholder.com/60' }} style={styles.teamLogo} />
-                    <Text style={styles.teamName}>Loading...</Text>
-                </View>
-            </View>
-            <Text style={styles.venue}>Loading...</Text>
+            <Text style={styles.venue}>Chargement...</Text>
         </View>
     );
 };
@@ -170,11 +119,32 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        minHeight: 220,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 12,
+    },
+    image: {
+        width: 40,
+        height: 40,
+        tintColor: '#000',
+    },
+    content_container: {
+        flex:1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    description: {
+        fontSize: 14,
+        color: '#444',
+        marginBottom: 8,
     },
     dateTime: {
         fontSize: 14,
@@ -186,6 +156,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 4,
+        height: 24,
     },
     liveStatus: {
         backgroundColor: '#FF4D4F',
@@ -198,48 +169,6 @@ const styles = StyleSheet.create({
     upcomingStatus: {
         backgroundColor: '#1890FF',
         color: '#FFFFFF',
-    },
-    teamsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: 16,
-    },
-    teamInfo: {
-        flex: 2,
-        alignItems: 'center',
-    },
-    teamLogo: {
-        width: 60,
-        height: 60,
-        resizeMode: 'contain',
-        marginBottom: 8,
-    },
-    teamName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    scoreContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    score: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginHorizontal: 4,
-    },
-    scoreSeparator: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#666',
-    },
-    vsText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#666',
     },
     venue: {
         fontSize: 14,

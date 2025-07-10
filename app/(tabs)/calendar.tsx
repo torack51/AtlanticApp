@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, FlatList, RefreshControl, Alert, Animated, Dime
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { atlanticupGetMoreIncomingEvents, atlanticupGetInitialIncomingEvents } from '../../backend/atlanticupBackendFunctions';
-import AtlanticupEventItem from '../../components/AtlanticupEventItem';
-import AtlanticupMatchItem from '@/components/AtlanticupMatchItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -160,7 +158,6 @@ const CalendarTab: React.FC = () => {
         fetchInitialEvents();
     }, []);
 
-    const mainLogo = require('../../assets/images/logo-atlanticup-no-background.png');
     const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
 
     return (
