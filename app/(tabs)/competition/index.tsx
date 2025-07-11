@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
 import ColoredImage from '@/components/ColoredImage';
-import ScrollingText from '@/components/ScrollingText';
+import SportItem from '@/components/Competition/SportItem';
 
 const width = Dimensions.get('window').width;
 
@@ -18,9 +18,9 @@ const images = {
     'volleyball': require('../../../assets/images/sports/volleyball-cropped.png'),
     'rugby': require('../../../assets/images/sports/rugby-cropped.png'),
     'badminton' : require('../../../assets/images/sports/badminton-cropped.png'),
-    'relais' : require('../../../assets/images/sports/relais-cropped.png'),
+    'relay' : require('../../../assets/images/sports/relais-cropped.png'),
     'ultimate' : require('../../../assets/images/sports/ultimate-cropped.png'),
-    'table-tennis' : require('../../../assets/images/sports/ultimate-cropped.png'),
+    'tableTennis' : require('../../../assets/images/sports/ultimate-cropped.png'),
     'climbing' : require('../../../assets/images/sports/escalade-cropped.png'),
 }
 
@@ -28,17 +28,13 @@ type Sport = {
     id: string;
     title: string;
     image: string;
+    categories?: any[];
 };
 
 type Props = {
     navigation: {
         navigate: (screen: string, params?: object) => void;
     };
-};
-
-type State = {
-    sports: Sport[];
-    refreshing: boolean;
 };
 
 // Function to interpolate colors
@@ -60,38 +56,6 @@ const color1 = '#1A3149'
 const color2 = '#67A3C6'
 const color3 = '#ECC250'
 
-// SportItem component with color gradient based on index
-const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props; onImageLoaded : any}> = ({ item, index, totalItems, props, onImageLoaded}) => {
-    const color = index % 2 === 0
-        ? color1
-        : color2;
-
-    const oppositeColor = index % 2 === 0 
-        ? color2
-        : color1;
-
-    const sport = item.id.split('_')[0];
-
-    const handleImageLoad = () => {
-        onImageLoaded();
-    }
-
-    return (
-        <View style={{ flexDirection : (index % 2 === 0 ? 'row' : 'row-reverse') }}>
-            <TouchableOpacity style={[styles.sportItemContainer, { flexDirection: (index % 2 === 0 ? 'row' : 'row-reverse'), backgroundColor: color }]} onPress={() => router.navigate(`/competition/sportDetail/${item.id}?name=${item.title}`)}>
-                <ColoredImage imageSource={images[sport]} style={styles.image} containerStyle={{height: '100%', width: '100%', position:'absolute'}} color={index % 2 === 0 ? color2 : color2} brightness={2}/>
-                <Text style={[styles.text, { color : index % 2 === 0 ? color2 : color1 }]} >{item.title.toUpperCase()}</Text>
-                {/*<ScrollingText   ne fonctionne pas pour le moment
-                    text={item.title.toUpperCase()}
-                    containerWidth={width / 2 - 20 - 50}
-                    speed={100}
-                    spacing={10}
-                />   */}                 
-            </TouchableOpacity>
-        </View>
-    );
-};
-
 const CompetitionScreen: React.FC<Props> = (props) => {
     const [sports, setSports] = useState<Sport[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -106,7 +70,6 @@ const CompetitionScreen: React.FC<Props> = (props) => {
 
     useEffect(() => {
         if (imagesLoaded === sports.length && sports.length > 0) {
-            console.log('all images loaded now');
             setAllImagesLoaded(true);
         }
     }, [imagesLoaded]);
@@ -121,7 +84,6 @@ const CompetitionScreen: React.FC<Props> = (props) => {
     };
 
     const handleImageLoad = () => {
-        console.log('new image loaded');
         setImagesLoaded(prev => prev + 1);
     }
 
