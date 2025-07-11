@@ -53,9 +53,9 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
             <SectionList
                 onRefresh={() => fetchMatches(sport_id)}
                 refreshing={refreshing}
-                style={{ width: '100%' }}
-                contentContainerStyle={{ alignItems: 'center', width: '100%' }}
+                style={{ width: '100%', padding: 10}}
                 sections={sectionListData}
+
                 renderItem={({ item }) => (
                     <EventCard event={item} />
                 )}
@@ -83,12 +83,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     scrollView: {
         flex: 1,
-        backgroundColor: 'red',
-    }
+    },
 });
 
 export default SportMatchesTab;

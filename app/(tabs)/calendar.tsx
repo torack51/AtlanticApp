@@ -178,7 +178,7 @@ const CalendarTab: React.FC = () => {
                 </Animated.View>
             </View>
 
-            <Animated.View style={[styles.eventListContainer, { height: listHeight, marginHorizontal: listMargin }]}>
+            <Animated.View style={[styles.eventListContainer, { height: listHeight, marginHorizontal: listMargin}]}>
                 <FlatList
                     data={displayEvents}
                     scrollEnabled={!loading}

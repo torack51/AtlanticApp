@@ -26,6 +26,7 @@ const getDayOfWeek = (date: Date): string => {
 };
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
+    
     if (event.kind == "match") {
         return <MatchCard match={event}/>;
     }

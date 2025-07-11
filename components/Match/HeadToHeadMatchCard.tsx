@@ -127,8 +127,6 @@ const HeadToHeadMatchCard: React.FC<MatchCardProps> = ({ match }) => {
         return days[(new Date(date)).getDay()];
     };
 
-    console.log("score", typeof match.team1_score, match.team2_score);
-
     if (activeFetches == 0){
         return (
             <TouchableOpacity style={styles.container} onPress={() => router.push(`/matches/head_to_head/${match.id}`)} onLongPress={() => null}>
