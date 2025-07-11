@@ -27,19 +27,19 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
         let sections: { [key: string]: any[] } = {};
 
         matches.forEach((match) => {
-            const category = match.category;
+            const phase = match.phase;
 
-            if (!sections[category]) {
-                sections[category] = [];
+            if (!sections[phase]) {
+                sections[phase] = [];
             }
 
-            sections[category].push(match);
+            sections[phase].push(match);
         });
 
-        Object.keys(sections).forEach((category) => {
+        Object.keys(sections).forEach((phase) => {
             sectionList.push({
-                title: category,
-                data: sections[category]
+                title: phase,
+                data: sections[phase]
             });
         });
 
