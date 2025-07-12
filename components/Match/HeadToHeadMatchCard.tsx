@@ -10,6 +10,7 @@ import { getSportFromId } from '@/backend/firestore/sportsService';
 interface Match {
     id: string;
     kind: string;
+    category: string;
     sport_id: string;
     start_time: Date;
     status: string;
@@ -33,6 +34,7 @@ interface Sport {
     id: string;
     image: string;
     title: string;
+    categories : any[];
 }
 
 interface Team {
@@ -132,7 +134,10 @@ const HeadToHeadMatchCard: React.FC<MatchCardProps> = ({ match }) => {
             <TouchableOpacity style={styles.container} onPress={() => router.push(`/matches/head_to_head/${match.id}`)} onLongPress={() => null}>
                 <View style={styles.header}>
                     <Text style={styles.dateTime}>{getDayOfWeek(match.start_time)} {(new Date(match.start_time)).getHours()}:{(new Date(match.start_time)).getMinutes().toString().padStart(2, "0")}</Text>
-                    <Image source={{ uri: sport?.image }} style={styles.image} />
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Image source={{ uri: sport?.image }} style={styles.sportImage} />
+                        <Text style={styles.categoryDescription}>{sport?.categories[match.category].description}</Text>
+                    </View>
                     <Text style={[styles.status, 
                         match.status === 'live' ? styles.liveStatus : 
                         match.status === 'completed' ? styles.completedStatus : 
@@ -228,10 +233,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 12,
     },
-    image: {
+    sportImage: {
         width: 40,
         height: 40,
         tintColor: '#000',
+        marginRight: 5,
     },
     dateTime: {
         fontSize: 14,
@@ -310,6 +316,11 @@ const styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
         marginTop: 8,
+    },
+    categoryDescription: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
     },
 });
 

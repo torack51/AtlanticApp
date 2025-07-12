@@ -100,7 +100,7 @@ const CompetitionScreen: React.FC<Props> = (props) => {
                     <FlatList
                         data={sports}
                         renderItem={({ item, index }) => (
-                            <SportItem item={item} index={index} totalItems={sports.length} props={props} onImageLoaded={handleImageLoad}/>
+                            <SportItem item={item} index={index}/>
                         )}
                         keyExtractor={item => item.id}
                         refreshing={refreshing}

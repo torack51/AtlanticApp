@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated, Easing } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import ColoredImage from '../ColoredImage';
+import { useRouter } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 const ANIMATION_DURATION = 100; // milliseconds for fade animation
@@ -28,14 +28,14 @@ type Sport = {
     id: string;
     title: string;
     image: string; // Not used in current rendering, but defined in type
-    categories?: { [key: string]: { id: string; name: string; description: string; } }; // Adjusted for dictionary
+    categories: { [key: string]: { id: string; name: string; description: string; } }; // Adjusted for dictionary
 };
 
 // Assuming Props is defined elsewhere or not strictly needed for this animation
 type Props = {}; // Placeholder if you need to define it
 
-const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; props: Props; onImageLoaded: any }> = ({ item, index, totalItems, props, onImageLoaded }) => {
-    const navigation = useNavigation();
+const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => {
+    const router = useRouter();
     const [showCategorySelection, setShowCategorySelection] = useState(false);
     const timeoutRef = useRef(null);
 
@@ -43,7 +43,10 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
     const defaultSportOpacity = useRef(new Animated.Value(1)).current;
     const categorySelectionOpacity = useRef(new Animated.Value(0)).current;
 
-    const categoriesArray = item.categories ? Object.values(item.categories) : [];
+    const categoriesArray = item.categories ? Object.keys(item.categories).map(key => ({
+        ...item.categories[key],
+        id: key
+    })) : [];
     const hasTwoCategories = categoriesArray.length === 2;
 
     // Use your custom colors for the category buttons based on index
@@ -81,9 +84,7 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
                 if (categoryId) {
                     url += `&category=${encodeURIComponent(categoryId)}`;
                 }
-                console.log("Navigating to:", url);
-                // router.navigate(url); // Uncomment this line in your actual app
-                // navigation.navigate('CompetitionDetail', { sportId: item.id, sportName: item.title, category: categoryId });
+                router.navigate(url);
             });
         } else {
             // If it's a single category and no selection state, navigate directly
@@ -94,11 +95,9 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
             if (categoryId) { // This might be null for single-category items
                 url += `&category=${encodeURIComponent(categoryId)}`;
             }
-            console.log("Navigating to:", url);
-            // router.navigate(url); // Uncomment this line in your actual app
-            // navigation.navigate('CompetitionDetail', { sportId: item.id, sportName: item.title, category: categoryId });
+            router.navigate(url); // Uncomment this line in your actual app
         }
-    }, [item.id, item.title, navigation, showCategorySelection, categorySelectionOpacity]);
+    }, [item.id, item.title, showCategorySelection, categorySelectionOpacity]);
 
     // Effect to manage the timeout and animations
     useEffect(() => {
@@ -125,7 +124,6 @@ const SportItem: React.FC<{ item: Sport; index: number; totalItems: number; prop
 
             // Set a timeout to revert if no selection is made
             timeoutRef.current = setTimeout(() => {
-                console.log("Timeout triggered, reverting to initial state.");
                 // State is changing back to default (from categories)
                 Animated.sequence([
                     Animated.timing(categorySelectionOpacity, {
