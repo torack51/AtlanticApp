@@ -59,7 +59,7 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
 
 
     // Function to navigate to the sport detail page
-    const navigateToSportDetail = useCallback((categoryId = null) => {
+    const navigateToSportDetail = useCallback((categoryId = null, categoryName = null) => {
         // Clear any active timeout when navigating
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -82,7 +82,8 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
                     url += `?name=${encodeURIComponent(item.title)}`;
                 }
                 if (categoryId) {
-                    url += `&category=${encodeURIComponent(categoryId)}`;
+                    url += `&categoryId=${encodeURIComponent(categoryId)}`;
+                    url += `&categoryName=${encodeURIComponent(categoryName)}`;
                 }
                 router.navigate(url);
             });
@@ -93,7 +94,8 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
                 url += `?name=${encodeURIComponent(item.title)}`;
             }
             if (categoryId) { // This might be null for single-category items
-                url += `&category=${encodeURIComponent(categoryId)}`;
+                url += `&categoryId=${encodeURIComponent(categoryId)}`;
+                url += `&categoryName=${encodeURIComponent(categoryName)}`;
             }
             router.navigate(url); // Uncomment this line in your actual app
         }
@@ -178,7 +180,7 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
     const handleSportPress = () => {
         if (!hasTwoCategories) {
             // If only one category, navigate directly
-            navigateToSportDetail(categoriesArray[0]?.id); // Pass the ID of the single category if applicable
+            navigateToSportDetail(categoriesArray[0]?.id, categoriesArray[0]?.description); // Pass the ID of the single category if applicable
         } else {
             setShowCategorySelection(true);
         }
@@ -206,7 +208,7 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
                         styles.categoryButton,
                         idx === 0 ? { backgroundColor: leftCategoryColor, borderRightWidth: 1, borderColor: '#fff' } : { backgroundColor: rightCategoryColor }
                     ]}
-                    onPress={() => navigateToSportDetail(category.id)}
+                    onPress={() => navigateToSportDetail(category.id, category.description)}
                     activeOpacity={0.7}
                 >
                     <Text style={styles.categoryButtonText}>{category.description}</Text>

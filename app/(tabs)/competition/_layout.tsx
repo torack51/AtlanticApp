@@ -12,7 +12,7 @@ export default function RootLayout() {
         <Stack.Screen 
           name="sportDetail/[sport_id]" 
           options={({ route }) => ({
-            title: route.params?.name || 'Titre',
+            title: route.params?.name + " - " + route.params?.categoryName || 'Titre',
             headerLeft: () => (
               <Button title="Retour" onPress={() => {
                 // Ici, tu définis l'action de retour que tu souhaites

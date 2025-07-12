@@ -31,12 +31,6 @@ type Sport = {
     categories?: any[];
 };
 
-type Props = {
-    navigation: {
-        navigate: (screen: string, params?: object) => void;
-    };
-};
-
 // Function to interpolate colors
 const interpolateColor = (color1: number[], color2: number[], factor: number): number[] => {
     const result = color1.slice();
