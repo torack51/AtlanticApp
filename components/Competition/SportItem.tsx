@@ -200,7 +200,7 @@ const SportItem: React.FC<{ item: Sport; index: number}> = ({ item, index }) => 
 
     // Render the two-category selection
     const renderCategorySelection = () => (
-        <View style={styles.categorySelectionContent}> {/* Apply base style for content */}
+        <View style={styles.categorySelectionContent}>
             {categoriesArray.map((category, idx) => ( // Changed index to idx to avoid conflict with outer index prop
                 <TouchableOpacity
                     key={category.id} // Use category.id for key if available, fallback to idx
