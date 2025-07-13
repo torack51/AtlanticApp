@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
 import AnimatedBackground from '@/components/Calendar/AnimatedBackground';
 import EventCard from '@/components/Event/EventCard';
+import { fetchNextPage } from '@/backend/firestore/eventsService';
 
 interface User {
     id: string;
@@ -24,7 +25,7 @@ interface Event {
     start_time: string;
     status: string;
     kind: string;
-    teams: { id: string; delegation: { color: string; image: string; title: string; }; description: string; }[];
+    teams: { id: string; delegation: { id : string; color: string; image: string; title: string; }; description: string; }[];
     team1_id: string;
     team2_id: string;
     title: string;
@@ -39,7 +40,7 @@ interface Match {
     sport_id: string;
     start_time: any;
     status: string;
-    teams: Array<{ id: string; delegation: { color: string; image: string; title: string }; description: string }>;
+    teams: Array<{ id: string; delegation: { id : string; color: string; image: string; title: string }; description: string }>;
     team1_id: string;
     team2_id: string;
     team1_score : any;
@@ -52,14 +53,16 @@ interface Match {
 
 const CalendarTab: React.FC = () => {
     const [loading, setLoading] = useState(false);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [allLoaded, setAllLoaded] = useState(false);
-    const [events, setEvents] = useState<Event[]>([]);
+    const [events, setEvents] = useState<any[]>([]);
     const [seeSchoolOnly, setSeeSchoolOnly] = useState(false);
-    const [lastVisibleItem, setLastVisibleItem] = useState(0);
     const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+    const [lastDoc, setLastDoc] = useState<any>(null);
+    const [hasMore, setHasMore] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
     const insets = useSafeAreaInsets();
+
+    const blackList : string[] = [];
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const listHeight = scrollY.interpolate({
@@ -105,38 +108,47 @@ const CalendarTab: React.FC = () => {
         });
     };
 
-    const fetchInitialEvents = async () => {
+    const loadEvents = async () => {
+        if (loading || !hasMore) return;
+
         setLoading(true);
+
         try {
-            const { items, lastVisible } = await atlanticupGetInitialIncomingEvents(ITEMS_PER_PAGE);
-            setEvents(items);
-            setLastVisibleItem(lastVisible);
-            setAllLoaded(false);
-            getTeamFromStorage();
-        } catch (error) {
-            console.log(error);
+        const { docs, lastDoc: newLastDoc } = await fetchNextPage({
+            lastDoc,
+            selectedSchool : null,
+            blackList,
+        });
+
+
+        setEvents(prev => [...prev, ...docs]);
+        setLastDoc(newLastDoc);
+        if (docs.length < ITEMS_PER_PAGE) setHasMore(false);
+        } catch (err) {
+            console.error('Erreur chargement événements:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchMoreEvents = async () => {
-        if (loadingMore || allLoaded) {
-            return;
-        }
-        setLoadingMore(true);
+    const refreshEvents = async () => {
+        setRefreshing(true);
+        setEvents([]);
+        setLastDoc(null);
+        setHasMore(true);
         try {
-            const { items, lastVisible } = await atlanticupGetMoreIncomingEvents(lastVisibleItem, ITEMS_PER_PAGE);
-            if (items.length > 0) {
-                setEvents(prevEvents => [...prevEvents, ...items]);
-                setLastVisibleItem(lastVisible);
-            } else {
-                setAllLoaded(true);
-            }
-        } catch (error) {
-            console.log(error);
+            const { docs, lastDoc: newLastDoc } = await fetchNextPage({
+                lastDoc: null,
+                selectedSchool : null,
+                blackList,
+        });
+        setEvents(docs);
+        setLastDoc(newLastDoc);
+        if (docs.length < ITEMS_PER_PAGE) setHasMore(false);
+        } catch (err) {
+            console.error('Erreur refresh:', err);
         } finally {
-            setLoadingMore(false);
+            setRefreshing(false);
         }
     };
 
@@ -144,21 +156,13 @@ const CalendarTab: React.FC = () => {
         return <EventCard event={item} />;
     };
 
-    const renderFooter = () => {
-        return loadingMore ? (
-            <View style={{ padding: 20, alignItems: 'center'}}>
-                <View style={{height:100, width:100}}>
-                    <ScreenLoader/>
-                </View>
-            </View>
-        ) : null;
-    };
-
     useEffect(() => {
-        fetchInitialEvents();
+        loadEvents();
     }, []);
 
-    const displayEvents = seeSchoolOnly ? (events.filter(event => event.kind=="event" || event.teams.map((team) => team.delegation.id).includes(selectedTeam))) : events;
+    useEffect(() => {
+        getTeamFromStorage();
+    }, [seeSchoolOnly]);
 
     return (
         <SafeAreaView style={[styles.container,{paddingBottom: insets.bottom}]}>
@@ -180,7 +184,7 @@ const CalendarTab: React.FC = () => {
 
             <Animated.View style={[styles.eventListContainer, { height: listHeight, marginHorizontal: listMargin}]}>
                 <FlatList
-                    data={displayEvents}
+                    data={events}
                     scrollEnabled={!loading}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
@@ -196,25 +200,9 @@ const CalendarTab: React.FC = () => {
                                     justifyContent: 'center',
                                     height: 50,
                                     borderRadius: 20,
-                                    paddingHorizontal:20,
-                                    backgroundColor: scrollY.interpolate({
-                                        inputRange: [0, screenHeight * 0.3],
-                                        outputRange: ['white', '#1d4966'],
-                                        extrapolate: 'clamp',
-                                    }),
+                                    paddingHorizontal:20
                                 }}>
-                                    <Animated.Text style={{ textAlign: 'center', fontWeight: 'bold', 
-                                        color: scrollY.interpolate({
-                                            inputRange: [0, screenHeight * 0.3],
-                                            outputRange: ['#1d4966', 'white'],
-                                            extrapolate: 'clamp',
-                                        }),
-                                        fontSize: scrollY.interpolate({
-                                            inputRange: [0, screenHeight * 0.3],
-                                            outputRange: [18, 12],
-                                            extrapolate: 'clamp',
-                                        }),
-                                    }}>
+                                    <Animated.Text style={{ textAlign: 'center', fontWeight: 'bold', color: "#1d4966", fontSize: 18 }}>
                                         {
                                             seeSchoolOnly ? "Retirer le filtre" : "Filtrer mon école"
                                         }
@@ -223,7 +211,6 @@ const CalendarTab: React.FC = () => {
                             </TouchableOpacity>
                         </View>
                     }
-                    stickyHeaderIndices={[0]}
                     contentContainerStyle={styles.eventListContent}
                     showsVerticalScrollIndicator={false}
                     onScroll={
@@ -233,6 +220,10 @@ const CalendarTab: React.FC = () => {
                         )
                     }
                     scrollEventThrottle={16}
+
+                    onEndReached={loadEvents}
+                    onEndReachedThreshold={0.5}
+
                     ListEmptyComponent={() => (
                         <View style={{ height:300, width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <View style={{height:200, width:200}}>
@@ -240,10 +231,19 @@ const CalendarTab: React.FC = () => {
                             </View>
                         </View>
                     )}
+
+                    ListFooterComponent={loading && !refreshing ? 
+                        <View style={{ height:300, width:'100%', alignItems:'center', justifyContent:'center'}}>
+                            <View style={{height:200, width:200}}>
+                                <ScreenLoader/>
+                            </View>
+                        </View>
+                    : null
+                }
                     refreshControl={
                         <RefreshControl
-                            refreshing={loading}
-                            onRefresh={fetchInitialEvents}
+                            refreshing={refreshing}
+                            onRefresh={refreshEvents}
                             tintColor="#1d4966"
                         />
                     }

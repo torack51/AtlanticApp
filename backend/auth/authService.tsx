@@ -4,6 +4,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
 
 export const signInAnonymously = async () => {
+  console.log("Tentative de connexion anonyme...");
   const userCredential = await auth().signInAnonymously();
 
   const uid = userCredential.user.uid;
@@ -33,7 +34,7 @@ export const signInAnonymously = async () => {
       lastLogin: new Date().toISOString(),
     });
   }
-
+  console.log('Connexion anonyme réussie avec UID:', userCredential.user.uid);
   return userCredential.user.uid;
 };
 

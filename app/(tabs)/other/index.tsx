@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenLoader from '@/components/ScreenLoader';
-import { getUserByUid, updateUserFollowedSports } from '@/backend/firestore/usersService';
+import { getUserFromUid, updateUserFollowedSports } from '@/backend/firestore/usersService';
 import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 import SchoolPicker from '@/components/SchoolPicker';
 import { updateUser, updateUserSupportedTeam} from '@/backend/firestore/usersService';
@@ -69,12 +69,12 @@ const ProfileScreen: React.FC = () => {
 
         while (!userData && attempts < 5) {
             try {
-                userData = await getUserByUid(user.uid);
+                userData = await getUserFromUid(user.uid);
                 setInitializing(false);
                 console.log("Utilisateur récupéré :", userData);
             if (userData) break;
             } catch (err) {
-                console.warn("Erreur pendant getUserByUid:", err);
+                console.warn("Erreur pendant getUserFromUid:", err);
             }
 
             attempts++;
@@ -148,7 +148,6 @@ const ProfileScreen: React.FC = () => {
     const handleSchoolSelected = async (school_id : string | null) => {
         setSchoolModalVisible(false);
         setLoadingUser(true);
-
         const uid = currentUser?.uid;
         if (!uid) {
             console.warn("Aucun utilisateur connecté pour mettre à jour l'équipe.");

@@ -4,17 +4,13 @@ const db = getFirestore();
 
 const PAGE_SIZE = 10;
 
-export const getInitialEvents = async (startAfterDate?: Date): Promise<any[]> => {
+export const getInitialEvents = async (): Promise<any[]> => {
     try {
         let q = query(
             collection(db, 'atlanticup_events'),
             orderBy('start_time', 'desc'),
             limit(PAGE_SIZE)
         );
-
-        if (startAfterDate) {
-            q = query(q, startAfter(startAfterDate));
-        }
 
         const querySnapshot = await getDocs(q);
         const events: any[] = [];
@@ -29,3 +25,44 @@ export const getInitialEvents = async (startAfterDate?: Date): Promise<any[]> =>
         throw error;
     }
 }
+
+export const fetchFlection = async (collectionName: string, lastTimestamp: any) => {
+    const q = lastTimestamp
+        ? query(collection(db, collectionName), orderBy('date'), startAfter(lastTimestamp), limit(PAGE_SIZE))
+        : query(collection(db, collectionName), orderBy('date'), limit(PAGE_SIZE));
+    const snapshot = await getDocs(q);
+    return {
+        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })),
+        lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+    };
+};
+
+type FetchEventsParams = {
+    lastDoc?: any | null;
+    selectedSchool?: string | null;
+    blackList?: string[] | null;
+};
+
+export const fetchNextPage = async ({ lastDoc, selectedSchool, blackList }: FetchEventsParams) => {
+    const baseQuery = query(
+        collection(db, 'atlanticup_matches'),
+        orderBy('start_time', 'desc'),
+        limit(PAGE_SIZE)
+    );
+
+    let q = lastDoc
+        ? query(baseQuery, startAfter(lastDoc))
+        : baseQuery;
+
+    if (blackList && blackList.length > 0) {
+        q = query(q, where('status', 'not-in', blackList));
+    }
+
+
+    const snapshot = await getDocs(q);
+    return {
+        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })),
+        lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+    };
+};
+
