@@ -57,6 +57,8 @@ const MatchPage: React.FC<Props> = () => {
     const [teams, setTeams] = useState<Array<Team> | null>(null);
     const [delegations, setDelegations] = useState<Array<Delegation> | null>(null);
     const [location, setLocation] = useState<any | null>(null);
+    const [categoryId, setCategoryId] = useState<string | null>(null);
+    const [categoryName, setCategoryName] = useState<string | null>(null);
 
     const checkForAdministratorRights = async () => {
         const currentUser = auth().currentUser;
@@ -110,6 +112,19 @@ const MatchPage: React.FC<Props> = () => {
         }
     }, [match]);
 
+    useEffect(() => {
+        if (sport && categoryId) {
+            const category = sport.categories[categoryId];
+            if (category) {
+                setCategoryName(category.description);
+            } else {
+                setCategoryName(null);
+            }
+        } else {
+            setCategoryName(null);
+        }
+    }, [categoryId, sport]);
+
    /*const openDropDownMenu = () => {
         setState(prevState => ({ ...prevState, dropDownMenuVisible: true }));
     };
@@ -143,7 +158,7 @@ const MatchPage: React.FC<Props> = () => {
 
     const redirectToSport = () => {
         if (sport){
-            router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}`);
+            router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}&categoryName=${categoryName}&categoryId=${categoryId}`);
         }
         else{
             console.warn('Sport introuvable');
@@ -261,7 +276,7 @@ const MatchPage: React.FC<Props> = () => {
                 <View style={styles.lower_container}>
                     {sport &&
                         <TouchableOpacity style={{ padding: 10, margin: 10, borderRadius: 15, backgroundColor: '#76b9f5' }} onPress={redirectToSport}>
-                            <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {sport.title}</Text>
+                            <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {sport.title} - {categoryName}</Text>
                         </TouchableOpacity>
                     }
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={redirectToMap}>

@@ -62,6 +62,8 @@ const MatchPage: React.FC<Props> = () => {
     const [delegation1, setDelegation1] = useState<Delegation | null>(null);
     const [delegation2, setDelegation2] = useState<Delegation | null>(null);
     const [location, setLocation] = useState<any | null>(null);
+    const [categoryId, setCategoryId] = useState<string | null>(null);
+    const [categoryName, setCategoryName] = useState<string | null>(null);
 
     const checkForAdministratorRights = async () => {
         const currentUser = auth().currentUser;
@@ -91,7 +93,6 @@ const MatchPage: React.FC<Props> = () => {
 
     const fetchDelegations = async (delegation1_id : string, delegation2_id : string) => {
         setActiveFetches(prev => prev + 2);
-        console.log('fetchDelegations', delegation1_id, delegation2_id);
         getDelegationFromId(delegation1_id).then(delegation => {setDelegation1(delegation); setActiveFetches(prev => prev - 1)});
         getDelegationFromId(delegation2_id).then(delegation => {setDelegation2(delegation); setActiveFetches(prev => prev - 1)});
     }
@@ -116,6 +117,7 @@ const MatchPage: React.FC<Props> = () => {
 
     useEffect(() => {
         if (match){
+            setCategoryId(match.category);
             fetchTeams(match.team1_id, match.team2_id);
             fetchLocation(match.place_id);
             fetchSport(match.sport_id);
@@ -127,6 +129,19 @@ const MatchPage: React.FC<Props> = () => {
             fetchDelegations(team1.delegation_id, team2.delegation_id);
         }
     }, [team1, team2]);
+
+    useEffect(() => {
+        if (sport && categoryId) {
+            const category = sport.categories[categoryId];
+            if (category) {
+                setCategoryName(category.description);
+            } else {
+                setCategoryName(null);
+            }
+        } else {
+            setCategoryName(null);
+        }
+    }, [categoryId, sport]);
 
 
    /*const openDropDownMenu = () => {
@@ -162,12 +177,11 @@ const MatchPage: React.FC<Props> = () => {
 
     const redirectToSport = () => {
         if (sport){
-            router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}`);
+            router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}&categoryName=${categoryName}&categoryId=${categoryId}`);
         }
         else{
             console.warn('Sport introuvable');
         }
-        //this.props.navigation.navigate('Sport', { sport_id: state.match.sport_id });
     }
 
     const renderScore = (score: number | null) => {
@@ -225,7 +239,6 @@ const MatchPage: React.FC<Props> = () => {
     })();
 
     if (activeFetches>0 || !match || !team1 || !team2 || !delegation1 || !delegation2) {
-        console.log('loading :', activeFetches, match, team1, team2, delegation1, delegation2);
         return (
             <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 <View style={styles.screen_loader_container}>
@@ -301,7 +314,7 @@ const MatchPage: React.FC<Props> = () => {
                 <View style={styles.lower_container}>
                     {sport &&
                         <TouchableOpacity style={{ padding: 10, margin: 10, borderRadius: 15, backgroundColor: '#76b9f5' }} onPress={redirectToSport}>
-                            <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {sport.title}</Text>
+                            <Text style={{ fontWeight: 'bold', color: 'white' }}>Plus sur la section {sport.title} - {categoryName}</Text>
                         </TouchableOpacity>
                     }
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3495eb', padding: 15, borderRadius: 20 }} onPress={redirectToMap}>
