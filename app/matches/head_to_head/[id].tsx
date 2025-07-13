@@ -172,12 +172,14 @@ const MatchPage: React.FC<Props> = () => {
         else{
             console.warn('Lieu introuvable');
         }
-        //this.props.navigation.navigate('Carte', { redirect_to_place_id: state.match.place_id });
     };
 
     const redirectToSport = () => {
         if (sport){
-            router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}&categoryName=${categoryName}&categoryId=${categoryId}`);
+            router.navigate(`/competition`);
+            setTimeout(() => {
+                router.navigate(`/competition/sportDetail/${sport.id}?name=${sport.title}&categoryName=${categoryName}&categoryId=${categoryId}`);
+            }, 50);
         }
         else{
             console.warn('Sport introuvable');
