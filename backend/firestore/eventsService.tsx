@@ -61,7 +61,7 @@ export const fetchNextPage = async ({ lastDoc, selectedSchool, blackList }: Fetc
 
     const snapshot = await getDocs(q);
     return {
-        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })),
+        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, start_time: (doc.data().start_time as any).toDate() })),
         lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
     };
 };

@@ -29,7 +29,12 @@ export const getMatchFromId = async (id: string): Promise<Match> => {
             throw new Error(`Sport with id ${id} not found`);
         }
 
-        return { id, ...docSnap.data() } as Match;
+        const data =  { id, ...docSnap.data() } as Match;
+
+        if (data.start_time) {
+            data.start_time = (data.start_time as any).toDate();
+        }
+        return data;
     } catch (error) {
         console.error("Error fetching match:", error);
         throw error;
@@ -57,6 +62,10 @@ export const getMatchesFromSportId = async (sportId: string, limitCount: number 
                 id: doc.id,
                 ...doc.data()
             } as Match;
+
+            if (data.start_time) {
+                data.start_time = (data.start_time as any).toDate();
+            }
              
             matches.push(data);
         }); 
@@ -91,6 +100,10 @@ export const getMatchesFromSportIdAndCategory = async (sportId: string, category
                 id: doc.id,
                 ...doc.data()
             } as Match;
+
+            if (data.start_time) {
+                data.start_time = (data.start_time as any).toDate();
+            }
              
             matches.push(data);
         }); 
