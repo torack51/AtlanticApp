@@ -10,8 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const initialLayout = { width: Dimensions.get('window').width };
 
 const SportDetailScreen: React.FC = () => {
-    const { sport_id, name, category} = useLocalSearchParams();
-    console.log("SportDetailScreen params:", sport_id);
+    const { sport_id, name, categoryName, categoryId} = useLocalSearchParams();
     const params = useLocalSearchParams();
 
     const layout = useWindowDimensions();
@@ -28,8 +27,8 @@ const SportDetailScreen: React.FC = () => {
         <TabView
             navigationState={{ index, routes }}
             renderScene={SceneMap({
-                rencontres: () => <SportMatchesTab sport_id={sport_id}/>,
-                rankings: () => <ResultsTab sport_id={sport_id}/>,
+                rencontres: () => <SportMatchesTab sport_id={sport_id} category_id={categoryId}/>,
+                rankings: () => <ResultsTab sport_id={sport_id} category_id={categoryId}/>,
             }
             )}
             onIndexChange={handleIndexChange}

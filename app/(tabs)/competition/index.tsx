@@ -50,7 +50,7 @@ const color1 = '#1A3149'
 const color2 = '#67A3C6'
 const color3 = '#ECC250'
 
-const CompetitionScreen: React.FC<Props> = (props) => {
+const CompetitionScreen: React.FC<{}> = () => {
     const [sports, setSports] = useState<Sport[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [imagesLoaded, setImagesLoaded] = useState(0);

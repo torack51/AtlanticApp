@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
-import { atlanticupGetMatchesFromSportId } from '../../../../backend/atlanticupBackendFunctions';
+import { getMatchesFromSportIdAndCategory } from '@/backend/firestore/matchService';
 import EventCard from '@/components/Event/EventCard';
 
 interface SportMatchesTabProps {
     sport_id: any;
+    category_id: string;
 }
 
-const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
+const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id, category_id}) => {
     const [matches, setMatches] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -17,7 +18,7 @@ const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id}) => {
 
     const fetchMatches = async (sport_id: string) => {
         setRefreshing(true);
-        const matches = await atlanticupGetMatchesFromSportId(sport_id);
+        const matches = await getMatchesFromSportIdAndCategory(sport_id, category_id);
         setMatches(matches);
         setRefreshing(false);
     };

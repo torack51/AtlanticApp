@@ -68,3 +68,37 @@ export const getMatchesFromSportId = async (sportId: string, limitCount: number 
         throw error;
     }
 }
+
+export const getMatchesFromSportIdAndCategory = async (sportId: string, categoryId: string, limitCount: number = 10, startAfterDate?: Date): Promise<Match[]> => {
+    try {
+        let q = query(
+            collection(getFirestore(), 'atlanticup_matches'),
+            where('sport_id', '==', sportId),
+            where('category', '==', categoryId),
+            orderBy('start_time', 'desc'),
+            limit(limitCount)
+        );
+
+        if (startAfterDate) {
+            q = query(q, startAfter(startAfterDate));
+        }
+
+        const querySnapshot = await getDocs(q);
+
+        const matches: Match[] = [];
+        querySnapshot.forEach((doc) => {
+            const data = { 
+                id: doc.id,
+                ...doc.data()
+            } as Match;
+             
+            matches.push(data);
+        }); 
+
+        return matches;
+    }
+    catch (error) {
+        console.error("Erreur lors de la récupération des matchs:", error);
+        throw error;
+    }
+}
