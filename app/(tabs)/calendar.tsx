@@ -61,7 +61,7 @@ const CalendarTab: React.FC = () => {
 
     const insets = useSafeAreaInsets();
 
-    const blackList : string[] = [];
+    const blackList : string[] = ['completed', 'cancelled'];
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const listHeight = scrollY.interpolate({
@@ -130,7 +130,7 @@ const CalendarTab: React.FC = () => {
         }
     };
 
-    const refreshEvents = async () => {
+    const refreshEvents = async ({selectedSchool = null, blackList = []}: {selectedSchool: string | null, blackList: string[]}) => {
         setRefreshing(true);
         setEvents([]);
         setLastDoc(null);
@@ -138,7 +138,7 @@ const CalendarTab: React.FC = () => {
         try {
             const { docs, lastDoc: newLastDoc } = await fetchNextPage({
                 lastDoc: null,
-                selectedSchool : null,
+                selectedSchool,
                 blackList,
         });
         setEvents(docs);
@@ -160,7 +160,13 @@ const CalendarTab: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        getTeamFromStorage();
+        getTeamFromStorage().then((team) => {
+            if (team) {
+                refreshEvents({ selectedSchool: team, blackList });
+            } else {
+                refreshEvents({ selectedSchool: null, blackList });
+            }
+        });
     }, [seeSchoolOnly]);
 
     return (
@@ -224,10 +230,8 @@ const CalendarTab: React.FC = () => {
                     onEndReachedThreshold={0.5}
 
                     ListEmptyComponent={() => (
-                        <View style={{ height:300, width:'100%', alignItems:'center', justifyContent:'center'}}>
-                            <View style={{height:200, width:200}}>
-                                <ScreenLoader/>
-                            </View>
+                        <View style={{ height:400, width:'100%', alignItems:'center', justifyContent:'center'}}>
+                                <Text>No data found</Text>
                         </View>
                     )}
 

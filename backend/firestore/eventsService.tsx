@@ -26,38 +26,30 @@ export const getInitialEvents = async (): Promise<any[]> => {
     }
 }
 
-export const fetchFlection = async (collectionName: string, lastTimestamp: any) => {
-    const q = lastTimestamp
-        ? query(collection(db, collectionName), orderBy('date'), startAfter(lastTimestamp), limit(PAGE_SIZE))
-        : query(collection(db, collectionName), orderBy('date'), limit(PAGE_SIZE));
-    const snapshot = await getDocs(q);
-    return {
-        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })),
-        lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
-    };
-};
-
 type FetchEventsParams = {
-    lastDoc?: any | null;
-    selectedSchool?: string | null;
-    blackList?: string[] | null;
+    lastDoc: any | null;
+    selectedSchool: string | null;
+    blackList: string[] | null;
 };
 
-export const fetchNextPage = async ({ lastDoc, selectedSchool, blackList }: FetchEventsParams) => {
-    const baseQuery = query(
+export const fetchNextPage = async ({ lastDoc = null, selectedSchool = null, blackList = []}: FetchEventsParams) => {
+    let q = query(
         collection(db, 'atlanticup_matches'),
-        orderBy('start_time', 'desc'),
+        orderBy('start_time', 'asc'),
         limit(PAGE_SIZE)
     );
 
-    let q = lastDoc
-        ? query(baseQuery, startAfter(lastDoc))
-        : baseQuery;
-
-    if (blackList && blackList.length > 0) {
-        q = query(q, where('status', 'not-in', blackList));
+    if (lastDoc && lastDoc.id) {
+        (q = query(q, startAfter(lastDoc)));
     }
 
+    if (selectedSchool!== null && selectedSchool !== 'null') {
+        (q = query(q, where('delegations_id', 'array-contains', selectedSchool)));
+    }
+
+    if (blackList && blackList.length > 0) {
+        (q = query(q, where('status', 'not-in', blackList)));
+    }
 
     const snapshot = await getDocs(q);
     return {
