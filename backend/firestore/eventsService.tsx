@@ -1,4 +1,4 @@
-import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc, addDoc, updateDoc, query, limit, orderBy, startAfter, where } from "@react-native-firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc, addDoc, updateDoc, query, limit, orderBy, startAfter, where, or } from "@react-native-firebase/firestore";
 
 const db = getFirestore();
 
@@ -33,6 +33,8 @@ type FetchEventsParams = {
 };
 
 export const fetchNextPage = async ({ lastDoc = null, selectedSchool = null, blackList = []}: FetchEventsParams) => {
+    console.log("Fetching next page with params:", { lastDoc, selectedSchool, blackList });
+
     let q = query(
         collection(db, 'atlanticup_matches'),
         orderBy('start_time', 'asc'),
@@ -43,18 +45,42 @@ export const fetchNextPage = async ({ lastDoc = null, selectedSchool = null, bla
         (q = query(q, startAfter(lastDoc)));
     }
 
-    if (selectedSchool!== null && selectedSchool !== 'null') {
-        (q = query(q, where('delegations_id', 'array-contains', selectedSchool)));
-    }
-
     if (blackList && blackList.length > 0) {
         (q = query(q, where('status', 'not-in', blackList)));
     }
 
-    const snapshot = await getDocs(q);
+    const qEvents = query(q, where('kind', '==', 'event'));
+
+    if (selectedSchool!== null && selectedSchool !== 'null') {
+        (q = query(q, where('delegations_id', 'array-contains', selectedSchool)));
+    }
+    
+    const [snap1, snap2] = await Promise.all([
+        getDocs(q),
+        getDocs(qEvents)
+    ]);
+
+    const docsMap = new Map();
+
+    [...snap1.docs, ...snap2.docs].forEach((doc) => {
+        if (!docsMap.has(doc.id)) {
+            docsMap.set(doc.id, {
+            ...doc.data(),
+            id: doc.id,
+            start_time: (doc.data().start_time as any)?.toDate?.() ?? null
+            });
+        }
+    });
+
+    const mergedDocs = Array.from(docsMap.values());
+
+    mergedDocs.sort((a, b) => a.start_time?.getTime?.() - b.start_time?.getTime?.());
+
+
+    
     return {
-        docs: snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, start_time: (doc.data().start_time as any).toDate() })),
-        lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+        docs: mergedDocs,
+        lastDoc: mergedDocs.length ? mergedDocs[mergedDocs.length - 1] : null
     };
 };
 

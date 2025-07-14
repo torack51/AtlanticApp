@@ -90,7 +90,7 @@ const CalendarTab: React.FC = () => {
 
     const seeSchoolOnlyPressed = async () => {
         await getTeamFromStorage().then((team) => {
-            if (!team) {
+            if (!team || team === 'null') {
                 if (!seeSchoolOnly) {
                     Alert.alert(
                         "Sélectionnez une école à soutenir.",
@@ -130,15 +130,16 @@ const CalendarTab: React.FC = () => {
         }
     };
 
-    const refreshEvents = async ({selectedSchool = null, blackList = []}: {selectedSchool: string | null, blackList: string[]}) => {
+    const refreshEvents = async ({blackList = []}: {blackList: string[]}) => {
         setRefreshing(true);
         setEvents([]);
         setLastDoc(null);
         setHasMore(true);
+        //TODO : refresh selected school when seeSchoolOnly is changed
         try {
             const { docs, lastDoc: newLastDoc } = await fetchNextPage({
                 lastDoc: null,
-                selectedSchool,
+                selectedSchool : null,
                 blackList,
         });
         setEvents(docs);

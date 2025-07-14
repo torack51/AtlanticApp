@@ -251,7 +251,7 @@ const ProfileScreen: React.FC = () => {
                     <View style={styles.selector_titles_container}>
                         <View style={{flex:2, justifyContent: 'center', alignItems: 'center'}}>
                             <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                                {"Mon équipe"}
+                                {"Mon école"}
                             </Text> 
                         </View>
                         <View style={{flex:3, justifyContent: 'center', alignItems: 'center'}}>
