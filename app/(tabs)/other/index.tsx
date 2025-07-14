@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Modal, Tou
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
 import { getAllDelegations } from '@/backend/firestore/schoolsService';
 import { getAllSports } from '@/backend/firestore/sportsService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +14,7 @@ import { switchToAnonymousAfterLogout } from '@/backend/auth/authService';
 import SchoolPicker from '@/components/SchoolPicker';
 import { updateUser, updateUserSupportedTeam} from '@/backend/firestore/usersService';
 import AnimatedSportsCard from '@/components/AnimatedSportsCard';
+import { getAllAnnouncements } from '@/backend/firestore/announcementsService';
 
 const width = Dimensions.get('window').width;
 
@@ -130,7 +130,7 @@ const ProfileScreen: React.FC = () => {
 
     const fetchAnnouncements = async () => {
         setLoadingAnnouncements(true);
-        const announcements = await atlanticupGetAllAnnouncements();
+        const announcements = await getAllAnnouncements();
         setAnnouncements(sortAnnouncementsByDate(announcements));
         setLoadingAnnouncements(false);
     };

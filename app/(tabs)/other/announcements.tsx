@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, RefreshControl } from 'react-native';
-import { atlanticupGetAllAnnouncements } from '../../../backend/atlanticupBackendFunctions';
+import { getAllAnnouncements } from '../../../backend/firestore/announcementsService';
 import { FlatList } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import AtlanticupAnnouncementItem from '../../../components/AtlanticupAnnouncementItem';
@@ -13,7 +13,7 @@ const AtlanticupAnnouncementsScreen: React.FC<{ navigation: any }> = ({ navigati
     const fetchAnnouncements = useCallback(async () => {
         setLoading(true);
         try {
-            const announcements = await atlanticupGetAllAnnouncements();
+            const announcements = await getAllAnnouncements();
             setAnnouncements(announcements);
         } catch (error) {
             console.log(error);

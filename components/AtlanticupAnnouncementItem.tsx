@@ -65,13 +65,12 @@ class AtlanticupAnnouncementItem extends React.Component<Props, State> {
 
     render() {
         const announcement = this.state.announcement;
-        const time_sent = new Date(announcement.time_sent);
         if (this.state.place){
         }
     return (
         <SafeAreaView style={styles.announcementContainer}>
             <View style={{padding:5}}>
-                <Text>{time_sent.toLocaleDateString()} {time_sent.getHours()}:{time_sent.getMinutes().toString().padStart(2,"0")}</Text>
+                <Text>{(new Date (announcement.time_sent)).toLocaleDateString()} {(new Date (announcement.time_sent)).getHours()}:{(new Date (announcement.time_sent)).getMinutes().toString().padStart(2,"0")}</Text>
             </View>
             <View style={{padding:5}}>
                 <Text style={styles.bigText}>{announcement.title}</Text>
@@ -94,7 +93,6 @@ class AtlanticupAnnouncementItem extends React.Component<Props, State> {
 const styles = StyleSheet.create({
     announcementContainer:{
         width: '90%',
-        padding:20,
         marginVertical: 10,
         backgroundColor: 'white',
         borderRadius: 15,

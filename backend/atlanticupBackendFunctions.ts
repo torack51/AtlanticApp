@@ -455,21 +455,6 @@ const atlanticupGetEventsFromPlaceId = async (itemsPerPage: number, place_id: st
     }
 }
 
-const atlanticupGetAllAnnouncements = async (): Promise<any[]> => {
-    try {
-        const querySnapshot = await firestore().collection('atlanticup_announcements').orderBy('time_sent', 'desc').get();
-        const announcements: any[] = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        return announcements;
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération des annonces:", error);
-        return [];
-    }
-}
-
 const atlanticupGetAllTeams = async (): Promise<any[]> => {
     try {
         const querySnapshot = await firestore().collection('atlanticup_teams').get();
@@ -587,7 +572,6 @@ export {
     atlanticupGetMoreIncomingEvents,
     atlanticupGetEventFromId,
     atlanticupGetEventsFromPlaceId,
-    atlanticupGetAllAnnouncements,
     atlanticupGetAllTeams,
     atlanticupUpdateMatchStatus,
     atlanticupUpdateType1MatchScore,
