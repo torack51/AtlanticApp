@@ -63,26 +63,6 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    const checkOnboarding = async () => {
-      await AsyncStorage.setItem('hasSeenOnboarding', 'false');
-      const seen = await AsyncStorage.getItem('hasSeenOnboarding');
-      console.log('seen : ', seen);
-
-      if (seen==='false' || seen === null) {
-        console.log('Onboarding not seen, redirecting to onboarding');
-        router.replace('/(onboarding)');
-      }
-      else {
-        console.log('Onboarding already seen, redirecting to tabs');
-        router.replace('/(tabs)/calendar');
-      }
-
-      console.log('Onboarding check complete');
-    };
-    checkOnboarding();
-  }, []);
-
-  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -98,7 +78,6 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <GestureHandlerRootView>
         <Stack
-          initialRouteName="(tabs)"
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
