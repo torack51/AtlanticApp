@@ -9,6 +9,7 @@ import ScreenLoader from '@/components/ScreenLoader';
 import ColoredImage from '@/components/ColoredImage';
 import SportItem from '@/components/Competition/SportItem';
 
+
 const width = Dimensions.get('window').width;
 
 const images = {
@@ -57,6 +58,7 @@ const CompetitionScreen: React.FC<{}> = () => {
     const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
     const insets = useSafeAreaInsets();
+    
 
     useEffect(() => {
         fetchSports();

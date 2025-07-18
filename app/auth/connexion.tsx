@@ -46,8 +46,9 @@ const ConnexionScreen: React.FC = () => {
             />
             {
                 loading ? <Text>Loading...</Text>
-                : <Button title="Login" onPress={handleLogin}/>
+                : <Button title="Se connecter" onPress={handleLogin}/>
             }
+            <Button title="Mot de passe oublié ?" onPress={() => router.push('/auth/resetPassword')} />
         </View>
     );
 };

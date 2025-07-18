@@ -32,7 +32,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="calendar"
           options={{
-            title: 'Calendar',
+            title: 'Calendrier',
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
           }}
         />
@@ -47,7 +47,14 @@ export default function TabLayout() {
           name="map"
           options={{
             title: 'Carte',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="map" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="other"
+          options={{
+            title: 'Autre',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="ellipsis" color={color} />,
           }}
         />
       </Tabs>

@@ -7,7 +7,6 @@ export default function Index() {
     const checkOnboarding = async () => {
         await AsyncStorage.setItem('hasSeenOnboarding', 'true');
         const seen = await AsyncStorage.getItem('hasSeenOnboarding');
-        console.log('seen : ', seen);
 
         if (seen === 'false' || seen === null) {
             console.log('Redirecting to onboarding');

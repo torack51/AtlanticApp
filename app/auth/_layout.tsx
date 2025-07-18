@@ -5,7 +5,8 @@ import { Stack } from 'expo-router';
 const AuthLayout: React.FC = () => {
     return (
         <Stack screenOptions={{headerShown : false}}>
-              <Stack.Screen name="connexion" options={{}}/> {/* Pour les routes comme /matches/123 */}
+            <Stack.Screen name="connexion" options={{}}/>
+            <Stack.Screen name="resetPassword" options={{}}/>
         </Stack>
     );
 };

@@ -7,18 +7,12 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen 
           name="index" 
-          options={{ headerShown: false }} 
+          options={{ headerShown: false, title: 'Compétition'}} 
         />
         <Stack.Screen 
           name="sportDetail/[sport_id]" 
           options={({ route }) => ({
-            title: route.params?.name + " - " + route.params?.categoryName || 'Titre',
-            headerLeft: () => (
-              <Button title="Retour" onPress={() => {
-                // Ici, tu définis l'action de retour que tu souhaites
-                router.back();
-              }} />
-            ),
+          title: route.params?.name + " - " + route.params?.categoryName || 'Titre',
           })}
         />
       </Stack>
