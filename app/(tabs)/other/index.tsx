@@ -221,6 +221,8 @@ const ProfileScreen: React.FC = () => {
         ));
     };
     const selectedTeamDetails = teams.find(team => team.id === selectedTeam);
+
+    console.log('currentUser:', currentUser);
     
     return (
         <ScrollView showsVerticalScrollIndicator={false}>

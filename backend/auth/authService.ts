@@ -1,7 +1,9 @@
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
+
+import { deleteAnonymousAccount } from './anonymousAuthService';
 
 export const signInAnonymously = async () => {
   console.log("Tentative de connexion anonyme...");
@@ -44,35 +46,27 @@ export const switchToAccountWithRights = async (email : string, password : strin
 
   try {
     let anonymousData: any = { followed_sports: [], supported_team: null };
+
     if (anonymousUid){
-    // 🔄 Récupérer données du compte anonyme
         const anonymousDoc = await firestore().collection('users').doc(anonymousUid).get();
         anonymousData = anonymousDoc.exists ? anonymousDoc.data() : { followed_sports: [], supported_team: null };
-
-        // Supprimer document Firestore du compte anonyme
-        await firestore().collection('users').doc(anonymousUid).delete();
-
-        // Supprimer le compte anonyme dans Firebase Auth
-        if (currentUser) {
-          await currentUser.delete();
-        } else {
-          throw new Error("User is null");
-        }
     }
     else{
         console.warn("Aucun compte anonyme à remplacer, il y a probablement eu une erreur précédemment.");
     }
 
-    
+    const oldUser = auth().currentUser;
 
-    // Connexion au compte avec droits
+    if (oldUser?.isAnonymous) {
+      await deleteAnonymousAccount(oldUser);
+    }
+
     const userCredential = await auth().signInWithEmailAndPassword(email, password);
     const uidFinal = userCredential.user.uid;
 
     const userDocRef = firestore().collection('users').doc(uidFinal);
     const docFinal = await userDocRef.get();
 
-    // Récupérer le fcmToken actuel
     const fcmToken = await messaging().getToken();
 
     if (!docFinal.exists) {
@@ -98,10 +92,12 @@ export const switchToAccountWithRights = async (email : string, password : strin
     }
 
     console.log("Passage au compte avec droits réussi.");
+    
     return uidFinal;
 
   } catch (error) {
     console.error("Erreur lors du switch vers un compte avec droits :", error);
+    signInAnonymously();
     throw error;
   }
 };
