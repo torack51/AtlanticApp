@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-
 View,
 Text,
 TextInput,
@@ -11,29 +10,33 @@ SafeAreaView,
 KeyboardAvoidingView,
 Platform,
 } from 'react-native';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import auth from '@react-native-firebase/auth';
+
 
 const ResetPasswordScreen = () => {
 const [email, setEmail] = useState('');
 const [loading, setLoading] = useState(false);
 
-const handleResetPassword = () => {
+const handleResetPassword = async () => {
     if (!email) {
         Alert.alert('Error', 'Please enter your email address.');
         return;
     }
+    
     setLoading(true);
-    // TODO: Implement password reset logic (e.g., call Firebase or your API)
-    console.log('Attempting to reset password for:', email);
-
-    // Simulate API call
-    setTimeout(() => {
-        setLoading(false);
+    try {
+        await auth().sendPasswordResetEmail(email);
         Alert.alert(
             'Check your email',
-            'If an account with that email exists, we have sent a password reset link.',
+            'If an account with that email exists, we have sent a link to reset your password.'
         );
-        // navigation.goBack(); // Optional: navigate back after submission
-    }, 2000);
+    } catch (error: any) {
+        console.error("Password reset error:", error);
+        Alert.alert('Error', error.message);
+    } finally {
+        setLoading(false);
+    }
 };
 
 return (

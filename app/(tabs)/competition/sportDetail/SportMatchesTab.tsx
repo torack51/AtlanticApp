@@ -5,7 +5,7 @@ import EventCard from '@/components/Event/EventCard';
 
 interface SportMatchesTabProps {
     sport_id: any;
-    category_id: string;
+    category_id: any;
 }
 
 const SportMatchesTab: React.FC<SportMatchesTabProps> = ({sport_id, category_id}) => {
